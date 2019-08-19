@@ -1,0 +1,8 @@
+[Unit]
+Description=Run the CoreOS Updater to pull new images.
+
+[Timer]
+OnCalendar=
+
+[Install]
+WantedBy=timers.target
