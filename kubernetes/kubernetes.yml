@@ -1,0 +1,3 @@
+- import_playbook: setenv.yml
+- import_playbook: kubectl.yml
+- import_playbook: cni.yml

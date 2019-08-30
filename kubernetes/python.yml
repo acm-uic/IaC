@@ -1,0 +1,24 @@
+- hosts: k8s_master
+  tasks:
+      - block:
+          - name: "Checking folders"
+            stat:
+                path: "{{item}}"
+            register: folder_stats
+            with_items:
+            - ["{{home}}/.bin"]
+          - name: "Creating multiple folders without disturbing previous permissions"
+            file:
+                path: "{{item.item}}"
+                state: directory
+                mode: 0755
+                group: "500"
+                owner: "{{ansible_user}}"
+            when: item.stat.exists == false
+            with_items:
+            - "{{folder_stats.results}}"
+      - name: Extract pypy
+        unarchive:
+            src: "https://bitbucket.org/squeaky/portable-pypy/downloads/pypy{{ pypy_version }}-linux_x86_64-portable.tar.bz2"
+            dest: "{{home}}/pypy"
+            remote_src: yes
