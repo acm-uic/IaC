@@ -1,0 +1,23 @@
+cluster_name: {{ cluster_name }}
+network:
+  plugin: flannel
+
+nodes:
+{% for host in cluster_nodes_control_plane %}
+- address: "{{ host }}.{{ vm_domain }}"
+  user: {{ rke_ssh_user }}
+  role:
+  - controlplane
+  - etcd
+  - worker
+{% endfor %}
+
+{% for host in cluster_nodes_worker %}
+- address: "{{ host }}.{{ vm_domain }}"
+  user: {{ rke_ssh_user }}
+  internal_address: ""
+  role:
+  - worker
+{% endfor %}
+
+ssh_key_path: {{ cluster_key_path }}

@@ -1,0 +1,426 @@
+- name: test vsphere
+  hosts: localhost
+  gather_facts: false
+  vars:
+    cluster_num_nodes: 6
+    cluster_num_control_plane: 3
+    cluster_name: CLUSTER-NAME
+    vm_cpu: 4
+    vm_mem: 15000
+    vm_timezone: America/Chicago
+    vm_disk_size: 128G
+    admin_ssh_user: admin
+    rke_ssh_user: rancher
+
+    govc_insecure: 1
+    govc_url: acmapp-vcenter.acm.cs
+    govc_username: USERNAME
+    govc_password: PASSWORD
+    govc_datastore: /ACMAPP/datastore/vsanDatastore
+    govc_network: ACMAPP-DSwitch-VM Network
+    govc_resource_pool: /ACMAPP/host/acmapp-cluster
+    govc_datacenter: /ACMAPP
+    govc_tag_category_cluster: "clusters"
+    govc_tag_category_role: "k8s_role"
+    vm_domain: acm.cs
+    base_work_dir: /home/bmiddha/.tmp
+    govc_version: 0.23.0
+    govc_download_url: https://github.com/vmware/govmomi/releases/download/v{{ govc_version }}/govc_linux_amd64.gz
+    govc_checksum: sha1:ba777988af807e4a9aaea47339125f15cdbc8eea
+    rke_version: 1.2.2
+    rke_download_url: "https://github.com/rancher/rke/releases/download/v{{ rke_version }}/rke_linux-amd64"
+    rke_checksum: "sha256:37b26104c0868706bc0c24e47a41c6dcee8e3ab6bc3b41425ade8c58337246f3"
+    ubuntu_version_name: focal
+    ubuntu_cloud_image: https://cloud-images.ubuntu.com/{{ ubuntu_version_name }}/current/{{ ubuntu_version_name }}-server-cloudimg-amd64.ova
+    ubuntu_cloud_image_checksum: sha256:197b7b126c0a16432d121c66022b0c7f8d591166150e7f9f311c2145b2b54a01 
+    template_name: "{{ cluster_name }}-template"
+    node_name: "{{ cluster_name }}-%d"
+    cluster_nodes_worker: []
+    cluster_nodes_control_plane: []
+    cluster_nodes: []
+
+  environment:
+    GOVC_INSECURE: "{{ govc_insecure }}"
+    GOVC_URL: "{{ govc_url }}"
+    GOVC_USERNAME: "{{ govc_username }}"
+    GOVC_PASSWORD: "{{ govc_password }}"
+    GOVC_DATASTORE: "{{ govc_datastore }}"
+    GOVC_NETWORK: "{{ govc_network }}"
+    GOVC_RESOURCE_POOL: "{{ govc_resource_pool }}"
+    GOVC_DATACENTER: "{{ govc_datacenter }}"
+    GOVC_FOLDER: "{{ cluster_name }}"
+
+  tasks:
+
+  - name: Build cluster nodes (cluster_nodes) array
+    set_fact: 
+      cluster_nodes: "{{ cluster_nodes | default([]) + [item] }}"
+    with_sequence: "start={{ 1 }} end={{ cluster_num_nodes }} stride=1 format={{ node_name }}"
+
+  - name: Build cluster control plane nodes (cluster_nodes_control_plane) array
+    set_fact: 
+      cluster_nodes_control_plane: "{{ cluster_nodes_control_plane | default([]) + [item] }}"
+    with_sequence: "start={{ 1 }} end={{ cluster_num_control_plane }} stride=1 format={{ node_name }}"
+
+  - block:
+    - name: Bandaid
+      set_fact:
+        cluster_worker_start_index: "{{cluster_num_control_plane + 1}}"
+    - name: Build cluster worker nodes (cluster_nodes_worker) array
+      set_fact: 
+        cluster_nodes_worker: "{{ cluster_nodes_worker | default([]) + [item] }}"
+      with_sequence: "start={{ cluster_worker_start_index }} end={{ cluster_num_nodes }} stride=1 format={{ node_name }}"
+    when: "{{ cluster_num_nodes > cluster_num_control_plane }}"
+
+  - name: Create work directory directory if it does not exist
+    file:
+      path: "{{ base_work_dir }}/{{ cluster_name }}"
+      state: directory
+      mode: '0700'
+      recurse: yes
+
+  - name: Set work directory (work_dir) variable
+    set_fact:
+      work_dir: "{{ base_work_dir }}/{{ cluster_name }}"
+
+  - name: Download govc
+    get_url:
+      url: "{{ govc_download_url }}"
+      dest: "{{ work_dir }}/govc_{{ govc_version }}.gz"
+      checksum: "{{ govc_checksum }}"
+
+  - name: Uncompress govc binary
+    command: "gzip -dk {{ work_dir }}/govc_{{ govc_version }}.gz"
+    args:
+      creates: "{{ work_dir }}/govc_{{ govc_version }}"
+
+  - name: Set govc path (govc_bin) variable
+    set_fact:
+      govc_bin: "{{ work_dir }}/govc_{{ govc_version }}"
+
+  - name: Ensure govc executable
+    file:
+      path: "{{ govc_bin }}"
+      mode: 0755
+
+  - name: Download OVA
+    get_url:
+      url: "{{ ubuntu_cloud_image }}"
+      dest: "{{ work_dir }}/ubuntu.ova"
+      checksum: "{{ ubuntu_cloud_image_checksum }}"
+
+  - name: Create cluster SSH key
+    command: ssh-keygen -t rsa -b 4096 -f "{{ work_dir }}/cluster" -q -N "" -C ""
+    args: 
+      creates: "{{ work_dir }}/cluster*"
+
+  - name: Set cluster key (cluster_key_path) variable
+    set_fact:
+      cluster_key_path: "{{ work_dir }}/cluster"
+
+  - name: Get cluster public key
+    command: "cat {{ work_dir }}/cluster.pub"
+    register: cat_cluster_public_key
+
+  - name: Set cluter public key (rke_ssh_public_key) variable
+    set_fact:
+      rke_ssh_public_key: "{{ cat_cluster_public_key.stdout }}"
+
+  - name: Create admin user SSH key
+    command: ssh-keygen -t rsa -b 4096 -f "{{ work_dir }}/admin" -q -N "" -C ""
+    args: 
+      creates: "{{ work_dir }}/admin*"
+
+  - name: Get admin public key
+    command: "cat {{ work_dir }}/admin.pub"
+    register: cat_admin_public_key
+
+  - name: Set admin public key (admin_ssh_public_key) variable
+    set_fact:
+      admin_ssh_public_key: "{{ cat_admin_public_key.stdout }}"
+
+  - name: Create user-data from template to "{{ work_dir }}/user-data"
+    template:
+      src: ../templates/user-data.j2
+      dest: "{{ work_dir }}/user-data"
+
+  - name: Encode user-data
+    command: "base64 -w 0 {{ work_dir }}/user-data"
+    ignore_errors: false
+    register: user_data_base64
+    changed_when: false 
+
+  - name: Set cloud init var
+    set_fact:
+      vm_user_data: "{{ user_data_base64.stdout }}"
+
+  - name: Genereate VM spec from template to {{ work_dir }}/ova_spec.json
+    template:
+      src: ../templates/ova_spec.j2
+      dest: "{{ work_dir }}/ova_spec.json"
+
+  - name: Check tag categories
+    command: "{{ govc_bin }} tags.category.ls"
+    ignore_errors: false
+    register: govc_ls_tag_category
+    changed_when: false
+
+  - name: Create role tag category - {{ govc_tag_category_role }}
+    command: "{{ govc_bin }} tags.category.create {{ govc_tag_category_role }}"
+    ignore_errors: false
+    register: govc_create_tag_category_role
+    changed_when: false
+    when: govc_tag_category_role not in govc_ls_tag_category.stdout
+
+  - name: Check if cluster tag exists - {{ govc_tag_category_role }}
+    command: "{{ govc_bin }} tags.ls -c {{ govc_tag_category_role }}"
+    ignore_errors: false
+    register: govc_ls_tag_role
+    changed_when: false
+
+  - name: Create cluster tag - {{ govc_tag_category_role }}
+    command: "{{ govc_bin }} tags.create -c {{ govc_tag_category_role }} {{ item }}"
+    ignore_errors: false
+    register: govc_create_tag_role
+    changed_when: false
+    when: item not in govc_ls_tag_role.stdout
+    with_items:
+    - template
+    - worker
+    - control_plane
+
+  - name: Create cluster tag category
+    command: "{{ govc_bin }} tags.category.create {{ govc_tag_category_cluster }}"
+    ignore_errors: false
+    register: govc_create_tag_category_cluster
+    changed_when: false
+    when: govc_tag_category_cluster not in govc_ls_tag_category.stdout
+
+  - name: Check if cluster tag exists - {{ govc_tag_category_cluster }}
+    command: "{{ govc_bin }} tags.ls -c {{ govc_tag_category_cluster }}"
+    ignore_errors: false
+    register: govc_ls_tag_cluster
+    changed_when: false
+
+  - name: Create cluster tag - {{ govc_tag_category_cluster }}
+    command: "{{ govc_bin }} tags.create -c {{ govc_tag_category_cluster }} {{ cluster_name }}"
+    ignore_errors: false
+    register: govc_create_tag_cluster
+    changed_when: false
+    when: cluster_name not in govc_ls_tag_cluster.stdout
+
+  - name: Check if cluster folder exist - {{ cluster_name }}
+    command: "{{ govc_bin }} folder.info vm/{{ cluster_name }}"
+    ignore_errors: true
+    register: govc_folder_info
+    changed_when: false
+
+  - name: Create cluster folder - {{ cluster_name }}
+    command: "{{ govc_bin }} folder.create vm/{{ cluster_name }}"
+    ignore_errors: false
+    register: govc_create_folder
+    changed_when: false
+    when: govc_folder_info is failed and govc_folder_info.stderr.find("not found") != -1
+
+  - name: Import OVA - {{ template_name }}
+    command: "{{ govc_bin }} import.ova -options={{ work_dir }}/ova_spec.json {{ work_dir }}/ubuntu.ova"
+    ignore_errors: false
+    register: govc_import
+    changed_when: false
+
+  - name: Set VM CPU and RAM size - {{ template_name }}
+    command: "{{ govc_bin }} vm.change -vm {{ template_name }} -c {{ vm_cpu }} -m {{ vm_mem }} -e='disk.enableUUID=1'"
+    ignore_errors: false
+    register: govc_vm_change
+    changed_when: false
+
+  - name: Set VM disk size - {{ template_name }}
+    command: "{{ govc_bin }} vm.disk.change -vm {{ template_name }} -disk.label 'Hard disk 1' -size {{ vm_disk_size }}"
+    ignore_errors: false
+    register: govc_vm_disk_change
+    changed_when: false
+
+  - name: Power on VM - {{ template_name }}
+    command: "{{ govc_bin }} vm.power -on=true {{ template_name }}"
+    ignore_errors: false
+    register: govc_vm_power_template
+    changed_when: false
+
+  - name: Wait for VM to turn off - {{ template_name }}
+    shell: "until {{ govc_bin }} vm.info -json {{ template_name }} | jq -r '.VirtualMachines[].Runtime.PowerState' | grep -q 'poweredOff'; do sleep 5; done"
+    ignore_errors: false
+    register: govc_vm_powered_off_template
+    changed_when: false
+
+  - name: Mark VM as template - {{ template_name }}
+    command: "{{ govc_bin }} vm.markastemplate {{ template_name }}"
+    ignore_errors: false
+    register: govc_vm_markastemplate
+    changed_when: false
+
+  - name: Tag VM - {{ template_name }}
+    command: "{{ govc_bin }} tags.attach -c {{ govc_tag_category_role }} template 'vm/{{ cluster_name }}/{{ template_name }}'"
+    ignore_errors: false
+    register: govc_vm_tag_template
+    changed_when: false
+
+  - name: Tag VM - {{ template_name }}
+    command: "{{ govc_bin }} tags.attach -c {{ govc_tag_category_cluster }} {{ cluster_name }} 'vm/{{ cluster_name }}/{{ template_name }}'"
+    ignore_errors: false
+    register: govc_vm_tag_template
+    changed_when: false
+
+  - name: Initiate VM cloning
+    command: "{{ govc_bin }} vm.clone -vm='{{ template_name }}' -on=false '{{ item }}'"
+    ignore_errors: false
+    register: govc_vm_clone
+    changed_when: false
+    with_items: "{{ cluster_nodes }}"
+    async: 3000
+    poll: 0
+  
+  - name: Wait for VM cloning
+    async_status:
+      jid: "{{ item.ansible_job_id }}"
+    register: govc_vm_clone_jobs
+    until: govc_vm_clone_jobs.finished
+    delay: "{{ 5 * cluster_num_nodes }}"
+    retries: 60
+    with_items: "{{ govc_vm_clone.results }}"
+
+  - name: Initiate VM customization
+    command: "{{ govc_bin }} vm.customize -vm '{{ item }}' -type Linux -tz '{{ vm_timezone }}' -ip dhcp -name '{{ item }}'"
+    ignore_errors: false
+    register: govc_vm_customize
+    changed_when: false
+    with_items: "{{ cluster_nodes }}"
+    async: 10
+    poll: 0
+  
+  - name: Wait for VM customization
+    async_status:
+      jid: "{{ item.ansible_job_id }}"
+    register: govc_vm_customize_jobs
+    until: govc_vm_customize_jobs.finished
+    delay: 1
+    retries: 10
+    with_items: "{{ govc_vm_customize.results }}"
+
+  - name: Initiate tag control plane VM
+    command: "{{ govc_bin }} tags.attach -c {{ govc_tag_category_role }} control_plane 'vm/{{ cluster_name }}/{{ item }}'"
+    ignore_errors: false
+    register: govc_vm_tag_cp
+    changed_when: false
+    with_items: "{{ cluster_nodes_control_plane }}"
+    async: 10
+    poll: 0
+  
+  - name: Wait for tag control plane VM
+    async_status:
+      jid: "{{ item.ansible_job_id }}"
+    register: govc_vm_tag_cp_jobs
+    until: govc_vm_tag_cp_jobs.finished
+    delay: 1
+    retries: 60
+    with_items: "{{ govc_vm_tag_cp.results }}"
+  
+  - name: Initiate tag worker VM
+    command: "{{ govc_bin }} tags.attach -c {{ govc_tag_category_role }} worker 'vm/{{ cluster_name }}/{{ item }}'"
+    ignore_errors: false
+    register: govc_vm_tag_worker
+    changed_when: false
+    with_items: "{{ cluster_nodes_worker }}"
+    async: 10
+    poll: 0
+
+  - name: Wait for tag worker VM
+    async_status:
+      jid: "{{ item.ansible_job_id }}"
+    register: govc_vm_tag_worker_jobs
+    until: govc_vm_tag_worker_jobs.finished
+    delay: 1
+    retries: 60
+    with_items: "{{ govc_vm_tag_worker.results }}"
+
+
+  - name: Initiate tag VM with cluster tag
+    command: "{{ govc_bin }} tags.attach -c {{ govc_tag_category_cluster }} {{ cluster_name }} 'vm/{{ cluster_name }}/{{ item }}'"
+    ignore_errors: false
+    register: govc_vm_tag_template
+    changed_when: false
+    with_items: "{{ cluster_nodes }}"
+    async: 10
+    poll: 0
+  
+  - name: Wait for tag VM with cluster tag
+    async_status:
+      jid: "{{ item.ansible_job_id }}"
+    register: govc_vm_customize_jobs
+    until: govc_vm_customize_jobs.finished
+    delay: 1
+    retries: 10
+    with_items: "{{ govc_vm_customize.results }}"
+  
+  - name: Initiate power on VM
+    command: "{{ govc_bin }} vm.power -on=true '{{ item }}'"
+    ignore_errors: false
+    register: govc_vm_power
+    changed_when: false
+    with_items: "{{ cluster_nodes }}"
+    async: 10
+    poll: 0
+  
+  - name: Wait for power on VM
+    async_status:
+      jid: "{{ item.ansible_job_id }}"
+    register: govc_vm_power_jobs
+    until: govc_vm_power_jobs.finished
+    delay: 1
+    retries: 60
+    with_items: "{{ govc_vm_power.results }}"
+
+  - name: Download rke
+    get_url:
+      url: "{{ rke_download_url }}"
+      dest: "{{ work_dir }}/rke_{{ rke_version }}"
+      checksum: "{{ rke_checksum }}"
+
+  - name: Set rke path (rke_bin) variable
+    set_fact:
+      rke_bin: "{{ work_dir }}/rke_{{ rke_version }}"
+
+  - name: Ensure rke executable
+    file:
+      path: "{{ rke_bin }}"
+      mode: 0755
+
+  - name: Genereate cluster config from template to {{ work_dir }}/{{ cluster_name }}.yml
+    template:
+      src: ../templates/cluster.j2
+      dest: "{{ work_dir }}/{{ cluster_name }}.yml"
+
+  - name: Initite wait for VM IPs
+    command: "{{ govc_bin }} vm.ip -wait 10m '{{ item }}'"
+    ignore_errors: false
+    register: govc_vm_ip
+    changed_when: false
+    with_items: "{{ cluster_nodes }}"
+    async: 600
+    poll: 0
+  
+  - name: Wait for wait for VM IPs
+    async_status:
+      jid: "{{ item.ansible_job_id }}"
+    register: govc_vm_ip_jobs
+    until: govc_vm_ip_jobs.finished
+    delay: 10
+    retries: 100
+    with_items: "{{ govc_vm_ip.results }}"
+
+  - name: Run rke up
+    command: "{{ rke_bin }} up --config {{ work_dir }}/{{ cluster_name }}.yml"
+    args:
+      chdir: "{{ work_dir }}"
+    ignore_errors: false
+    register: rke_up
+    changed_when: false
