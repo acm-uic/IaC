@@ -1,9 +1,0 @@
-- hosts: k8s_master
-  tasks:
-      - name: Add another bin dir to system-wide $PATH.
-        become: true
-        become_user: root
-        lineinfile:
-          path: "/usr/share/skel/.bashrc"
-          regexp: '^PATH='
-          line: 'PATH={{ k8s_executable_path }}:$PATH'
