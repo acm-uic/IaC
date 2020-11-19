@@ -1,4 +1,4 @@
-- name: test vsphere
+- name: Deploy RKE on vSphere
   hosts: localhost
   gather_facts: false
   vars:
@@ -394,12 +394,12 @@
       path: "{{ rke_bin }}"
       mode: 0755
 
-  - name: Genereate cluster config from template to {{ work_dir }}/{{ cluster_name }}.yml
+  - name: Generate cluster config from template to {{ work_dir }}/{{ cluster_name }}.yml
     template:
       src: ../templates/cluster.j2
       dest: "{{ work_dir }}/{{ cluster_name }}.yml"
 
-  - name: Initite wait for VM IPs
+  - name: Initiate wait for VM IPs
     command: "{{ govc_bin }} vm.ip -wait 10m '{{ item }}'"
     ignore_errors: false
     register: govc_vm_ip
