@@ -1,0 +1,16 @@
+apiVersion: v2
+name: jira
+description: A Helm chart for Jira in Kubernetes
+
+# This is an application chart: a collection of templates that can be packaged into versioned archives
+# to be deployed.
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+version: 1.0.0
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time Jira needs to be updated. Take care in which versions are stable
+# versus in the EAP (Early Access Program).
+appVersion: 8.12.2

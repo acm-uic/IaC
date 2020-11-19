@@ -1,0 +1,31 @@
+{{- if .Values.pvc.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jira-data-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+{{- if .Values.pvc.storageClass }}
+  storageClassName: {{ .Values.pvc.storageClass }}
+{{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.dataPVSize }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jira-config-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+{{- if .Values.pvc.storageClass }}
+  storageClassName: {{ .Values.pvc.storageClass }}
+{{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.configPVSize }}
+{{- end }}
