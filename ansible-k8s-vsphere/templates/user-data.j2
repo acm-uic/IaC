@@ -1,0 +1,63 @@
+#cloud-config
+
+users:
+# Admin User
+- name: {{ admin_ssh_user }}
+  primary_group: {{ admin_ssh_user }}
+  groups: users
+  sudo: ALL=(ALL) NOPASSWD:ALL
+  shell: /bin/bash
+  ssh_authorized_keys:
+  - {{ admin_ssh_public_key }}
+# Cluster User
+- name: {{ rke_ssh_user }}
+  primary_group: {{ rke_ssh_user }}
+  groups: docker
+  sudo: false
+  shell: /bin/bash
+  ssh_authorized_keys:
+  - {{ rke_ssh_public_key }} 
+
+# Update apt cache and dist-upgrade
+package_update: true
+package_upgrade: true
+
+apt:
+  sources:
+    docker.list:
+      source: deb [arch=amd64] https://download.docker.com/linux/ubuntu $RELEASE stable
+      keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+
+packages:
+  - docker-ce
+  - docker-ce-cli
+  - open-vm-tools
+
+write_files:
+# Docker config
+- content: |
+    {
+      "exec-opts": ["native.cgroupdriver=systemd"],
+      "log-driver": "json-file",
+      "log-opts": {
+        "max-size": "100m"
+      },
+      "storage-driver": "overlay2"
+    }
+  path: /etc/docker/daemon.json
+
+runcmd:
+- swapoff --all
+- sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab
+- mkdir -p /etc/systemd/system/docker.service.d
+- systemctl daemon-reload
+- systemctl restart docker
+- systemctl enable docker
+- systemctl enable open-vm-tools
+- 'echo "disable_vmware_customization: false" >> /etc/cloud/cloud.cfg'
+- sed -i 's/D \/tmp 1777 root root -/#D \/tmp 1777 root root -/g' /usr/lib/tmpfiles.d/tmp.conf
+- echo -n > /etc/machine-id
+final_message: "The system is prepped, after $UPTIME seconds"
+power_state:
+  timeout: 30
+  mode: poweroff

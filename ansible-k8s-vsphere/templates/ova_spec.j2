@@ -1,0 +1,42 @@
+{
+    "DiskProvisioning": "thin",
+    "IPAllocationPolicy": "dhcpPolicy",
+    "IPProtocol": "IPv4",
+    "InjectOvfEnv": false,
+    "MarkAsTemplate": false,
+    "Name": "{{ template_name }}",
+    "NetworkMapping": [
+        {
+            "Name": "VM Network",
+            "Network": "{{ govc_network }}"
+        }
+    ],
+    "PowerOn": false,
+    "PropertyMapping": [
+        {
+            "Key": "instance-id",
+            "Value": "id-ovf"
+        },
+        {
+            "Key": "hostname",
+            "Value": "{{ template_name }}"
+        },
+        {
+            "Key": "seedfrom",
+            "Value": ""
+        },
+        {
+            "Key": "public-keys",
+            "Value": ""
+        },
+        {
+            "Key": "user-data",
+            "Value": "{{ vm_user_data }}"
+        },
+        {
+            "Key": "password",
+            "Value": ""
+        }
+    ],
+    "WaitForIP": false
+}
