@@ -1,0 +1,10 @@
+---
+# tasks file for bootstrap
+  - name: Check for Python
+    raw: test -e /usr/bin/python
+    changed_when: false
+    failed_when: false
+    register: check_python
+  - name: Install Python
+    raw: (test -e /usr/bin/pacman && (pacman -Sy --noconfirm python)) || (test -e /usr/bin/apt && (apt -y update && apt install -y python-minimal)) || (test -e /usr/bin/yum && (yum -y install python38))
+    when: check_python.rc != 0

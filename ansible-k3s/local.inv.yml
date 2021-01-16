@@ -1,0 +1,12 @@
+all:
+  hosts:
+  children:
+    controlplanes:
+      hosts:
+        192.168.122.204:
+          ansible_user: root
+        192.168.122.228:
+          ansible_user: root
+        192.168.122.33:
+          ansible_user: root
+
