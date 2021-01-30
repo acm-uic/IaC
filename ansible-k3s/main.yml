@@ -3,4 +3,18 @@
 - hosts: all
   gather_facts: false
   roles:
-    - bootstrap
+    - { role: bootstrap, vars: { } }
+
+- hosts: localhost
+  tasks:
+    - name: Create binary directory
+      ansible.builtin.file:
+        path: '{{playbook_dir}}/bin'
+        state: directory
+        mode: '0755'
+
+# TODO: Role for installing k3sup on localhost
+- hosts: localhost
+  roles:
+    - { role: vandot.k3sup.k3sup, vars: { k3sup_install_dir: '{{playbook_dir}}/bin', k3sup_non_root: true } }
+# TODO: Role for creating a k3s cluster with k3sup

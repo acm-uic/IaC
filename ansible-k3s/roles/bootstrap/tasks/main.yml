@@ -1,7 +1,7 @@
 ---
 # tasks file for bootstrap
   - name: Check for Python
-    raw: test -e /usr/bin/python
+    raw: ((test -e /usr/bin/python) || (test -e /usr/bin/python3))
     changed_when: false
     failed_when: false
     register: check_python
