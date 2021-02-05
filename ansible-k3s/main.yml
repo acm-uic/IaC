@@ -12,9 +12,56 @@
         path: '{{playbook_dir}}/bin'
         state: directory
         mode: '0755'
+    - name: Check that the kubectl is available
+      stat:
+        path: '{{playbook_dir}}/bin/kubectl'
+      register: does_kubectl_exist
+    - name: Install kubectl
+      raw: 'curl -L "https://dl.k8s.io/release/{{kubectl_version}}/bin/linux/amd64/kubectl" -o {{playbook_dir}}/bin/kubectl'
+      when: not does_kubectl_exist.stat.exists
+    - name: Change permissions for kubectl binary
+      ansible.builtin.file:
+        path: '{{playbook_dir}}/bin/kubectl'
+        mode: '0755'
 
 # TODO: Role for installing k3sup on localhost
 - hosts: localhost
   roles:
     - { role: vandot.k3sup.k3sup, vars: { k3sup_install_dir: '{{playbook_dir}}/bin', k3sup_non_root: true } }
+
+- hosts: controlplanes
+  tasks:
+    - name: Proposed names
+      debug: msg="k3s-{{hostvars[inventory_hostname]['ansible_default_ipv4']['address'] | replace('.','-')}}"
+    - ansible.builtin.hostname:
+        name: "k3s-{{hostvars[inventory_hostname]['ansible_default_ipv4']['address'] | replace('.','-')}}"
+      name: "Set name for {{groups['controlplanes'] | length}} host(s)"
+
+# Run k3sup uninstall scripts
+- hosts: controlplanes
+  tasks:
+    - name: "Run k3s-killall.sh"
+      become: yes
+      command: k3s-killall.sh
+    - name: "Run k3s-uninstall.sh"
+      become: yes
+      command:
+        cmd: k3s-uninstall.sh
+        removes: /usr/local/bin/k3s-uninstall.sh
+    - name: "Run k3s-agent-uninstall.sh"
+      become: yes
+      command:
+        cmd: k3s-agent-uninstall.sh
+        removes: /usr/local/bin/k3s-agent-uninstall.sh
+
 # TODO: Role for creating a k3s cluster with k3sup
+- hosts: localhost
+  tasks:
+    - name: Print groups
+      debug: msg="{{groups}}"
+    - name: Install k3s server in clustering mode
+      raw: '{{playbook_dir}}/bin/k3sup install --ip {{item}} --user {{install_user}} --cluster'
+      with_items: "{{ groups['controlplanes'][0] }}"
+    - name: Install additional servers
+      raw: "{{playbook_dir}}/bin/k3sup join --ip {{item}} --user {{install_user}} --server-user {{install_user}} --server-ip {{groups['controlplanes'][0]}} --server"
+      with_items: "{{ groups['controlplanes'][1:] }}"
