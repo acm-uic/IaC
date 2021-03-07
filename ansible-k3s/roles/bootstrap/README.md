@@ -3,6 +3,10 @@ Bootstrap
 
 This is a bootstrapping role to allow Ansible to be run on our machines. 
 
+This role achieve the following actions:
+
+* Checks and installs a version of Python to be used by Ansible on the target system.
+
 Requirements
 ------------
 
