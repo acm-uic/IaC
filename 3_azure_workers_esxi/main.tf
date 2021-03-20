@@ -24,7 +24,7 @@ data "vsphere_network" "network" {
 
 resource "vsphere_content_library" "library" {
   name            = "General Images"
-  storage_backing = data.vsphere_datastore.datastore.id
+  storage_backing = [data.vsphere_datastore.datastore.id]
   description     = "General VM Images hosted on truenas.acm.cs"
 }
 
@@ -32,7 +32,7 @@ resource "vsphere_content_library_item" "ubuntu2004_cloudimg" {
   name        = "Ubuntu-20.04-server-cloudimg-amd64"
   description = "Ubuntu 20.04 - focal-server-cloudimg-amd64 OVA"
   library_id  = vsphere_content_library.library.id
-  file_url    = "https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.ova"
+  #file_url    = "https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.ova"
 }
 
 resource "vsphere_virtual_machine" "vm_ova" {
