@@ -11,9 +11,11 @@ variable iso_filename {
 variable ram_mb {
   type = number
   description = "The number of megabytes used for RAM"
+  default = 2048
 }
 
-variable proxmox_url {
+variable worker_prefix {
   type = string
-  description = "URL to access the proxmox API. In the form of: https://proxmox-server01.example.com:8006/api2/json"
+  description = "The name of the VM in Proxmox"
+  default = "github-worker"
 }

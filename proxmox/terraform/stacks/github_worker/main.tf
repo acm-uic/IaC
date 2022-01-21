@@ -1,8 +1,12 @@
+resource "random_pet" "name_randomizer" {
+  prefix = var.worker_prefix
+}
+
 resource "proxmox_vm_qemu" "github_worker" {
-  name = "github-worker"
+  name = random_pet.name_randomizer.id
   desc = "VM for GitHub Action workloads"
   target_node = var.target_node
-  bios = "ovmf"
+  bios = "seabios"
   iso = var.iso_filename
   memory = var.ram_mb
   cores = 2
@@ -17,5 +21,6 @@ resource "proxmox_vm_qemu" "github_worker" {
     type = "sata"
     storage = "acm-nfs"
     size = "30G"
+    format = "qcow2"
   }
 }

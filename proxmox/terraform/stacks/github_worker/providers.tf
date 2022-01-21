@@ -9,6 +9,5 @@ terraform {
 
 provider "proxmox" {
   # Configuration options
-  pm_api_url = var.proxmox_url
   pm_tls_insecure = true
 }
