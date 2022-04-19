@@ -1,0 +1,25 @@
+---
+- name: Create a directory if it does not exist
+  become: yes
+  ansible.builtin.file:
+    path: /usr/local/share/ca-certificates/extra/
+    state: directory
+    owner: root
+    mode: '0755'
+- name: Install the certificate
+  register: cert_changed
+  become: yes
+  template:
+    src: acm.pem
+    dest: /usr/local/share/ca-certificates/extra/acm.crt
+    owner: root
+    mode: '0644'
+- name: Update certificates when cert is changed
+  when: cert_changed.changed
+  become: yes
+  command: update-ca-certificates --fresh
+- name: Upgrade packages if enabled
+  become: yes
+  apt: upgrade=dist force_apt_get=yes
+  ignore_errors: yes
+  when: autoupdate == "yes"

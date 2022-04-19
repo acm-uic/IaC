@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextcloud-deployment
+  namespace: nextcloud
+  labels:
+    app: nextcloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nextcloud
+  template:
+    metadata:
+      labels:
+        app: nextcloud
+    spec:
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: nextcloud-pvc
+      containers:
+        - image: nextcloud
+          name: nextcloud
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: NEXTCLOUD_TRUSTED_DOMAINS
+            value: "nextcloud.acm.cs nextcloud.kube.acm.cs nextcloud.acm.cs.uic.edu"
+          - name: OVERWRITEPROTOCOL
+            value: https
+          - name: MYSQL_DATABASE
+            value: nextcloud
+          - name: MYSQL_USER
+            value: nextclouduser
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: nextcloud-mysql-pass
+                key: password
+          - name: MYSQL_HOST
+            value: mariadb.mariadb.svc.cluster.local
+          - name: NEXTCLOUD_ADMIN_USER
+            value: admin
+          - name: NEXTCLOUD_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                  name: nextcloud-admin-pass
+                  key: password
+          ports:
+            - containerPort: 80
+          volumeMounts:
+          - name: data
+            mountPath: /var/www/html

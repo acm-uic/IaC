@@ -1,0 +1,86 @@
+---
+- name: Run basic roles
+  include_role:
+    name: basic
+- name: Get AD SA password from environment
+  set_fact:
+    sa_password: "{{ lookup('env', 'ANSIBLE_SA') }}"
+- name: Update packages
+  become: yes
+  apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+- name: Install packages required for AD auth
+  become: yes
+  ignore_errors: yes
+  package:
+    name:
+    - sssd
+    - realmd
+    - oddjob
+    - oddjob-mkhomedir
+    - adcli
+    - samba-common
+    - krb5-user
+    - libnss-ldap
+    - libnss-sss
+    - libpam-sss
+    - libpam-ldap
+    - ldap-utils
+    - policycoreutils-python-utils
+    - ntp
+    state: present
+- name: Check if realm is connected
+  command: realm list
+  register: result
+- name: Connect to realm
+  become: yes
+  shell: echo "{{sa_password}}" | realm join --user realmlogin ad.acm.cs
+  when: result.stdout == ""
+- name: Set the sssd.conf template
+  become: yes
+  register: sssd_changed
+  template:
+    src: sssd.conf.j2
+    dest: /etc/sssd/sssd.conf
+    owner: root
+    backup: yes
+- name: Reload service when sssd changed (using command because service times out)
+  become: yes
+  command: systemctl restart sssd
+  when: sssd_changed.changed
+- name: Set the krb5.conf template
+  become: yes
+  template:
+    src: krb5.conf.j2
+    dest: /etc/krb5.conf
+    owner: root
+    backup: yes
+- name: Allow ACMLanAdmins to all systems
+  become: yes
+  command: realm permit -g acmlanadmins@acm.cs
+- name: Set the sudoers acmlanadmins template
+  become: yes
+  template:
+    src: sudoers.j2
+    dest: /etc/sudoers.d/acm
+    owner: root
+    mode: 0440
+    backup: yes
+- name: Set the pam configuration so home directories are created.
+  become: yes
+  template:
+    src: sshd_pam.j2
+    dest: /etc/pam.d/sshd
+    owner: root
+    backup: yes
+- name: Give sudo group NOPASSWD privileges
+  become: yes
+  register: sshd_changed
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    state: present
+    regexp: '^PasswordAuthentication'
+    line: 'PasswordAuthentication yes'
+- name: Restart sshd service
+  become: yes
+  command: systemctl restart sshd
+  when: sshd_changed.changed

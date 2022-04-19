@@ -1,0 +1,12 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: gitlab-pvc-data
+  namespace: gitlab
+spec:
+  storageClassName: longhorn
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 200Gi

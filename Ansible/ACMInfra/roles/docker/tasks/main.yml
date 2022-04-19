@@ -1,0 +1,31 @@
+- name: Install required packages
+  become: yes
+  package:
+    name:
+    - ca-certificates
+    - curl
+    - gnupg
+- name: Download docker script
+  register: docker_download
+  get_url:
+    url: "https://get.docker.com"
+    dest: /home/ansible/get_docker.sh
+    mode: '0755'
+- name: Run docker script
+  when: docker_download.changed
+  shell: /home/ansible/get_docker.sh
+- name: Start service
+  become: yes
+  service:
+    name: docker
+    enabled: yes
+    state: started
+- name: Ensure ansible user is part of docker group
+  become: yes
+  user:
+    name: ansible
+    comment: Default ansible user
+    shell: /bin/bash
+    groups:
+    - sudo
+    - docker

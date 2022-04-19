@@ -1,0 +1,20 @@
+[sssd]
+domains = acm.cs
+config_file_version = 2
+services = nss, pam
+default_domain_suffix = ACM.CS
+
+[domain/acm.cs]
+default_shell = /bin/bash
+ad_server = ad.acm.cs
+krb5_store_password_if_offline = False
+cache_credentials = False
+krb5_realm = ACM.CS
+realmd_tags = manages-system joined-with-adcli 
+id_provider = ad
+fallback_homedir = /home/%u
+ad_domain = acm.cs
+use_fully_qualified_names = True
+ldap_id_mapping = True
+access_provider = ad
+full_name_format = %1$s

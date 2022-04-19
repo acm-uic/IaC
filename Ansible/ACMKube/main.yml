@@ -1,0 +1,14 @@
+---
+- name: Run role for each host
+  hosts: all
+  remote_user: ansible
+  environment:
+      K8S_AUTH_KUBECONFIG: "/home/ansible/kube_config_cluster.yml"
+  vars:
+    ansible_ssh_private_key_file: files/id_rsa
+  tasks:
+  - name: Run prod Kubernetes role
+    include_role:
+      name: prod
+    when: role == "prod"
+    

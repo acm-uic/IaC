@@ -1,0 +1,52 @@
+- name: Set sysctl settings
+  become: yes
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: '1'
+- name: Add RKE User
+  become: yes
+  user:
+    name: ansible
+    shell: /bin/sh
+    groups: sudo,docker
+- name: Set authorized key
+  become: yes
+  authorized_key:
+    user: ansible
+    key: "{{ lookup('file', 'rke_rsa.pub') }}"
+- name: Set main private key when checking cluster creator
+  become: yes
+  when: runner == "yes"
+  copy:
+    src: rke_rsa
+    dest: /home/ansible/.ssh/id_rsa
+    mode: '0600'
+    owner: ansible
+    group: ansible
+- name: Download rke binary
+  when: runner == "yes"
+  become: yes
+  get_url:
+    url: "https://github.com/rancher/rke/releases/download/v1.2.7/rke_linux-amd64"
+    mode: '0755'
+    dest: /usr/bin/rke
+    owner: root
+- name: Copy cluster.yml file to home
+  when: runner =="yes"
+  copy:
+    src: cluster.yml
+    dest: /home/ansible/cluster.yml
+    mode: '0644'
+    owner: ansible
+    group: ansible
+- name: Run RKE
+  when: runner == "yes"
+  command: "rke up --config cluster.yml"
+- name: Install nfs-common
+  become: yes
+  package:
+    name: nfs-common
+- name: Install open-iscsi
+  become: yes
+  package:
+    name: open-iscsi

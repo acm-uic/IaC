@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: entrepreneurshipsite-ingress
+  namespace: entrepreneurshipsite
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: entrepreneurship.acmuic.org
+    http:
+      paths:
+      - backend:
+          service:
+            name: entrepreneurshipsite-service
+            port:
+              number: 80
+        path: /
+        pathType: Prefix

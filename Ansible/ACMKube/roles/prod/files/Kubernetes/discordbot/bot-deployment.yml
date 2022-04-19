@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bot-deployment
+  namespace: discordbot
+  labels:
+    app: bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bot
+  template:
+    metadata:
+      labels:
+        app: bot
+    spec:
+      containers:
+        - name: bot
+          image: christianbingman/discord-bot:latest
+          env:
+          - name: ENVIRONMENT
+            value: development
+          - name: TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: bot
+                key: TOKEN
+          - name: CLIENTID
+            valueFrom:
+              secretKeyRef:
+                name: bot
+                key: CLIENTID
+          - name: GUILDID
+            valueFrom:
+              secretKeyRef:
+                name: bot
+                key: GUILDID
+          - name: ADMINROLEID
+            valueFrom:
+              secretKeyRef:
+                name: bot
+                key: ADMINROLEID
+          - name: MODROLEID
+            valueFrom:
+              secretKeyRef:
+                name: bot
+                key: MODROLEID
+          - name: LEVEL1ROLEID
+            valueFrom:
+              secretKeyRef:
+                name: bot
+                key: LEVEL1ROLEID
+          - name: LEVEL2ROLEID
+            valueFrom:
+              secretKeyRef:
+                name: bot
+                key: LEVEL2ROLEID
+          - name: LEVEL3ROLEID
+            valueFrom:
+              secretKeyRef:
+                name: bot
+                key: LEVEL3ROLEID
+          - name: LEVEL4ROLEID
+            valueFrom:
+              secretKeyRef:
+                name: bot
+                key: LEVEL4ROLEID
+          - name: ENABLELISTSERV
+            valueFrom:
+              secretKeyRef:
+                name: bot
+                key: ENABLELISTSERV
+          - name: LISTSERVNAME
+            valueFrom:
+              secretKeyRef:
+                name: bot
+                key: LISTSERVNAME
+          - name: LISTSERVPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: bot
+                key: LISTSERVPASSWORD
+          - name: LISTSERVADDRESS
+            valueFrom:
+              secretKeyRef:
+                name: bot
+                key: LISTSERVADDRESS
+          - name: GMAILEMAIL
+            valueFrom:
+              secretKeyRef:
+                name: bot
+                key: GMAILEMAIL
+          - name: GMAILPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: bot
+                key: GMAILPASSWORD
+          - name: ADDRESS
+            value: "mongodb://mongodb-service:27017"
+          - name: DB
+            value: bot
+          - name: DBUSER
+            value: root
+          - name: DBPASS
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-root
+                key: password

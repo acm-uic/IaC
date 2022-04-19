@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-test-ingress
+  namespace: nginx
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: entrepreneurship.uic.edu
+    http:
+      paths:
+      - backend:
+          service:
+            name: nginx-test-service
+            port:
+              number: 80
+        path: /
+        pathType: Prefix

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: addict-deployment
+  namespace: addict
+  labels:
+    app: addict
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: addict
+  template:
+    metadata:
+      labels:
+        app: addict
+    spec:
+      containers:
+        - image: christianbingman/addict-acm
+          name: addict
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: TOKEN_SECRET
+              value: "lskadfuASDo9e87e@qy982o4ui*$dfdifh"
+            - name: ADDICT_USER
+              value: "twebdev@acmuic.org"
+            - name: ADDICT_PASS
+              value: "TB4of8aWL6c%x*EL"
+            - name: ADDICT_URL
+              value: "ldaps://addc1.acmuic.org"

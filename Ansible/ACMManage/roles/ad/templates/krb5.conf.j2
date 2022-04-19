@@ -1,0 +1,31 @@
+[libdefaults]
+    default_realm       =           ACM.CS    # domain specific parameter (full domain name)
+    clockskew           =           300
+    ticket_lifetime     =           1d
+    forwardable         =           true
+    proxiable           =           true
+    dns_lookup_realm    =           true
+    dns_lookup_kdc      =           true
+   
+ 
+   [realms]
+        ACM.CS = {
+        kdc            =       {{hostname}}.acm.cs   # domain specific parameter (domain controller name)
+        admin_server   =       {{hostname}}.acm.cs   # domain specific parameter (domain controller name)
+        default_domain =       ACM.CS         # domain specific parameter (full domain name)
+        }
+ 
+[domain_realm]
+        .domain.com = ACM.CS  # domain specific parameter (domain name for dns names)
+        domain.com = ACM.CS   # domain specific parameter (domain name for dns names)
+ 
+[appdefaults]
+        pam = {
+        ticket_lifetime         = 1d
+        renew_lifetime          = 1d
+        forwardable             = true
+        proxiable               = false
+        retain_after_close      = false
+        minimum_uid             = 0
+        debug                   = false
+        }

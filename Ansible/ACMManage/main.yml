@@ -1,0 +1,19 @@
+---
+- name: Check host setup and run related role
+  hosts: all
+  remote_user: ansible
+  vars:
+    ansible_ssh_private_key_file: files/id_rsa
+  tasks:
+    - name: Run basic roles
+      include_role:
+        name: basic
+      when: role == "basic"
+    - name: Run ad roles
+      include_role:
+        name: ad
+      when: role == "ad"
+    - name: Install K3S
+      include_role:
+        name: docker
+      when: installDocker == "yes"

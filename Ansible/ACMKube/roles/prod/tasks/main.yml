@@ -1,0 +1,163 @@
+- name: Install python3-pip
+  become: yes
+  package:
+    name: python3-pip
+    state: present
+- name: Install required python packages
+  become: yes
+  command: pip3 install openshift pyyaml kubernetes
+  changed_when: false
+- name: Download helm if needed
+  register: helmdownload
+  when: shouldInstallHelm == "yes"
+  get_url: 
+    url: https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+    dest: /home/ansible/get_helm.sh
+    mode: '0755'
+- name: Install helm
+  when: helmdownload.changed
+  become: yes
+  command: '/home/ansible/get_helm.sh'
+- name: Install helm diff
+  when: helmdownload.changed
+  become: yes
+  kubernetes.core.helm_plugin:
+    plugin_path: https://github.com/databus23/helm-diff
+    state: present
+
+# Deploy metallb
+- name: Add MetalLB Repo
+  when: shouldDeployMetalLB
+  community.kubernetes.helm_repository:
+    name: metallb
+    repo_url: https://metallb.github.io/metallb
+  
+- name: Install MetalLB
+  when: shouldDeployMetalLB
+  community.kubernetes.helm:
+    name: metallb
+    release_namespace: metallb
+    create_namespace: true
+    chart_ref: metallb/metallb
+    values:
+      configInline:
+        address-pools:
+        - name: default
+          protocol: layer2
+          addresses:
+          - "{{metalLBIPRange}}"
+
+# Setup Cert Manager when enabled
+- name: Add cert manager repo
+  when: install_cert_manager == "yes"
+  community.kubernetes.helm_repository:
+    name: jetstack
+    repo_url: https://charts.jetstack.io
+
+
+- name: Install cert manager
+  when: install_cert_manager == "yes"
+  community.kubernetes.helm:
+    name: cert-manager
+    release_namespace: cert-manager
+    create_namespace: true
+    chart_ref: jetstack/cert-manager
+    values:
+      installCRDs: true
+
+- name: Install cert manager issuer information
+  when: install_cert_manager == "yes"
+  k8s:
+    definition: "{{ lookup('file', 'Kubernetes/' + item + '.yml') | from_yaml }}"
+  loop: "{{cert_manager_config}}"
+
+# Deploy Rancher
+- name: Add Rancher Repo
+  when: shouldDeployRancher == "yes"
+  community.kubernetes.helm_repository:
+    name: rancher-stable
+    repo_url: https://releases.rancher.com/server-charts/stable
+
+- name: Install Rancher
+  when: install_cert_manager == "yes"
+  community.kubernetes.helm:
+    name: rancher
+    release_namespace: cattle-system
+    create_namespace: true
+    chart_ref: rancher-stable/rancher
+    values:
+      hostname: rancher.acmuic.org
+      replicas: 3
+
+# Setup namespaces
+- name: Create namespaces
+  community.kubernetes.k8s:
+    definition:
+      apiVersion: v1
+      kind: namespace
+      metadata:
+        name: "{{item}}"
+  loop: "{{namespaces}}"
+
+# Setup PVCs
+- name: Create PVCs
+  k8s:
+    definition: "{{ lookup('file', 'Kubernetes/' + item + '.yml') | from_yaml }}"
+  loop: "{{pvcs}}"
+
+# Swtup Services
+- name: Create Services
+  k8s:
+    definition: "{{ lookup('file', 'Kubernetes/' + item + '.yml') | from_yaml }}"
+  loop: "{{services}}"
+
+# Setup Services
+- name: Create RBAC Rules
+  k8s:
+    definition: "{{ lookup('file', 'Kubernetes/' + item + '.yml') | from_yaml }}"
+  loop: "{{rbac}}"
+
+- name: Download longhorn
+  when: shouldDeployLonghorn == "yes"
+  ansible.builtin.git:
+    repo: "https://github.com/longhorn/longhorn"
+    dest: /tmp/longhorn
+
+- name: Install longhorn
+  when: shouldDeployLonghorn == "yes"
+  community.kubernetes.helm:
+    name: longhorn
+    chart_ref: /tmp/longhorn/chart
+    release_namespace: longhorn-system
+
+# Swtup Ingresses
+- name: Create ingresses
+  k8s:
+    definition: "{{ lookup('file', 'Kubernetes/' + item + '.yml') | from_yaml }}"
+  loop: "{{ingresses}}"
+
+# Setup secrets
+- name: Create secrets
+  k8s:
+    definition: "{{ lookup('file', 'secrets/' + item + '.yml') | from_yaml }}"
+  loop: "{{secrets}}"
+
+# Setup Non-Custom Image Deployments
+- name: Create Non-Custom Deployments
+  k8s:
+    definition: "{{ lookup('file', 'Kubernetes/' + item + '.yml') | from_yaml }}"
+  loop: "{{deployments}}"
+  when: shouldApplyDeployments == "yes"
+
+# Setup Custom Image Deployments
+- name: Create Custom Deployments
+  when: deploy_custom_images == "yes" and shouldApplyDeployments == "yes"
+  k8s:
+    definition: "{{ lookup('file', 'Kubernetes/' + item + '.yml') | from_yaml }}"
+  loop: "{{deployments_custom_images}}"
+
+# Create config maps
+- name: Create config maps
+  k8s:
+    definition: "{{ lookup('file', 'Kubernetes/' + item + '.yml') | from_yaml }}"
+  loop: "{{configmaps}}"

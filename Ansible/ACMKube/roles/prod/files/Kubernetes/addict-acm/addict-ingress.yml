@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: addict-dashboard
+  namespace: addict
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: addict-api.acmuic.org
+    http:
+      paths:
+      - backend:
+          service:
+            name: addict-service-http
+            port:
+              number: 3000
+        path: /
+        pathType: Prefix

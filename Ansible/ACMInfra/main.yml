@@ -1,0 +1,15 @@
+---
+- name: Run role for each host
+  hosts: all
+  remote_user: ansible
+  vars:
+    ansible_ssh_private_key_file: files/id_rsa
+  tasks:
+  - name: Install docker
+    include_role:
+      name: docker
+    when: role == "docker" or role == "rkecluster"
+  - name: Run RKECluster
+    include_role:
+      name: rkecluster
+    when: role == "rkecluster"

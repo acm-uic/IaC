@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nextcloud-service-http
+  namespace: nextcloud
+  labels:
+    app: nextcloud
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    nodePort: 31300
+  selector:
+    app: nextcloud
+  type: NodePort

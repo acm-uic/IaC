@@ -1,0 +1,22 @@
+[all]
+
+[all:vars]
+installDocker=no
+
+# autoupdate yes : no; Should autoupdate packages on run
+# hostname String; hostname of the computer (NOT FQDN)
+[AD]
+#dev-cbingm2.acm.cs autoupdate=yes hostname=dev-cbingm2
+#controlplane1.acm.cs hostname=controlplane1
+#controlplane2.acm.cs hostname=controlplane2
+#controlplane3.acm.cs hostname=controlplane3
+
+[AD:vars]
+role=ad
+autoupdate=no
+
+[Docker]
+edtvm.acmuic.org role=""
+
+[Docker:vars]
+installDocker=yes

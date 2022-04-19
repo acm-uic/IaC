@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitlab-service-http
+  namespace: gitlab
+  labels:
+    app: gitlab
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    nodePort: 31310
+  selector:
+    app: gitlab
+  type: NodePort

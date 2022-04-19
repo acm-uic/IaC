@@ -1,0 +1,16 @@
+[all:vars]
+ansible_python_interpreter=auto
+
+[RKECluster]
+acm-kube-m-01.acmuic.org runner=yes
+acm-kube-m-02.acmuic.org
+acm-kube-m-03.acmuic.org
+acm-kube-n-02.acmuic.org
+acm-kube-n-03.acmuic.org
+acm-kube-n-04.acmuic.org
+acm-kube-n-05.acmuic.org
+acm-kube-n-06.acmuic.org
+
+[RKECluster:vars]
+role=rkecluster
+runner=no

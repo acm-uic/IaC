@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: entrepreneurshipsite-deployment
+  namespace: entrepreneurshipsite
+  labels:
+    app: entrepreneurshipsite
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: entrepreneurshipsite
+  template:
+    metadata:
+      labels:
+        app: entrepreneurshipsite
+    spec:
+      containers:
+        - name: entrepreneurshipsite
+          image: entrepreneurshipuic/site:latest
+          ports:
+            - containerPort: 80

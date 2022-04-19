@@ -1,0 +1,49 @@
+- name: Install required packages
+  become: yes
+  package:
+    name:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg
+    - lsb-release
+- name: Attempt to install the docker packages
+  become: yes
+  ignore_errors: yes
+  register: docker_install
+  apt:
+    update_cache: yes
+    pkg:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+- name: Add Docker GPG Keys
+  when: docker_install.failed
+  become: yes
+  shell: 'curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg'
+  args:
+    warn: no
+- name: Check if repository already added
+  when: docker_install.failed
+  register: repository_exists
+  become: yes
+  stat:
+    path: /etc/apt/sources.list.d/docker.list
+- name: Add repository
+  when: docker_install.failed and repository_exists.stat.exists == False
+  become: yes
+  shell: 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null'
+- name: Attempt to install again if failed originally
+  when: docker_install.failed
+  become: yes
+  apt:
+    update_cache: yes
+    pkg:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+- name: Start service
+  service:
+    name: docker
+    enabled: yes
+    state: started
