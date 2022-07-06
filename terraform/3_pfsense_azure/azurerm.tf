@@ -30,3 +30,11 @@ resource "azurerm_role_assignment" "pfsense_contributor" {
   principal_id = azuread_service_principal.pfsense.object_id
 }
 
+output "app_id" {
+  value = azuread_application.pfsense.application_id
+}
+
+output "client_secret" {
+  value = azuread_service_principal_password.pfsense.value
+  sensitive = true
+}
