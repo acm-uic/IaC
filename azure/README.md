@@ -19,12 +19,12 @@ Assuming you are already logged into the CLI, you can run the following invocati
 
 ```bash
 # Create Service Principal and configure its access to Azure resources.
-az ad sp create-for-rbac --name terraform-svc
+az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/SUBSCRIPTION_ID" --name terraform-svc
 ```
 
 This should result in a response similar to this:
 ```bash
-$ az ad sp create-for-rbac --name terraform-svc
+$ az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/SUBSCRIPTION_ID" --name terraform-svc
 The output includes credentials that you must protect. Be sure that you do not include these credentials in your code or check the credentials into your source control. For more information, see https://aka.ms/azadsp-cli
 {
   "appId": "00XXXXXX-XXXX-XXXX-xxxx-XXXXXXXXXX",
