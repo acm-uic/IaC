@@ -28,22 +28,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: 'Terraform Format'
+      - name: 'Setup Terraform'
         uses: hashicorp/setup-terraform@v2
+
+      - name: 'Terraform Format'
         id: fmt
         run: terraform fmt -check
 
       - name: 'Terraform Init'
-        uses: hashicorp/setup-terraform@v2
         id: init
         run: terraform init
 
       - name: 'Terraform Validate'
-        uses: hashicorp/setup-terraform@v2
         id: validate
         run: terraform validate
 
       - name: 'Terraform Plan'
-        uses: hashicorp/setup-terraform@v2
         id: plan
         run: terraform plan
