@@ -50,4 +50,4 @@ jobs:
       - name: 'Terraform Apply'
         id: apply
         if: github.ref_name == 'main'
-        run: terraform apply --var-file 'configuration/$TF_WORKSPACE.tfvars'
+        run: terraform apply --var-file "configuration/$TF_WORKSPACE.tfvars"
