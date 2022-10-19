@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
 
 jobs:
   terraform:
@@ -16,6 +15,8 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
       TF_WORKSPACE: prod
       TF_VERSION: 1.3.2
+      TF_IN_AUTOMATION: true
+      TF_INPUT: 0
     runs-on: ubuntu-latest
     environment: prod
 
@@ -50,4 +51,4 @@ jobs:
       - name: 'Terraform Apply'
         id: apply
         if: github.ref_name == 'main'
-        run: terraform apply --var-file "configuration/$TF_WORKSPACE.tfvars"
+        run: terraform apply --var-file "configuration/$TF_WORKSPACE.tfvars" --auto-approve
