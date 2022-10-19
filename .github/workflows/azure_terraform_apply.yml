@@ -1,0 +1,53 @@
+---
+name: 'Terraform Apply on Azure'
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  terraform:
+    name: 'Terraform Apply'
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+      TF_WORKSPACE: prod
+      TF_VERSION: 1.3.2
+    runs-on: ubuntu-latest
+    environment: prod
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: azure/terraform/stacks/acm-general
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: 'Setup Terraform'
+        uses: hashicorp/setup-terraform@v2
+
+      - name: 'Terraform Format'
+        id: fmt
+        run: terraform fmt -check
+
+      - name: 'Terraform Init'
+        id: init
+        run: terraform init
+
+      - name: 'Terraform Validate'
+        id: validate
+        run: terraform validate
+
+      - name: 'Terraform Plan'
+        id: plan
+        run: terraform plan --var-file "configuration/$TF_WORKSPACE.tfvars"
+      
+      - name: 'Terraform Apply'
+        id: apply
+        if: github.ref_name == 'main'
+        run: terraform apply --var-file "configuration/$TF_WORKSPACE.tfvars"
