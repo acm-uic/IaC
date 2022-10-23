@@ -1,0 +1,64 @@
+- # Github actions
+  name: ":construction: Actions"
+  color: "8f4fbc"
+  description: ""
+- # Ansible
+  name: ":robot: Ansible"
+  color: "b6f779"
+  description: "Ansible related stuff"
+- # Azure
+  name: ":cloud: Azure"
+  color: "1D76DB"
+  description: "Microsoft Azure related work"
+- # Bug
+  name: ":bug: bug"
+  color: "d73a4a"
+  description: "Something isn't working"
+- # Duplicate
+  name: ":clipboard: duplicate"
+  color: "cfd3d7"
+  description: "This issue or pull request already exists"
+- # Enhancement
+  name: ":sparkles: enhancement"
+  color: "a2eeef"
+  description: "New feature or request"
+- # Good First Issue
+  name: ":1st_place_medal: good first issue"
+  color: "7057ff"
+  description: "Good for newcomers"
+- # Helm
+  name: ":boat: Helm"
+  color: "f76fe9"
+  description: "Helm related stuff"
+- # Help Wanted
+  name: ":alien: help wanted"
+  color: "008672"
+  description: "Extra attention is needed"
+- # Invalid
+  name: ":exclamation: invalid"
+  color: "e4e669"
+  description: "This doesn't seem right"
+- # Kubernetes
+  name: ":wheel_of_dharma: k8s"
+  color: "8263e8"
+  description: "Kubernetes related stuff"
+- # Meta
+  name: ":broom: meta"
+  color: "adc920"
+  description: "Work needed to be done to manage the project"
+- # Proxmox
+  name: ":desktop_computer: Proxmox"
+  color: "FBCA04"
+  description: "Proxmox related work"
+- # Question
+  name: ":question: question"
+  color: "d876e3"
+  description: "Further information is requested"
+- # Terraform
+  name: ":building_construction: Terraform"
+  color: "5319E7"
+  description: "Terraform related work"
+- # Wont fix
+  name: ":no_entry_sign: wont fix"
+  color: "ffffff"
+  description: "This will not be worked on"
