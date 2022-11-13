@@ -5,6 +5,7 @@
   ansible.builtin.git:
     repo: "{{ doorkeeper_controller_git_url }}"
     dest: "/opt/{{ runner_username }}/doorkeeper_controller"
+    force: true
 - name: Set repo ownership
   become: true
   ansible.builtin.file:
@@ -17,9 +18,17 @@
 - name: Setup autostart shell
   become: true
   ansible.builtin.template:
-    src: bashrc.j2
-    dest: "/opt/{{ runner_username }}/.bashrc"
+    src: user_tmux.conf.j2
+    dest: "/opt/{{ runner_username }}/.tmux.conf"
     owner: "{{ runner_username }}"
     group: "{{ runner_username }}"
-    mode: 644
+    mode: 0644
+- name: Setup tmux configuration
+  become: true
+  ansible.builtin.template:
+    src: tmux.conf.j2
+    dest: "/etc/tmux.conf"
+    owner: root
+    group: root
+    mode: 0644
 

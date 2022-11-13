@@ -1,0 +1,8 @@
+---
+# tasks file for doorbot_install
+- name: Download code
+  ansible.builtin.git:
+    repo: "{{ discord_bot_git_url }}"
+    dest: /opt/{{ runner_username }}/doorbot-discord
+    force: true
+

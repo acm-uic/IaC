@@ -1,15 +1,23 @@
 ---
 # tasks file for autologin
+- name: Get current systemd default
+  command: "systemctl get-default"
+  changed_when: false
+  register: systemdefault
+
 - name: Set default init target
   become: true
   ansible.builtin.command: systemctl --quiet set-default multi-user.target
+  when: "'multi-user' not in systemdefault.stdout"
+  notify: "Reload systemctl"
 
-- name: Setup console autologin for a specified user
+- name: "Setup console autologin for {{ username }}"
   become: true
   ansible.builtin.template:
     src: autologin.conf.j2
     dest: /etc/systemd/system/getty@tty1.service.d/autologin.conf
     owner: root
     group: root
-    mode: 644
+    mode: 0644
+  notify: "Reload systemctl"
 

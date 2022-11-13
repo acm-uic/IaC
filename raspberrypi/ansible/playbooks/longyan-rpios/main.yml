@@ -5,6 +5,8 @@
     runner_username: acmrunner
     doorkeeper_controller_git_url: 'https://github.com/lugatuic/doorkeeper-controller.git'
     discord_bot_git_url: 'https://github.com/lugatuic/doorbot-discord.git'
+    install_doorkeeper_controller: true
+    install_doorbot_discord: false
   tasks:
     - name: Create acmrunner group
       become: true
@@ -16,14 +18,12 @@
       ansible.builtin.user:
         name: "{{ runner_username }}"
         groups: "{{ runner_username }}"
-        shell: /bin/bash
+        shell: /usr/bin/tmux
         home: "/opt/{{ runner_username }}"
         comment: Service user used to run the doorkeeper controllers
     - name: Setup autologin
       include_role:
         name: autologin
-      vars:
-        shell: /usr/bin/tmux
     - name: Install tmux
       become: true
       ansible.builtin.package:
@@ -37,9 +37,9 @@
     - name: Setup doorkeeper_controller
       include_role:
         name: doorkeeper_install
-#    - name: Install Discord bot code
-#      ansible.builtin.git:
-#        repo: "{{ discord_bot_git_url }}"
-#        dest: /opt/{{ runner_username }}/doorbot-discord
-#    - name: Enable Discord doorkeeper bot
+      when: install_doorkeeper_controller
+    - name: Install Discord bot code
+      include_role:
+        name: doorbot_install
+      when: install_doorbot_discord
 

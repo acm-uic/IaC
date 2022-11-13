@@ -1,2 +1,7 @@
 ---
 # handlers file for autologin
+- name: Reload systemctl
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
