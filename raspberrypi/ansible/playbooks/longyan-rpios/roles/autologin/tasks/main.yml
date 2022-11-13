@@ -1,0 +1,15 @@
+---
+# tasks file for autologin
+- name: Set default init target
+  become: true
+  ansible.builtin.command: systemctl --quiet set-default multi-user.target
+
+- name: Setup console autologin for a specified user
+  become: true
+  ansible.builtin.template:
+    src: autologin.conf.j2
+    dest: /etc/systemd/system/getty@tty1.service.d/autologin.conf
+    owner: root
+    group: root
+    mode: 644
+

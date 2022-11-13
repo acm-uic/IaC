@@ -1,0 +1,4 @@
+---
+# defaults file for autologin
+user: acmrunner
+shell: /bin/bash

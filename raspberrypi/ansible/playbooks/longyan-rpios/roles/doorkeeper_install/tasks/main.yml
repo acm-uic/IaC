@@ -1,0 +1,25 @@
+---
+# tasks file for doorkeeper_install
+- name: Install doorkeeper-controller code and scripts
+  become: true
+  ansible.builtin.git:
+    repo: "{{ doorkeeper_controller_git_url }}"
+    dest: "/opt/{{ runner_username }}/doorkeeper_controller"
+- name: Set repo ownership
+  become: true
+  ansible.builtin.file:
+    path: "/opt/{{ runner_username }}/doorkeeper_controller"
+    state: directory
+    recurse: true
+    owner: "{{ runner_username }}"
+    group: "{{ runner_username }}"
+#- name: Configure doorkeeper-controller scripts
+- name: Setup autostart shell
+  become: true
+  ansible.builtin.template:
+    src: bashrc.j2
+    dest: "/opt/{{ runner_username }}/.bashrc"
+    owner: "{{ runner_username }}"
+    group: "{{ runner_username }}"
+    mode: 644
+
