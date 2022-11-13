@@ -1,17 +1,17 @@
-Role Name
+Doorkeeper Install
 =========
 
-A brief description of the role goes here.
+This role installs and configures the doorkeeper to run on a machine for a given runner user.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+The user that this application runs under must already be created.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+`runner_username` - This is the Unix username of the user that we will be installing the application under.
 
 Dependencies
 ------------
@@ -25,14 +25,15 @@ Including an example of how to use your role (for instance, with variables passe
 
     - hosts: servers
       roles:
-         - { role: username.rolename, x: 42 }
+         - { role: username.doorkeeper_install, runner_username: acmrunner }
 
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+This role was originally created by Chase Lee as part of the IaC for the Association for Computing Machinery Student Chapter at the University of Illinois at Chicago. For more information, see the repo: https://github.com/acm-uic/IaC
+
