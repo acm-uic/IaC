@@ -17,7 +17,7 @@
       become: true
       ansible.builtin.user:
         name: "{{ runner_username }}"
-        groups: "{{ runner_username }}"
+        groups: "{{ runner_username }},gpio"
         shell: /usr/bin/tmux
         home: "/opt/{{ runner_username }}"
         comment: Service user used to run the doorkeeper controllers
