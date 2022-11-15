@@ -23,7 +23,10 @@ The repo is split by major technologies to better organize the various codebases
 │       └── stacks - This folder is a folder of folders, each subfolder contains Terraform stacks to deploy VMs and Proxmox resources
 │   └── ansible - This is where all Ansible code resides for Proxmox hypervisors and VMs
 │       └── playbooks - This folder is a folder of folders, each subfolder contains Ansible playbooks to deploy VMs and Proxmox resources
-└── vsphere - This folder contains all IaC related to VMware ESXi / VSphere hypervisors
-    └── ansible - This is where all Ansible code resides for VSphere VM deployments
-        └── playbooks - This folder is a folder of folders, each subfolder contains Ansible playbooks to deploy VMs and VSphere resources
+├── vsphere - This folder contains all IaC related to VMware ESXi / VSphere hypervisors
+│   └── ansible - This is where all Ansible code resides for VSphere VM deployments
+│       └── playbooks - This folder is a folder of folders, each subfolder contains Ansible playbooks to deploy VMs and VSphere resources
+└── raspberrypi - This folder contains all IaC related to deployed Raspberry Pis
+    └── ansible - This is where all Ansible code resides for deployed Raspberry Pis
+        └── playbooks - This folder is a folder of folders, each subfolder contains Ansible playbooks to configure Raspberry Pis
 ```
