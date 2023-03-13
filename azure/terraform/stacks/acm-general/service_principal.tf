@@ -1,6 +1,9 @@
 data "azuread_client_config" "current" {}
 
+data "azurerm_client_config" "current" {}
+
 data "azurerm_subscription" "primary" {}
+
 
 resource "azuread_application" "terraform_sysadmin_demo" {
   display_name = "terraform-sysadmindemo-svc"
