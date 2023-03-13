@@ -50,4 +50,4 @@ jobs:
         with:
           path: "azure/terraform/stacks/acm-general"
           workspace: ${{ env.TF_WORKSPACE }}
-          var_file: "azure/terraform/stacks/acm-general/configuration/$TF_WORKSPACE.tfvars"
+          var_file: "azure/terraform/stacks/acm-general/configuration/${{ env.TF_WORKSPACE }}.tfvars"
