@@ -2,7 +2,7 @@ data "azuread_client_config" "current" {}
 
 resource "azuread_application" "terraform_sysadmin_demo" {
   display_name = "terraform-sysadmindemo-svc"
-  owners       = [data.azuread_client_config.current.object_id]
+  owners       = concat([data.azuread_client_config.current.object_id], var.additional_owner_ids)
 }
 
 resource "azuread_service_principal" "terraform_sysadmin_demo" {
