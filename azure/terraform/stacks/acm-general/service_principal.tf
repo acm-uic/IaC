@@ -12,7 +12,7 @@ resource "azuread_service_principal" "terraform_sysadmin_demo" {
 }
 
 resource "azuread_service_principal_password" "terraform_sysadmin_demo" {
-  display_name = "rbac-sysadmindemo"
+  display_name         = "rbac-sysadmindemo"
   service_principal_id = azuread_service_principal.terraform_sysadmin_demo.object_id
-  end_date_relative = "240h"
+  end_date_relative    = "240h"
 }
