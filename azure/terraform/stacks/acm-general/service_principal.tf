@@ -8,7 +8,7 @@ resource "azuread_application" "terraform_sysadmin_demo" {
 resource "azuread_service_principal" "terraform_sysadmin_demo" {
   application_id               = azuread_application.terraform_sysadmin_demo.application_id
   app_role_assignment_required = false
-  owners                       = [data.azuread_client_config.current.object_id]
+  owners                       = concat([data.azuread_client_config.current.object_id], var.additional_owner_ids)
 }
 
 resource "azuread_service_principal_password" "terraform_sysadmin_demo" {
