@@ -1,5 +1,3 @@
-data "azuread_client_config" "current" {}
-
 data "azurerm_client_config" "current" {}
 
 data "azurerm_subscription" "primary" {}
@@ -7,13 +5,13 @@ data "azurerm_subscription" "primary" {}
 
 resource "azuread_application" "terraform_sysadmin_demo" {
   display_name = "terraform-sysadmindemo-svc"
-  owners       = concat([data.azuread_client_config.current.object_id], var.additional_owner_ids)
+  owners       = var.additional_owner_ids # Azure AD Owner IDs
 }
 
 resource "azuread_service_principal" "terraform_sysadmin_demo" {
   application_id               = azuread_application.terraform_sysadmin_demo.application_id
   app_role_assignment_required = false
-  owners                       = concat([data.azuread_client_config.current.object_id], var.additional_owner_ids)
+  owners                       = var.additional_owner_ids # Azure AD Owner IDs
 }
 
 resource "azuread_application_password" "terraform_sysadmin_demo" {
