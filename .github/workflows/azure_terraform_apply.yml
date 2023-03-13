@@ -29,26 +29,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: 'Setup Terraform'
-        uses: hashicorp/setup-terraform@v2
-
       - name: 'Terraform Format'
         id: fmt
-        run: terraform fmt -check
-
-      - name: 'Terraform Init'
-        id: init
-        run: terraform init
+        uses: dflook/terraform-fmt-check@v1
+        with:
+          path: "terraform/stacks/${{ matrix.tf_stack }}"
+          workspace: ${{ env.TF_WORKSPACE }}
 
       - name: 'Terraform Validate'
         id: validate
-        run: terraform validate
+        uses: dflook/terraform-validate@v1
+        with:
+          path: "terraform/stacks/${{ matrix.tf_stack }}"
+          workspace: ${{ env.TF_WORKSPACE }}
 
-      - name: 'Terraform Plan'
-        id: plan
-        run: terraform plan --var-file "configuration/$TF_WORKSPACE.tfvars"
-      
       - name: 'Terraform Apply'
         id: apply
-        if: github.ref_name == 'main'
-        run: terraform apply --var-file "configuration/$TF_WORKSPACE.tfvars" --auto-approve
+        uses: dflook/terraform-apply@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: "azure/terraform/stacks/acm-general"
+          workspace: ${{ env.TF_WORKSPACE }}
+          var_file: "azure/terraform/stacks/acm-general/configuration/$TF_WORKSPACE.tfvars"
