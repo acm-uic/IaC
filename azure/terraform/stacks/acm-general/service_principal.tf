@@ -23,12 +23,12 @@ resource "azuread_application_password" "terraform_sysadmin_demo" {
 resource "azurerm_role_assignment" "terraform_sysadmin_demo_reader" {
   scope                = data.azurerm_subscription.primary.id
   role_definition_name = "Reader"
-  principal_id         = data.azurerm_client_config.current.object_id
+  principal_id         = azuread_service_principal.terraform_sysadmin_demo.id
 }
 
 resource "azurerm_role_assignment" "terraform_sysadmin_demo_dns" {
   scope                = data.azurerm_subscription.primary.id
   role_definition_name = "DNS Zone Contributor"
-  principal_id         = data.azurerm_client_config.current.object_id
+  principal_id         = azuread_service_principal.terraform_sysadmin_demo.id
 }
 
