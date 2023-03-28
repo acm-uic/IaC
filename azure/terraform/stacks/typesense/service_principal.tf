@@ -23,15 +23,3 @@ resource "azuread_application_federated_identity_credential" "terraform_typesens
   issuer                = "https://token.actions.githubusercontent.com"
   subject               = "repo:acm-uic/acm-uic.github.io:environment:azure-container-app"
 }
-
-resource "github_actions_secret" "typesense_application_id" {
-  repository      = "acm-uic.github.io"
-  secret_name     = "AZURE_CLIENT_ID"
-  plaintext_value = azuread_application.terraform_typesense_deploy.application_id
-}
-
-resource "github_actions_secret" "typesense_resource_group" {
-  repository      = "acm-uic.github.io"
-  secret_name     = "AZURE_RESOURCE_GROUP_NAME"
-  plaintext_value = azurerm_resource_group.typesense_rg.name
-}
