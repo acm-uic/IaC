@@ -18,6 +18,10 @@ terraform {
   }
 }
 
+provider "github" {
+  owner = "acm-uic"
+}
+
 provider "azuread" {
   # Configuration options
 }

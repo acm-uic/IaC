@@ -9,34 +9,29 @@ resource "azuread_service_principal" "terraform_typesense_deploy" {
   owners                       = var.additional_owner_ids # Azure AD Owner IDs
 }
 
-resource "azuread_application_password" "terraform_typesense_deploy" {
-  application_object_id = azuread_application.terraform_typesense_deploy.object_id
-  display_name          = "rbac-sysadmindemo-apppass"
-}
-
 resource "azurerm_role_assignment" "terraform_typesense_deploy" {
   scope                = azurerm_resource_group.typesense_rg.id
-  role_definition_name = "Contributer"
+  role_definition_name = "Contributor"
   principal_id         = azuread_service_principal.terraform_typesense_deploy.id
 }
 
-resource "azurerm_federated_identity_credential" "terraform_typesense_deploy" {
-  name                = "terraform-typesense-deploy"
-  resource_group_name = azurerm_resource_group.typesense_rg.name
-  audience            = ["api://AzureADTokenExchange"]
-  issuer              = "https://token.actions.githubusercontent.com"
-  parent_id           = azuread_application.terraform_typesense_deploy.application_id
-  subject             = "repo:acm-uic/acm-uic.github.io:environment:azure-container-app"
+resource "azuread_application_federated_identity_credential" "terraform_typesense_deploy" {
+  application_object_id = azuread_application.terraform_typesense_deploy.object_id
+  display_name          = "terraform-typesense-deploy"
+  description           = "https://github.com/acm-uic/acm-uic.github.io"
+  audiences             = ["api://AzureADTokenExchange"]
+  issuer                = "https://token.actions.githubusercontent.com"
+  subject               = "repo:acm-uic/acm-uic.github.io:environment:azure-container-app"
 }
 
 resource "github_actions_secret" "typesense_application_id" {
-  repository      = "acm-uic/acm-uic.github.io"
+  repository      = "acm-uic.github.io"
   secret_name     = "AZURE_CLIENT_ID"
   plaintext_value = azuread_application.terraform_typesense_deploy.application_id
 }
 
 resource "github_actions_secret" "typesense_resource_group" {
-  repository      = "acm-uic/acm-uic.github.io"
+  repository      = "acm-uic.github.io"
   secret_name     = "AZURE_RESOURCE_GROUP_NAME"
   plaintext_value = azurerm_resource_group.typesense_rg.name
 }
