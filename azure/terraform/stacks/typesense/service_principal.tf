@@ -1,7 +1,3 @@
-locals {
-  gh_repo = "acm-uic/acm-uic.github.io"
-}
-
 data "azurerm_resource_group" "acm_hybridcloud_rg" {
   name = "acm-hybridcloud"
 }
@@ -62,23 +58,6 @@ resource "azuread_application_federated_identity_credential" "terraform_typesens
   subject               = "repo:acm-uic/acm-uic.github.io:environment:azure-container-app"
 }
 
-resource "shell_sensitive_script" "github_secret_azuread_typesense_app_client_id" {
-  triggers = {
-    when_value_changed = azuread_application.terraform_typesense_deploy.object_id
-  }
-  environment = {
-    REPO = local.gh_repo
-  }
-  sensitive_environment = {
-    GITHUB_TOKEN    = var.github_token
-    AZURE_CLIENT_ID = azuread_application.terraform_typesense_deploy.object_id
-  }
-  lifecycle_commands {
-    create = <<-EOF
-      gh secret set AZURE_CLIENT_ID -b $AZURE_CLIENT_ID -R $REPO
-      EOF
-    delete = <<-EOF
-      gh secret remove AZURE_CLIENT_ID -R $REPO
-      EOF
-  }
+output "azuread_application_terraform_typesense_deploy_object_id" {
+  value = azuread_application.terraform_typesense_deploy.object_id
 }
