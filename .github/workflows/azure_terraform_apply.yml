@@ -19,10 +19,16 @@ jobs:
     runs-on: ubuntu-latest
     environment: prod
 
+    strategy:
+      matrix:
+        stack:
+          - acm-general
+          - typesense
+
     defaults:
       run:
         shell: bash
-        working-directory: azure/terraform/stacks/acm-general
+        working-directory: azure/terraform/stacks/${{ matrix.stack }}
 
     steps:
       - name: Checkout
@@ -32,14 +38,14 @@ jobs:
         id: fmt
         uses: dflook/terraform-fmt-check@v1
         with:
-          path: "azure/terraform/stacks/acm-general"
+          path: "azure/terraform/stacks/${{ matrix.stack }}"
           workspace: ${{ env.TF_WORKSPACE }}
 
       - name: 'Terraform Validate'
         id: validate
         uses: dflook/terraform-validate@v1
         with:
-          path: "azure/terraform/stacks/acm-general"
+          path: "azure/terraform/stacks/${{ matrix.stack }}"
           workspace: ${{ env.TF_WORKSPACE }}
 
       - name: 'Terraform Apply'
@@ -48,6 +54,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          path: "azure/terraform/stacks/acm-general"
+          path: "azure/terraform/stacks/${{ matrix.stack }}"
           workspace: ${{ env.TF_WORKSPACE }}
-          var_file: "azure/terraform/stacks/acm-general/configuration/${{ env.TF_WORKSPACE }}.tfvars"
+          var_file: "azure/terraform/stacks/${{ matrix.stack }}/configuration/${{ env.TF_WORKSPACE }}.tfvars"
