@@ -1,23 +1,23 @@
 terraform {
   backend "kubernetes" {
-    secret_suffix    = "acmappstate"
+    secret_suffix    = "acmstate"
 }
   required_providers {
     helm = {
       source = "hashicorp/helm"
-      version = "2.4.1"
+      version = "2.10.1"
     }
     kubernetes = {
       source = "hashicorp/kubernetes"
-      version = "2.7.1"
+      version = "2.21.1"
     }
     azuread = {
       source = "hashicorp/azuread"
-      version = "2.15.0"
+      version = "2.39.0"
     }
     azurerm = {
       source = "hashicorp/azurerm"
-      version = "2.93.0"
+      version = "3.63.0"
     }
   }
 }
