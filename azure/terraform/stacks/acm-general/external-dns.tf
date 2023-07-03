@@ -31,3 +31,11 @@ resource "azurerm_role_assignment" "externaldns_contributor" {
   principal_id = azuread_service_principal.externaldns.object_id
 }
 
+output "externaldns_sp_keyid" {
+    value = azuread_service_principal_password.externaldns.key_id
+  }
+
+output "externaldns_sp_password" {
+    value = azuread_service_principal_password.externaldns.value
+    sensitive = true
+  }

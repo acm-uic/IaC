@@ -39,24 +39,3 @@ provider "registry.terraform.io/hashicorp/azurerm" {
     "zh:fc95c1c80e98c317ec38fa33d16d55b5a62058dc893fbf578d100fb91401356e",
   ]
 }
-
-provider "registry.terraform.io/linyinfeng/shell" {
-  version = "1.7.12"
-  hashes = [
-    "h1:s6dxJj1htfz0i7i+VWE9inu7qRPkJc8w6GgNDpXlpY8=",
-    "zh:089de5cff698b5e4d2ab4a6fbc67d90c1a71efd1c8e666071cd8b81c28c14326",
-    "zh:1cb6b16d4edf3a14a3fd293b4287cfe1f7372847db3fa570f73ebb9e32a74492",
-    "zh:23c40760244613932dc5733fc945ccad1bf1371585552cbe3e294a74442e092f",
-    "zh:32b921f25e6e3cef299ba88d60621e5d77a2eee088b998769c11a6779b43d112",
-    "zh:4cf97d63e43838ad74a778199a9693cc354e54b742d14829734b8f79090b9b2b",
-    "zh:51ddd1a63dcabfad61f14e99ebc0b5a2d819a1b43b1962471ce73d3d0ed32976",
-    "zh:7bf11b78d09650d7d8d430d637b8d81b8a1ce6b1947177f910467609d735cb8b",
-    "zh:9a6b515f70df34a3cfc803f8221766a4edcff0c0c537238f4c1dbfeef81233c8",
-    "zh:9ca235f5e695d391990887bbfee2b60ed3702dffa33f8696fa5ef3c84589d054",
-    "zh:a20ddfd9853186a2717910698a905bbb2738da6e2e9b19abbddce7b52644cd15",
-    "zh:cbfc3299a0b874339972a22b3044bc330c0e2ab6ac6cf1ea57b8c0c60f4f6e1f",
-    "zh:e7a2dd66372deb5a346366fcbf14e5e6728086b909c69519a949e42196bac0d8",
-    "zh:f0ecd3a4b9a03cac1ba90a9bccceed0ed7f16d85472a7d6221bde031ce639e94",
-    "zh:f7d39bb21977cb15c8d77d6512982eeba61464242f5a1c88d04babc74bfc7fc7",
-  ]
-}
