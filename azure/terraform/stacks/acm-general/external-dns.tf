@@ -10,7 +10,7 @@ resource "azuread_application" "externaldns" {
 resource "azuread_service_principal" "externaldns" {
   application_id               = azuread_application.externaldns.application_id
   app_role_assignment_required = false
-  owners                       = [data.azuread_client_config.current.object_id]
+  owners                       = distinct(concat(data.azuread_client_config.current.object_id,var.additional_owner_ids))
   description                  = "Service Principal for ExternalDNS within on-prem Kubernetes"
 }
 
