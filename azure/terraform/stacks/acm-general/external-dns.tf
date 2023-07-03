@@ -4,7 +4,7 @@ data "azurerm_subscription" "current" {}
 
 resource "azuread_application" "externaldns" {
   display_name = "${var.external_dns_namespace}ServiceApp"
-  owners       = [data.azuread_client_config.current.object_id]
+  owners       = distinct(concat([data.azuread_client_config.current.object_id], var.additional_owner_ids))
 }
 
 resource "azuread_service_principal" "externaldns" {
