@@ -21,9 +21,6 @@ resource "kubernetes_manifest" "application_cluster_config" {
     "apiVersion" = "argoproj.io/v1alpha1"
     "kind"       = "Application"
     "metadata" = {
-      "labels" = {
-        "argocd.argoproj.io/secret-type" = "repository"
-      }
       "name"      = "iac"
       "namespace" = "argocd"
     }
