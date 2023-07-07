@@ -31,16 +31,6 @@ variable "argocd_namespace" {
   default     = "argocd"
 }
 
-variable "azure_tenant_id" {
-  type        = string
-  description = "The tenantId of the Azure account"
-}
-
-variable "azure_subscription_id" {
-  type        = string
-  description = "The subscriptionId of the Azure account"
-}
-
 variable "azure_dns_resource_group" {
   type        = string
   description = "The resourceGroup of the DNS Zone"
