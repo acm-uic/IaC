@@ -39,3 +39,9 @@ spec:
   # CIDR prefix, or an explicit start-end range of IPs.
   addresses:
     - 172.29.8.0/21
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: l2
+  namespace: metallb-system
