@@ -29,3 +29,6 @@ terraform.rc
 
 # Ignore Obsidian things
 **/.obsidian/*
+
+# Ignore kubeconfig files
+*-kubeconfig
