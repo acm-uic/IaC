@@ -36,3 +36,8 @@ variable "azure_dns_resource_group" {
   description = "The resourceGroup of the DNS Zone"
 }
 
+variable "deploy_key" {
+  type        = string
+  description = "The SSH private key used for deployment and pulling from Github repos"
+  sensitive   = true
+}
