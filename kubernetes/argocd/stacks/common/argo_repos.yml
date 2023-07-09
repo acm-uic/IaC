@@ -20,5 +20,5 @@ metadata:
     argocd.argoproj.io/secret-type: repository
 stringData:
   name: traefik
-  url: https://helm.traefik.io/traefik
+  url: https://traefik.github.io/charts
   type: helm
