@@ -26,20 +26,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: dashboard
-  namespace: traefik
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
-spec:
-  entryPoints:
-    - web
-  routes:
-    - match: Host(`traefik.acmuic.org`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
-      kind: Rule
-      services:
-        - name: api@internal
-          kind: TraefikService
