@@ -20,6 +20,12 @@ spec:
     repoURL: 'https://traefik.github.io/charts'
     targetRevision: 23.1.0
     chart: traefik
+    helm:
+      parameters:
+        - name: ingressRoute.dashboard.matchRule
+          value: >-
+            Host(`traefik.acmuic.org`) && PathPrefix(`/dashboard`) ||
+            PathPrefix(`/api`)
   sources: []
   project: default
   syncPolicy:
