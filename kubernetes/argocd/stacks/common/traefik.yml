@@ -26,6 +26,8 @@ spec:
           value: >-
             Host(`traefik.acmuic.org`) && PathPrefix(`/dashboard`) ||
             PathPrefix(`/api`)
+        - name: ingressRoute.dashboard.entryPoints[0]
+          value: web
   sources: []
   project: default
   syncPolicy:
