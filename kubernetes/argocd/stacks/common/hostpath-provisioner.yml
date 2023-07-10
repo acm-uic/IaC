@@ -18,7 +18,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "1"
 spec:
   destination:
-    namespace: traefik
+    namespace: hostpath-provisioner
     server: 'https://kubernetes.default.svc'
   source:
     repoURL: 'https://charts.rimusz.net'
