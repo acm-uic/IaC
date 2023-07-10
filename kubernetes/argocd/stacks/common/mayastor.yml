@@ -16,15 +16,12 @@ metadata:
   name: mayastor
 spec:
   destination:
-    name: ''
     namespace: mayastor
     server: 'https://kubernetes.default.svc'
   source:
-    path: ''
     repoURL: 'https://openebs.github.io/mayastor-extensions'
     targetRevision: 2.2.0
     chart: mayastor
-  sources: []
   project: default
   syncPolicy:
     automated:
