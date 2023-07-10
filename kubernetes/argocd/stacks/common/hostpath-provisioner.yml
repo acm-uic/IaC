@@ -28,6 +28,8 @@ spec:
       parameters:
         - name: storageClass.defaultClass
           value: 'false'
+        - name: nodeHostPath
+          value: '/var/hostpath-provisioner'
   project: default
   syncPolicy:
     automated:
