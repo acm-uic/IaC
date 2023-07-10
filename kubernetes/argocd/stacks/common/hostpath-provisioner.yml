@@ -27,7 +27,7 @@ spec:
     helm:
       parameters:
         - name: storageClass.defaultClass
-          value: false
+          value: 'false'
   project: default
   syncPolicy:
     automated:
