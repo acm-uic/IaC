@@ -34,3 +34,15 @@ stringData:
   name: mayastor
   url: https://openebs.github.io/mayastor-extensions
   type: helm
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rimusz
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  name: rimusz
+  url: https://charts.rimusz.net
+  type: helm

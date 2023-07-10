@@ -14,6 +14,8 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: mayastor
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   destination:
     namespace: mayastor
@@ -22,6 +24,10 @@ spec:
     repoURL: 'https://openebs.github.io/mayastor-extensions'
     targetRevision: 2.2.0
     chart: mayastor
+    helm:
+      parameters:
+        - name: etcd.persistence.storageClassName
+          value: hostpath
   project: default
   syncPolicy:
     automated:
