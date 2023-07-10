@@ -26,7 +26,9 @@ spec:
     chart: mayastor
     helm:
       parameters:
-        - name: etcd.persistence.storageClassName
+        - name: etcd.persistence.storageClass
+          value: hostpath
+        - name: loki-stack.loki.persistence.storageClassName
           value: hostpath
   project: default
   syncPolicy:
