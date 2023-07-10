@@ -38,4 +38,4 @@ metadata:
   namespace: mayastor
 spec:
   node: k8s-04
-  disks: ["/dev/vda2"]
+  disks: ["/dev/vdb"]
