@@ -30,3 +30,12 @@ spec:
     automated:
       prune: true
       selfHeal: true
+---
+apiVersion: "openebs.io/v1alpha1"
+kind: DiskPool
+metadata:
+  name: pool-k8s-04
+  namespace: mayastor
+spec:
+  node: k8s-04
+  disks: ["/dev/vda2"]
