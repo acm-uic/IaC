@@ -35,12 +35,49 @@ spec:
     automated:
       prune: true
       selfHeal: true
-#---
-#apiVersion: "openebs.io/v1alpha1"
-#kind: DiskPool
-#metadata:
-#  name: pool-k8s-04
-#  namespace: mayastor
-#spec:
-#  node: k8s-04
-#  disks: ["/dev/vdb"]
+---
+apiVersion: "openebs.io/v1alpha1"
+kind: DiskPool
+metadata:
+  name: pool-k8s-04
+  namespace: mayastor
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  node: k8s-04
+  disks: ["/dev/vdb"]
+---
+apiVersion: "openebs.io/v1alpha1"
+kind: DiskPool
+metadata:
+  name: pool-k8s-05
+  namespace: mayastor
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  node: k8s-05
+  disks: ["/dev/vdb"]
+---
+apiVersion: "openebs.io/v1alpha1"
+kind: DiskPool
+metadata:
+  name: pool-k8s-06
+  namespace: mayastor
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  node: k8s-06
+  disks: ["/dev/vdb"]
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  # This storage class is replicated across 3 nodes
+  name: mayastor-3
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+parameters:
+  ioTimeout: "30"
+  protocol: nvmf
+  repl: "3"
+provisioner: io.openebs.csi-mayastor
