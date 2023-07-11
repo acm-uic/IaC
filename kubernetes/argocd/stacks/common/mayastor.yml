@@ -76,6 +76,7 @@ metadata:
   name: mayastor-3
   annotations:
     argocd.argoproj.io/sync-wave: "3"
+    storageclass.kubernetes.io/is-default-class: "true"
 parameters:
   ioTimeout: "30"
   protocol: nvmf
