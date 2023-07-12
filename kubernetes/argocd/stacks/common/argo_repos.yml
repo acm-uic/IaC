@@ -22,3 +22,15 @@ stringData:
   name: traefik
   url: https://traefik.github.io/charts
   type: helm
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hashicorp
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  name: hashicorp
+  url: https://helm.releases.hashicorp.com
+  type: helm

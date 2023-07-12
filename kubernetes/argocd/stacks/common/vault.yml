@@ -1,0 +1,68 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vault
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  destination:
+    name: ''
+    namespace: vault
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: ''
+    repoURL: 'https://helm.releases.hashicorp.com'
+    targetRevision: 0.25.0
+    chart: vault
+    helm:
+      parameters:
+        - name: global.enabled
+          value: true
+        - name: global.tlsDisable
+          value: false
+        - name: injector.resources.requests.memory
+          value: 256Mi
+        - name: injector.resources.requests.cpu
+          value: 250m
+        - name: injector.resources.limits.memory
+          value: 256Mi
+        - name: injector.resources.limits.cpu
+          value: 250m
+        - name: server.ha.enabled
+          value: true
+        - name: server.resources.requests.memory
+          value: 2Gi
+        - name: server.resources.requests.cpu
+          value: 1000m
+        - name: server.resources.limits.memory
+          value: 2Gi
+        - name: server.resources.limits.cpu
+          value: 1000m
+        - name: server.readinessProbe.enabled
+          value: true
+        - name: server.readinessProbe.path
+          value: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
+        - name: server.livenessProbe.enabled
+          value: true
+        - name: server.livenessProbe.path
+          value: "/v1/sys/health?standbyok=true"
+        - name: server.livenessProbe.initialDelaySeconds
+          value: 60
+        - name: server.auditStorage.enabled
+          value: true
+        - name: server.standalone.enabled
+          value: false
+        - name: server.ha.enabled
+          value: true
+  sources: []
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
