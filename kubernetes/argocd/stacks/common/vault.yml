@@ -25,7 +25,7 @@ spec:
         - values.yml
         - $values/kubernetes/argocd/stacks/common/vault-values-override.yml
   - repoURL: 'git@github.com:acm-uic/IaC.git'
-    targetRevision: HEAD
+    targetRevision: 'feature/hashicorp-vault'
     ref: values
   sources: []
   project: default
