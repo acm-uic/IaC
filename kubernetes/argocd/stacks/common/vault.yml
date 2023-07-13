@@ -27,7 +27,6 @@ spec:
   - repoURL: 'git@github.com:acm-uic/IaC.git'
     targetRevision: 'feature/hashicorp-vault'
     ref: values
-  sources: []
   project: default
   syncPolicy:
     automated:
