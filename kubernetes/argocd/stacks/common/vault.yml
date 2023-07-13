@@ -23,9 +23,9 @@ spec:
     helm:
       parameters:
         - name: global.enabled
-          value: true
+          value: "true"
         - name: global.tlsDisable
-          value: false
+          value: "false"
         - name: injector.resources.requests.memory
           value: 256Mi
         - name: injector.resources.requests.cpu
@@ -35,7 +35,7 @@ spec:
         - name: injector.resources.limits.cpu
           value: 250m
         - name: server.ha.enabled
-          value: true
+          value: "true"
         - name: server.resources.requests.memory
           value: 2Gi
         - name: server.resources.requests.cpu
@@ -45,27 +45,27 @@ spec:
         - name: server.resources.limits.cpu
           value: 1000m
         - name: server.readinessProbe.enabled
-          value: true
+          value: "true"
         - name: server.readinessProbe.path
           value: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
         - name: server.livenessProbe.enabled
-          value: true
+          value: "true"
         - name: server.livenessProbe.path
           value: "/v1/sys/health?standbyok=true"
         - name: server.livenessProbe.initialDelaySeconds
           value: 60
         - name: server.auditStorage.enabled
-          value: true
+          value: "true"
         - name: server.standalone.enabled
-          value: false
+          value: "false"
         - name: server.ha.enabled
-          value: true
+          value: "true"
         - name: server.ha.raft.enabled
-          value: true
+          value: "true"
         - name: server.ha.raft.setNodeId
-          value: true
+          value: "true"
         - name: ui.enabled
-          value: true
+          value: "true"
         - name: ui.serviceType
           value: LoadBalancer
   sources: []
