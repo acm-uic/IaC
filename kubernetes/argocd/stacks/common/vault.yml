@@ -15,15 +15,18 @@ spec:
     name: ''
     namespace: vault
     server: 'https://kubernetes.default.svc'
-  source:
-    path: ''
+  sources:
+  - path: ''
     repoURL: 'https://helm.releases.hashicorp.com'
     targetRevision: 0.25.0
     chart: vault
     helm:
       valueFiles:
-        - vault-values-base.yml
-        - vault-values-override.yml
+        - values.yml
+        - $values/kubernetes/argocd/stacks/common/vault-values-override.yml
+  - repoURL: 'git@github.com:acm-uic/IaC.git'
+    targetRevision: HEAD
+    ref: values
   sources: []
   project: default
   syncPolicy:
