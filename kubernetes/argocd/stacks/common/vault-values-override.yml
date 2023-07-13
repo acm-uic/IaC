@@ -1,0 +1,85 @@
+---
+global:
+  enabled: true
+  tlsDisable: false
+
+injector:
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 256Mi
+      cpu: 250m
+
+server:
+  ha:
+    enabled: true
+    raft:
+      enabled: true
+      setNodeId: true
+      config: |
+        ui = true
+        listener "tcp" {
+          address = "[::]:8200"
+          cluster_address = "[::]:8201"
+          tls_cert_file = "/vault/userconfig/vault-ha-tls/vault.crt"
+          tls_key_file = "/vault/userconfig/vault-ha-tls/vault.key"
+          tls_client_ca_file = "/vault/userconfig/vault-ha-tls/vault.ca"
+        }
+
+        storage "raft" {
+          path = "/vault/data"
+            retry_join {
+            leader_api_addr = "https://vault-0.vault:8200"
+            leader_ca_cert_file = "/vault/userconfig/vault-ha-tls/vault.ca"
+            leader_client_cert_file = "/vault/userconfig/vault-ha-tls/server.crt"
+            leader_client_key_file = "/vault/userconfig/vault-ha-tls/vault.key"
+          }
+          retry_join {
+            leader_api_addr = "https://vault-1.vault:8200"
+            leader_ca_cert_file = "/vault/userconfig/vault-ha-tls/vault.ca"
+            leader_client_cert_file = "/vault/userconfig/vault-ha-tls/server.crt"
+            leader_client_key_file = "/vault/userconfig/vault-ha-tls/vault.key"
+          }
+          retry_join {
+            leader_api_addr = "https://vault-2.vault:8200"
+            leader_ca_cert_file = "/vault/userconfig/vault-ha-tls/vault.ca"
+            leader_client_cert_file = "/vault/userconfig/vault-ha-tls/server.crt"
+            leader_client_key_file = "/vault/userconfig/vault-ha-tls/vault.key"
+          }
+        }
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 1000m
+    limits:
+      memory: 2Gi
+      cpu: 1000m
+  readinessProbe:
+    enabled: true
+    path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
+  livenessProbe:
+    enabled: true
+    path: "/v1/sys/health?standbyok=true"
+  auditStorage:
+    enabled: true
+  standalone:
+    enabled: false
+  extraEnvironmentVars:
+    VAULT_CACERT: "/vault/userconfig/vault-ha-tls/vault.ca"
+    VAULT_TLSCERT: "/vault/userconfig/vault-ha-tls/vault.crt"
+    VAULT_TLSKEY: "/vault/userconfig/vault-ha-tls/vault.key"
+  volumes:
+    - name: userconfig-vault-ha-tls
+      secret:
+        defaultMode: 420
+        secretName: vault-ha-tls
+  volumeMounts:
+      - mountPath: /vault/userconfig/vault-ha-tls
+        name: userconfig-vault-ha-tls
+        readOnly: true
+
+ui:
+  enabled: true
+  serviceType: "LoadBalancer"
