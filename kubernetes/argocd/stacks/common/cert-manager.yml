@@ -16,6 +16,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   source:
     repoURL: 'https://charts.jetstack.io'
+    targetRevision: HEAD
     chart: cert-manager
     valuesObject:
       installCRDs: true
