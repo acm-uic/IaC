@@ -17,6 +17,8 @@ spec:
   source:
     repoURL: 'https://charts.jetstack.io'
     chart: cert-manager
+    valuesObject:
+      installCRDs: true
   project: default
   syncPolicy:
     automated:
