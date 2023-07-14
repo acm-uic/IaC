@@ -22,7 +22,7 @@ spec:
     chart: vault
     helm:
       valueFiles:
-        - values.yml
+        - values.yaml
         - $values/kubernetes/argocd/stacks/common/vault-values-override.yml
   - repoURL: 'git@github.com:acm-uic/IaC.git'
     targetRevision: 'feature/hashicorp-vault'
