@@ -12,11 +12,9 @@ metadata:
     argocd.argoproj.io/sync-wave: "1"
 spec:
   destination:
-    name: ''
     namespace: traefik
     server: 'https://kubernetes.default.svc'
   source:
-    path: ''
     repoURL: 'https://traefik.github.io/charts'
     targetRevision: 23.1.0
     chart: traefik
@@ -28,7 +26,6 @@ spec:
             PathPrefix(`/api`)
         - name: ingressRoute.dashboard.entryPoints[0]
           value: web
-  sources: []
   project: default
   syncPolicy:
     automated:
