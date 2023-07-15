@@ -116,5 +116,10 @@ resource "helm_release" "argocd" {
     value = yamlencode(local.argo_sidecar_containers)
   }
 
+  set {
+    name  = "server.service.type"
+    value = "LoadBalancer"
+  }
+
 }
 
