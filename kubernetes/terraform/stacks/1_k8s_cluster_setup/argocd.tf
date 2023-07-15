@@ -5,32 +5,32 @@ resource "kubernetes_namespace" "argocd_namespace" {
 }
 
 locals {
-  argo_volume_cm          = [{
+  argo_volume_cm = [{
     name = "cmp-plugin"
     configMap = {
       name = "cmp-plugin"
-    }},
+    } },
     {
-      name = "custom-tools"
-        emptyDir = {}
+      name     = "custom-tools"
+      emptyDir = {}
     }
   ]
-  argo_init_containers    = [{
-          name    = "download-tools"
-          image   = "registry.access.redhat.com/ubi8"
-          command = ["sh", "-c"]
-          args    = ["curl -L https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v$(AVP_VERSION)/argocd-vault-plugin_$(AVP_VERSION)_linux_amd64 -o argocd-vault-plugin && chmod +x argocd-vault-plugin && mv argocd-vault-plugin /custom-tools/"]
+  argo_init_containers = [{
+    name    = "download-tools"
+    image   = "registry.access.redhat.com/ubi8"
+    command = ["sh", "-c"]
+    args    = ["curl -L https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v$(AVP_VERSION)/argocd-vault-plugin_$(AVP_VERSION)_linux_amd64 -o argocd-vault-plugin && chmod +x argocd-vault-plugin && mv argocd-vault-plugin /custom-tools/"]
 
-          env = [{
-            name  = "AVP_VERSION"
-            value = "1.11.0"
-          }]
+    env = [{
+      name  = "AVP_VERSION"
+      value = "1.11.0"
+    }]
 
-          volumeMounts = [{
-            name       = "custom-tools"
-            mountPath = "/custom-tools"
-          }]
-        }]
+    volumeMounts = [{
+      name      = "custom-tools"
+      mountPath = "/custom-tools"
+    }]
+  }]
   argo_sidecar_containers = [
     {
       name    = "avp"
@@ -38,31 +38,31 @@ locals {
       command = ["/var/run/argocd/argocd-cmp-server"]
 
       volumeMounts = [{
-        name       = "var-files"
+        name      = "var-files"
         mountPath = "/var/run/argocd"
-      },
-      {
-        name       = "plugins"
-        mountPath = "/home/argocd/cmp-server/plugins"
-      },
-      {
-        name       = "tmp"
-        mountPath = "/tmp"
-      },
-      {
-        name       = "cmp-plugin"
-        mountPath = "/home/argocd/cmp-server/config/plugin.yaml"
-        subPath   = "avp.yaml"
-      },
-      {
-        name       = "custom-tools"
-        mountPath = "/usr/local/bin/argocd-vault-plugin"
-        subPath   = "argocd-vault-plugin"
+        },
+        {
+          name      = "plugins"
+          mountPath = "/home/argocd/cmp-server/plugins"
+        },
+        {
+          name      = "tmp"
+          mountPath = "/tmp"
+        },
+        {
+          name      = "cmp-plugin"
+          mountPath = "/home/argocd/cmp-server/config/plugin.yaml"
+          subPath   = "avp.yaml"
+        },
+        {
+          name      = "custom-tools"
+          mountPath = "/usr/local/bin/argocd-vault-plugin"
+          subPath   = "argocd-vault-plugin"
       }]
 
       securityContext = {
-        runAsUser     = 999
-        runAsNonRoot  = true
+        runAsUser    = 999
+        runAsNonRoot = true
       }
     }
   ]
