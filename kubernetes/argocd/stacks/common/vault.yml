@@ -111,3 +111,33 @@ subjects:
   - kind: ServiceAccount
     name: vault-auth
     namespace: default
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: vault
+  namespace: vault
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - kind: Rule
+    match: Host(`vault.acmuic.org`)
+    priority: 10
+    services:
+    - kind: Service
+      name: vault-ui
+      namespace: vault
+      passHostHeader: true
+      port: 8200
+      responseForwarding:
+        flushInterval: 1ms
+      scheme: https
+      sticky:
+        cookie:
+          httpOnly: true
+          name: cookie
+          secure: true
+          sameSite: none
+      strategy: RoundRobin
+      weight: 10
