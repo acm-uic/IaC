@@ -19,7 +19,7 @@ locals {
     name    = "download-tools"
     image   = "registry.access.redhat.com/ubi8"
     command = ["sh", "-c"]
-    args    = ["curl -L https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v$(AVP_VERSION)/argocd-vault-plugin_$(AVP_VERSION)_linux_amd64 -o argocd-vault-plugin && chmod +x argocd-vault-plugin && mv argocd-vault-plugin /custom-tools/"]
+    args    = ["curl -L https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v$(AVP_VERSION)/argocd-vault-plugin_$(AVP_VERSION)_linux_amd64 -o argocd-vault-plugin && chmod +x argocd-vault-plugin && mv argocd-vault-plugin /custom-tools/ && curl -L https://get.helm.sh/helm-v$(HELM_VERSION)-linux-amd64.tar.gz -o helm.tar.gz && tar -xzf helm.tar.gz && mv linux-amd64/helm /custom-tools/"]
 
     env = [{
       name  = "AVP_VERSION"
@@ -93,11 +93,6 @@ resource "helm_release" "argocd" {
 
   set {
     name  = "repoServer.autoscaling.enabled"
-    value = "true"
-  }
-
-  set {
-    name  = "configs.params.server\\.insecure"
     value = "true"
   }
 
