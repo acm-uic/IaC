@@ -82,5 +82,3 @@ server:
 
 ui:
   enabled: true
-  serviceType: "LoadBalancer"
-  externalPort: 443
