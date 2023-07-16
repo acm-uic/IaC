@@ -128,7 +128,7 @@ spec:
     - kind: Service
       name: vault-ui
       namespace: vault
-      passHostHeader: true
+      passHostHeader: false
       port: 8200
       responseForwarding:
         flushInterval: 1ms
