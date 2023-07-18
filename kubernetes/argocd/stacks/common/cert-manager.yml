@@ -22,6 +22,8 @@ spec:
       installCRDs: true
       startupapicheck:
         timeout: 5m
+      leaderElection:
+        namespace: cert-manager
   project: default
   syncPolicy:
     automated:
