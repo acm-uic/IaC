@@ -20,6 +20,8 @@ spec:
     chart: cert-manager
     valuesObject:
       installCRDs: true
+      startupapicheck:
+        timeout: 5m
   project: default
   syncPolicy:
     automated:
