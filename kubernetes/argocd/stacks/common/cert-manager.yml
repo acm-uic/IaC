@@ -37,6 +37,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   source:
     repoURL: 'https://charts.jetstack.io'
+    chart: 'cert-manager'
     targetRevision: 'v1.12.2'
   project: default
   syncPolicy:
