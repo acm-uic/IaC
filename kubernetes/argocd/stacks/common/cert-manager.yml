@@ -15,13 +15,29 @@ spec:
     namespace: cert-manager
     server: 'https://kubernetes.default.svc'
   source:
+    repoURL: 'git@github.com:acm-uic/IaC.git'
+    targetRevision: 'HEAD'
+    path: 'kubernetes/argocd/stacks/common'
+    include: 'cert-manager.crds.yml'
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  destination:
+    namespace: cert-manager
+    server: 'https://kubernetes.default.svc'
+  source:
     repoURL: 'https://charts.jetstack.io'
-    targetRevision: 1.12.2
-    chart: cert-manager
-    helm:
-      version: v3
-      valuesObject:
-        installCRDs: true
+    targetRevision: '1.12.2'
   project: default
   syncPolicy:
     automated:
