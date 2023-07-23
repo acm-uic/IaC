@@ -37,7 +37,7 @@ resource "azuread_application_federated_identity_credential" "terraform_typesens
   description           = "https://github.com/acm-uic/acm-uic.github.io"
   audiences             = ["api://AzureADTokenExchange"]
   issuer                = "https://token.actions.githubusercontent.com"
-  subject               = "repo:acm-uic/acm-uic.github.io:ref:main"
+  subject               = "repo:acm-uic/acm-uic.github.io:ref:refs/heads/main"
 }
 
 resource "azuread_application_federated_identity_credential" "terraform_typesense_deploy_pr" {
