@@ -28,6 +28,8 @@ spec:
           value: nfs
         - name: storageClass.accessModes
           value: ReadWriteMany
+        - name: nfs.mountOptions[0]
+          value: nfsvers=4
   project: default
   syncPolicy:
     automated:
