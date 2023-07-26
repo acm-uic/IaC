@@ -86,6 +86,7 @@ metadata:
   name: nfs-csi
   annotations:
     argocd.argoproj.io/sync-wave: "2"
+    storageclass.kubernetes.io/is-default-class: "true"
 provisioner: nfs.csi.k8s.io
 parameters:
   server: truenas.acmuic.org
