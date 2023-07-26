@@ -27,4 +27,4 @@ metadata:
   name: acmuic-self-ca
 spec:
   ca:
-    secretName: cert-manager/acmuic-self-cert
+    secretName: acmuic-self-cert
