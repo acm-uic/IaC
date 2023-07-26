@@ -35,3 +35,59 @@ spec:
     automated:
       prune: true
       selfHeal: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: csi-driver-nfs
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  destination:
+    namespace: nfs
+    server: 'https://kubernetes.default.svc'
+  source:
+    repoURL: 'https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts'
+    targetRevision: v4.4.0
+    chart: csi-driver-nfs
+    helm:
+      parameters:
+        - name: externalSnapshotter.enabled
+          value: "true"
+        - name: controller.runOnControlPlane
+          value: "true"
+        - name: controller.replicas
+          value: 2
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mount-options
+  namespace: nfs
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+stringData:
+  mountOptions: "nfsvers=4.1"
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-csi
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+provisioner: nfs.csi.k8s.io
+parameters:
+  server: truenas.acmuic.org
+  share: /mnt/pool/kubernetes-storage
+  # csi.storage.k8s.io/provisioner-secret is only needed for providing mountOptions in DeleteVolume
+  csi.storage.k8s.io/provisioner-secret-name: "mount-options"
+  csi.storage.k8s.io/provisioner-secret-namespace: "nfs"
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+mountOptions:
+  - nfsvers=4.1
