@@ -57,7 +57,7 @@ spec:
         - name: controller.runOnControlPlane
           value: "true"
         - name: controller.replicas
-          value: 2
+          value: "2"
   project: default
   syncPolicy:
     automated:
