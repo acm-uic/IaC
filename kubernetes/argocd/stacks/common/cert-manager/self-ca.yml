@@ -28,3 +28,14 @@ metadata:
 spec:
   ca:
     secretName: acmuic-self-cert
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: test-cert
+spec:
+  commonName: test.acmuic.org
+  secretName: test-cert
+  issuerRef:
+    kind: ClusterIssuer
+    name: acmuic-self-ca
