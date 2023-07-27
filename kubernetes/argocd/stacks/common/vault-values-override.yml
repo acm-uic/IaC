@@ -49,6 +49,7 @@ server:
             leader_client_key_file = "/vault/userconfig/vault-ha-tls/tls.key"
           }
         }
+        log_level = "Debug"
   resources:
     requests:
       memory: 2Gi
