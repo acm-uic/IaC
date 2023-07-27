@@ -141,3 +141,26 @@ spec:
           sameSite: none
       strategy: RoundRobin
       weight: 10
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vault-raft-cert
+  namespace: vault
+spec:
+  dnsNames:
+    - "vault.acmuic.org"
+    - "*.vault.svc.cluster.local"
+    - "*.vault-internal"
+    - "*.vault-internal.vault.svc.cluster.local"
+    - "*.vault"
+  ipAddresses:
+    - 127.0.0.1
+  usages:
+    - server auth
+    - digital signature
+    - key encipherment
+  secretName: vault-ha-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: acmuic-self-ca
