@@ -58,3 +58,15 @@ stringData:
   name: rimusz
   url: https://charts.rimusz.net
   type: helm
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kubernetes-pfsense-controller
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  name: kubernetes-pfsense-controller
+  url: https://travisghansen.github.io/kubernetes-pfsense-controller-chart/
+  type: helm

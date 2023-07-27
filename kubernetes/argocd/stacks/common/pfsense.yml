@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kpc
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pfsense
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  destination:
+    namespace: kpc
+    server: 'https://kubernetes.default.svc'
+  source:
+    repoURL: 'https://travisghansen.github.io/kubernetes-pfsense-controller-chart/'
+    targetRevision: 0.1.2
+    chart: kubernetes-pfsense-controller
+    helm:
+      parameters:
+        - name: pfsense.url
+          value: https://router.acmuic.org
+        - name: pfsense.insecure
+          value: "false"
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
