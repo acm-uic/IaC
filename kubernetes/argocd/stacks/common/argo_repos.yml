@@ -81,4 +81,13 @@ metadata:
 stringData:
   name: csi-driver-nfs
   url: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: jetstack
+  namespace: argocd
+stringData:
+  name: jetstack
+  url: https://charts.jetstack.io
   type: helm
