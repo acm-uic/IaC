@@ -27,9 +27,9 @@ spec:
     helm:
       parameters:
         - name: etcd.persistence.storageClass
-          value: hostpath
+          value: nfs-csi
         - name: loki-stack.loki.persistence.storageClassName
-          value: hostpath
+          value: nfs-csi
   project: default
   syncPolicy:
     automated:
@@ -76,7 +76,6 @@ metadata:
   name: mayastor-3
   annotations:
     argocd.argoproj.io/sync-wave: "3"
-    storageclass.kubernetes.io/is-default-class: "true"
 parameters:
   ioTimeout: "30"
   protocol: nvmf
