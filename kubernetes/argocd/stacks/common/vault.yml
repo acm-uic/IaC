@@ -141,6 +141,8 @@ spec:
           sameSite: none
       strategy: RoundRobin
       weight: 10
+  tls:
+    secretName: vault-ha-tls
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
