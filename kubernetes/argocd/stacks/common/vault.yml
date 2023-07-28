@@ -127,7 +127,7 @@ spec:
     dialTimeout: 42s
     responseHeaderTimeout: 42s
     idleConnTimeout: 42s
-  peerCertURI: "vault.acmuic.org"
+  peerCertURI: "https://vault.acmuic.org"
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
