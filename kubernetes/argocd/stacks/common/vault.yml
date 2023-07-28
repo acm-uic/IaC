@@ -112,6 +112,23 @@ subjects:
     name: vault-auth
     namespace: default
 ---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: vaulttransport
+  namespace: vault
+spec:
+  serverName: "vault-ui.vault"
+  insecureSkipVerify: true
+  rootCAsSecrets:
+    - vault-ha-tls
+  maxIdleConnsPerHost: 1
+  forwardingTimeouts:
+    dialTimeout: 42s
+    responseHeaderTimeout: 42s
+    idleConnTimeout: 42s
+  peerCertURI: "vault-ui.vault"
+---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
@@ -133,6 +150,7 @@ spec:
       responseForwarding:
         flushInterval: 1ms
       scheme: https
+      serversTransport: vaulttransport
       sticky:
         cookie:
           httpOnly: true
