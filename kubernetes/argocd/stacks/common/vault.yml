@@ -151,12 +151,6 @@ spec:
         flushInterval: 1ms
       scheme: https
       serversTransport: vaulttransport
-      sticky:
-        cookie:
-          httpOnly: true
-          name: cookie
-          secure: true
-          sameSite: none
       strategy: RoundRobin
       weight: 10
   tls:
