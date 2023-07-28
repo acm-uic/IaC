@@ -128,7 +128,7 @@ spec:
     - kind: Service
       name: vault-ui
       namespace: vault
-      passHostHeader: false
+      passHostHeader: true
       port: 8200
       responseForwarding:
         flushInterval: 1ms
@@ -143,7 +143,6 @@ spec:
       weight: 10
   tls:
     secretName: vault-ha-tls
-    passthrough: true
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
