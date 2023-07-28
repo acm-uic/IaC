@@ -143,6 +143,7 @@ spec:
       weight: 10
   tls:
     secretName: vault-ha-tls
+    passthrough: true
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
