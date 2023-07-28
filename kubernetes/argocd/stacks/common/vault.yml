@@ -153,6 +153,7 @@ spec:
       serversTransport: vaulttransport
       strategy: RoundRobin
       weight: 10
+      nativeLB: false
   tls:
     secretName: vault-ha-tls
 ---
