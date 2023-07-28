@@ -118,7 +118,7 @@ metadata:
   name: vaulttransport
   namespace: vault
 spec:
-  serverName: "vault-ui.vault"
+  serverName: "vault.acmuic.org"
   insecureSkipVerify: true
   rootCAsSecrets:
     - vault-ha-tls
@@ -127,7 +127,7 @@ spec:
     dialTimeout: 42s
     responseHeaderTimeout: 42s
     idleConnTimeout: 42s
-  peerCertURI: "vault-ui.vault"
+  peerCertURI: "vault.acmuic.org"
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
