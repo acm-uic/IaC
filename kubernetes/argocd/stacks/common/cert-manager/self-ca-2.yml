@@ -1,0 +1,43 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: selfca-cert-2
+spec:
+  isCA: true
+  commonName: acmuic-self-ca-2
+  subject:
+    organizations:
+      - "ACM@UIC"
+    countries:
+      - "US"
+    organizationalUnits:
+      - "SigSysAdmin"
+  duration: "87600h"
+  secretName: acmuic-self-cert-2
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: selfsigned-issuer-donotuse
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: acmuic-self-ca-2
+spec:
+  ca:
+    secretName: acmuic-self-cert-2
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: test-cert-2
+spec:
+  commonName: test.acmuic.org
+  secretName: test-cert-2
+  issuerRef:
+    kind: ClusterIssuer
+    name: acmuic-self-ca-2
