@@ -33,3 +33,4 @@ terraform.rc
 # Ignore kubeconfig files
 *-kubeconfig
 .direnv
+*.crt
