@@ -17,6 +17,9 @@ spec:
   privateKey:
     algorithm: ECDSA
     size: 256
+  usages:
+    - server auth
+    - client auth
   issuerRef:
     name: selfsigned-issuer-donotuse
     kind: ClusterIssuer
@@ -35,7 +38,8 @@ kind: Certificate
 metadata:
   name: test-cert
 spec:
-  commonName: test.acmuic.org
+  dnsNames:
+    - test.acmuic.org
   secretName: test-cert
   issuerRef:
     kind: ClusterIssuer
