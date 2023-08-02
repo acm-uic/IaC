@@ -2,8 +2,8 @@ name: Kube Lint
 
 on:
   pull_request:
-    # paths:
-    #   - "kubernetes/**/*.yml"
+    paths:
+      - "kubernetes/**/*.yml"
     branches:
       - main
 
