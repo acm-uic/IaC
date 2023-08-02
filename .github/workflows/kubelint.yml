@@ -11,3 +11,5 @@ jobs:
     steps:
       - name: Scan yamls
         uses: stackrox/kube-linter-action@v1
+        with:
+          directory: kubernetes
