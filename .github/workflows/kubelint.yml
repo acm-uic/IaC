@@ -2,6 +2,8 @@ name: Kube Lint
 
 on:
   pull_request:
+    # paths:
+    #   - "kubernetes/**/*.yml"
     branches:
       - main
 
@@ -12,4 +14,4 @@ jobs:
       - name: Scan yamls
         uses: stackrox/kube-linter-action@v1
         with:
-          directory: kubernetes
+          directory: ./kubernetes
