@@ -1,0 +1,13 @@
+name: Kube Lint
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Scan yamls
+        uses: stackrox/kube-linter-action@v1
