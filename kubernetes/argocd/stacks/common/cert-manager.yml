@@ -17,7 +17,9 @@ spec:
   source:
     repoURL: 'git@github.com:acm-uic/IaC.git'
     targetRevision: 'HEAD'
-    include: 'kubernetes/argocd/stacks/cert-manager/cert-manager.crds.yml'
+    path: 'kubernetes/argocd/stacks/cert-manager'
+    directory:
+      include: 'cert-manager.crds.yml'
   project: default
   syncPolicy:
     automated:
