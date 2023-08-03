@@ -46,7 +46,7 @@ spec:
       path: 'kubernetes/argocd/stacks/cert-manager'
       directory:
         include: '*.yml'
-        exclude: '*.crds.yml'
+        exclude: '*.crds.yaml'
   project: default
   syncPolicy:
     automated:
