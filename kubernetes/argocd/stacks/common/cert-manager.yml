@@ -39,8 +39,11 @@ spec:
       chart: 'cert-manager'
       targetRevision: 'v1.12.3'
     - repoURL: 'git@github.com:acm-uic/IaC.git'
-      targetRevision: 'bug/cert-manager-sync'
-      include: 'kubernetes/argocd/stacks/cert-manager/*.yml'
+      targetRevision: 'HEAD'
+      path: 'kubernetes/argocd/stacks/cert-manager'
+      directory:
+        include: '*.yml'
+        exclude: '*.crds.yml'
   project: default
   syncPolicy:
     automated:
