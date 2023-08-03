@@ -32,8 +32,8 @@ resource "helm_release" "argocd" {
   }
 
   set {
-    name  = "configs.params.server\\.insecure"
-    value = "true"
+    name  = "server.service.type"
+    value = "LoadBalancer"
   }
 
 }
