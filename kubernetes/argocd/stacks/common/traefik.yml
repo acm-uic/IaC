@@ -26,8 +26,6 @@ spec:
             PathPrefix(`/api`)
         - name: ingressRoute.dashboard.entryPoints[0]
           value: web
-        - name: logs.general.level
-          value: DEBUG
   project: default
   syncPolicy:
     automated:
