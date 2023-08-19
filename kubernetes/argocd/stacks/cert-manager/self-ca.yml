@@ -12,7 +12,7 @@ metadata:
 spec:
   isCA: true
   commonName: acmuic-self-ca
-  duration: "87600h"
+  duration: "87600h0m0s"
   secretName: acmuic-self-cert
   privateKey:
     algorithm: ECDSA
