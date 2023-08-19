@@ -23,7 +23,7 @@ spec:
         - values.yaml
         - $values/kubernetes/argocd/stacks/common/vault-values-override.yml
   - repoURL: 'git@github.com:acm-uic/IaC.git'
-    targetRevision: 'HEAD'
+    targetRevision: 'feature/vault-certs'
     ref: values
   project: default
   syncPolicy:
@@ -112,6 +112,22 @@ subjects:
     name: vault-auth
     namespace: default
 ---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: vaulttransport
+  namespace: vault
+spec:
+  serverName: "vault.acmuic.org"
+  insecureSkipVerify: true
+  rootCAsSecrets:
+    - vault-ha-tls
+  maxIdleConnsPerHost: 1
+  forwardingTimeouts:
+    dialTimeout: 42s
+    responseHeaderTimeout: 42s
+    idleConnTimeout: 42s
+---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
@@ -128,16 +144,36 @@ spec:
     - kind: Service
       name: vault-ui
       namespace: vault
-      passHostHeader: false
+      passHostHeader: true
       port: 8200
       responseForwarding:
         flushInterval: 1ms
       scheme: https
-      sticky:
-        cookie:
-          httpOnly: true
-          name: cookie
-          secure: true
-          sameSite: none
+      serversTransport: vaulttransport
       strategy: RoundRobin
       weight: 10
+  tls:
+    secretName: vault-ha-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vault-raft-cert
+  namespace: vault
+spec:
+  dnsNames:
+    - "vault.acmuic.org"
+    - "*.vault.svc.cluster.local"
+    - "*.vault-internal"
+    - "*.vault-internal.vault.svc.cluster.local"
+    - "*.vault"
+  ipAddresses:
+    - 127.0.0.1
+  usages:
+    - server auth
+    - digital signature
+    - key encipherment
+  secretName: vault-ha-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: acmuic-self-ca
