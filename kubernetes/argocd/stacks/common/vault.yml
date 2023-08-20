@@ -23,7 +23,7 @@ spec:
         - values.yaml
         - $values/kubernetes/argocd/stacks/common/vault-values-override.yml
   - repoURL: 'git@github.com:acm-uic/IaC.git'
-    targetRevision: 'feature/vault-certs'
+    targetRevision: HEAD
     ref: values
   project: default
   syncPolicy:
