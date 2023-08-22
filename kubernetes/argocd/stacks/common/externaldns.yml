@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: externaldns
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: externaldns
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  destination:
+    namespace: externaldns
+    server: 'https://kubernetes.default.svc'
+  source:
+    repoURL: 'https://kubernetes-sigs.github.io/external-dns/'
+    targetRevision: 1.13.0
+    chart: externaldns
+    helm:
+      parameters:
+        - name: provider
+          value: azure
+        - name: serviceAccount.name
+          value: externaldns
+        - name: secretConfiguration.enabled
+          value: "true"
+        - name: secretConfiguration.mountPath
+          value: "/etc/kubernetes"
+        - name: secretConfiguration.subPath
+          value: "azure.json"
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
