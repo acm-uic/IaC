@@ -14,22 +14,17 @@ spec:
   destination:
     namespace: externaldns
     server: 'https://kubernetes.default.svc'
-  source:
-    repoURL: 'https://kubernetes-sigs.github.io/external-dns/'
-    targetRevision: 1.13.0
-    chart: externaldns
-    helm:
-      parameters:
-        - name: provider
-          value: azure
-        - name: serviceAccount.name
-          value: externaldns
-        - name: secretConfiguration.enabled
-          value: "true"
-        - name: secretConfiguration.mountPath
-          value: "/etc/kubernetes"
-        - name: secretConfiguration.subPath
-          value: "azure.json"
+  sources:
+    - repoURL: 'https://kubernetes-sigs.github.io/external-dns/'
+      targetRevision: 1.13.0
+      chart: externaldns
+      helm:
+        valueFiles:
+          - $values/kubernetes/argocd/stacks/common/helm-values/externaldns-values.yml
+    - repoURL: 'git@github.com:acm-uic/IaC.git'
+      targetRevision: feature/externaldns
+      ref: values
+
   project: default
   syncPolicy:
     automated:

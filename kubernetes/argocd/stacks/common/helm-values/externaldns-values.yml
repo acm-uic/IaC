@@ -1,0 +1,16 @@
+---
+provider: azure
+serviceAccount:
+  name: externaldns
+secretConfiguration:
+  enabled: true
+  mountPath: "/etc/kubernetes"
+  subPath: "azure.json"
+  data: |
+    {
+      "tenantId" : "tenant",
+      "subscriptionId" : "subscription",
+      "resourceGroup" : "azure resource group",
+      "aadClientId" : "app sp id",
+      "aadClientSecret" : "app sp secret"
+    }
