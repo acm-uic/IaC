@@ -2,15 +2,17 @@
 provider: azure
 serviceAccount:
   name: externaldns
-secretConfiguration:
-  enabled: true
-  mountPath: "/etc/kubernetes"
-  subPath: "azure.json"
-  data: |
+podAnnotations:
+  vault.hashicorp.com/agent-inject: 'true'
+  vault.hashicorp.com/agent-inject-secret-azure.json: 'kv/externaldns/service_account'
+  vault.hashicorp.com/agent-inject-template-azure.json: |
+    {{- with secret "kv/externaldns/service_account" -}}
     {
-      "tenantId" : "tenant",
-      "subscriptionId" : "subscription",
-      "resourceGroup" : "azure resource group",
-      "aadClientId" : "app sp id",
-      "aadClientSecret" : "app sp secret"
+      "tenantId" : "{{ .Data.data.tenantId }}",
+      "subscriptionId" : "{{ .Data.data.subscriptionId }}",
+      "resourceGroup" : "{{ .Data.data.resourceGroup }}",
+      "aadClientId" : "{{ .Data.data.aadClientId }}",
+      "aadClientSecret" : "{{ .Data.data.aadClientSecret }}"
     }
+    {{- end }}
+extraArgs: ["--azure-config-file=/vault/secrets/azure.json"]
