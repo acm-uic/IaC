@@ -4,6 +4,7 @@ serviceAccount:
   name: externaldns
 podAnnotations:
   vault.hashicorp.com/agent-inject: 'true'
+  vault.hashicorp.com/role: 'externaldns'
   vault.hashicorp.com/agent-inject-secret-azure.json: 'kv/externaldns/service_account'
   vault.hashicorp.com/agent-inject-template-azure.json: |
     {{- with secret "kv/externaldns/service_account" -}}
