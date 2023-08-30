@@ -46,7 +46,7 @@ spec:
     - server auth
     - digital signature
     - key encipherment
-  secretName: vault-ha-tls
+  secretName: externaldns-vault-cert
   issuerRef:
     kind: ClusterIssuer
     name: acmuic-self-ca
