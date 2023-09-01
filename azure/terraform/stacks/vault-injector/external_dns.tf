@@ -3,8 +3,11 @@ resource "vault_kv_secret_v2" "externaldns_keyid" {
   name                       = "externaldns/service_account"
   data_json                  = jsonencode(
   {
-    key_id = data.terraform_remote_state.acm_general.outputs.externaldns_sp_keyid,
-    key_secret = data.terraform_remote_state.acm_general.outputs.externaldns_sp_password
+    aadClientId = data.terraform_remote_state.acm_general.outputs.externaldns_sp_appid,
+    aadClientSecret = data.terraform_remote_state.acm_general.outputs.externaldns_sp_password
+    resourceGroup = "acm-general"
+    subscriptionId = data.terraform_remote_state.acm_general.outputs.subscription_id
+    tenantId = data.terraform_remote_state.acm_general.outputs.tenant_id
   }
   )
   custom_metadata {

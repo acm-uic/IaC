@@ -31,8 +31,20 @@ resource "azurerm_role_assignment" "externaldns_contributor" {
   principal_id         = azuread_service_principal.externaldns.object_id
 }
 
+output "tenant_id" {
+  value = data.azuread_client_config.current.tenant_id
+}
+
+output "subscription_id" {
+  value = data.azurerm_subscription.current.subscription_id
+}
+
 output "externaldns_sp_keyid" {
   value = azuread_service_principal_password.externaldns.key_id
+}
+
+output "externaldns_sp_appid" {
+  value = azuread_application.externaldns.application_id
 }
 
 output "externaldns_sp_password" {
