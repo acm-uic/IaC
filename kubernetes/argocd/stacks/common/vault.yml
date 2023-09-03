@@ -167,6 +167,7 @@ spec:
     - "*.vault-internal"
     - "*.vault-internal.vault.svc.cluster.local"
     - "*.vault"
+    - "*.vault.svc"
   ipAddresses:
     - 127.0.0.1
   usages:

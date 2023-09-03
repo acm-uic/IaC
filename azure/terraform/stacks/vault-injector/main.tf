@@ -1,5 +1,5 @@
 data "terraform_remote_state" "acm_general" {
-  backend = "azurerm"
+  backend   = "azurerm"
   workspace = "prod"
 
   config = {
