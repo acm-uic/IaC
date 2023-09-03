@@ -53,5 +53,5 @@ output "externaldns_sp_password" {
 }
 
 output "default_resource_group" {
-  value     = var.resource_group_name
+  value = var.resource_group_name
 }
