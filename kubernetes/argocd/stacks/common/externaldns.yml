@@ -22,7 +22,7 @@ spec:
         valueFiles:
           - $values/kubernetes/argocd/stacks/common/helm-values/externaldns-values.yml
     - repoURL: 'git@github.com:acm-uic/IaC.git'
-      targetRevision: feature/externaldns
+      targetRevision: HEAD
       ref: values
 
   project: default
