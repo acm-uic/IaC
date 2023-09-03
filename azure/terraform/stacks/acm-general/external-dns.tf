@@ -20,13 +20,13 @@ resource "azuread_service_principal_password" "externaldns" {
 }
 
 resource "azurerm_role_assignment" "externaldns_reader" {
-  scope                = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/acm-general/providers/Microsoft.Network/dnszones/${var.public_domain_suffixes[0]}"
+  scope                = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Network/dnszones/${var.public_domain_suffixes[0]}"
   role_definition_name = "Reader"
   principal_id         = azuread_service_principal.externaldns.object_id
 }
 
 resource "azurerm_role_assignment" "externaldns_contributor" {
-  scope                = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/acm-general/providers/Microsoft.Network/dnszones/${var.public_domain_suffixes[0]}"
+  scope                = "/subscriptions/${data.azurerm_subscription.current.subscription_id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Network/dnszones/${var.public_domain_suffixes[0]}"
   role_definition_name = "Contributor"
   principal_id         = azuread_service_principal.externaldns.object_id
 }
@@ -50,4 +50,8 @@ output "externaldns_sp_appid" {
 output "externaldns_sp_password" {
   value     = azuread_service_principal_password.externaldns.value
   sensitive = true
+}
+
+output "default_resource_group" {
+  value     = var.resource_group_name
 }

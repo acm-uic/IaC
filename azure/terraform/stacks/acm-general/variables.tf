@@ -21,3 +21,9 @@ variable "external_dns_namespace" {
   default     = "externaldns"
 }
 
+variable "resource_group_name" {
+  type        = string
+  description = "Specifies the name of the resource group that resources should be deployed into"
+  default     = "acm-general"
+
+}

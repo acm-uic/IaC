@@ -5,7 +5,7 @@ resource "vault_kv_secret_v2" "externaldns_keyid" {
   {
     aadClientId = data.terraform_remote_state.acm_general.outputs.externaldns_sp_appid,
     aadClientSecret = data.terraform_remote_state.acm_general.outputs.externaldns_sp_password
-    resourceGroup = "acm-general"
+    resourceGroup = data.terraform_remote_state.acm_general.outputs.default_resource_group
     subscriptionId = data.terraform_remote_state.acm_general.outputs.subscription_id
     tenantId = data.terraform_remote_state.acm_general.outputs.tenant_id
   }
