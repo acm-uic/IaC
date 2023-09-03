@@ -80,7 +80,6 @@ server:
       - mountPath: /vault/userconfig/vault-ha-tls
         name: userconfig-vault-ha-tls
         readOnly: true
-  logLevel: debug
 
 ui:
   enabled: true
