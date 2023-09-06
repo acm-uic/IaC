@@ -31,5 +31,8 @@ spec:
       kind: Rule
       services:
         - name: docker2
+          namespace: ingress-forwarder
+          passHostHeader: true
           kind: Service
           port: 80
+          scheme: http
