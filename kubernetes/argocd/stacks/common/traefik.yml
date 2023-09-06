@@ -27,7 +27,7 @@ spec:
         - name: ingressRoute.dashboard.entryPoints[0]
           value: web
         - name: providers.kubernetesIngress.allowExternalNameServices
-          value: true
+          value: "true"
   project: default
   syncPolicy:
     automated:
