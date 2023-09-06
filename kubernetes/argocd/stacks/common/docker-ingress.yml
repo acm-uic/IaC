@@ -1,0 +1,35 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingress-forwarder
+---
+# https://crt.the-mori.com/index/2021-09-17-kubernetes-traefik-forward-traffic-external-ip
+kind: Service
+apiVersion: v1
+metadata:
+  name: docker2.acmuic.org
+  namespace: ingress-forwarder
+spec:
+  type: ExternalName
+  ports:
+    - name: docker2.acmuic.org
+      port: 80
+      targetPort: 80
+  externalName: 172.29.1.224
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: flourishconf
+  namespace: ingress-forwarder
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`flourishconf.com`)
+      kind: Rule
+      services:
+        - name: docker2.acmuic.org
+          kind: Service
+          port: 80
