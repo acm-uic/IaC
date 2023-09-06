@@ -8,12 +8,12 @@ metadata:
 kind: Service
 apiVersion: v1
 metadata:
-  name: docker2.acmuic.org
+  name: docker2
   namespace: ingress-forwarder
 spec:
   type: ExternalName
   ports:
-    - name: docker2.acmuic.org
+    - name: docker2
       port: 80
       targetPort: 80
   externalName: 172.29.1.224
@@ -30,6 +30,6 @@ spec:
     - match: Host(`flourishconf.com`)
       kind: Rule
       services:
-        - name: docker2.acmuic.org
+        - name: docker2
           kind: Service
           port: 80
