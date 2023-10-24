@@ -11,7 +11,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   sources:
     - repoURL: 'https://github.com/acm-uic/marketplace.git'
-      targetRevision: 'feature/helm-chart'
+      targetRevision: 0.1.0
       chart: 'marketplace'
       path: 'helm'
       helm:
