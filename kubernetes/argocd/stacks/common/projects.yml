@@ -13,8 +13,7 @@ spec:
     server: '*'
   sourceRepos:
   - 'git@github.com:acm-uic/IaC.git'
-  - 'git@github.com:acm-uic/marketplace.git'
-  - 'https://github.com/acm-uic/marketplace.git'
+  - 'https://acm.cs.uic.edu/helm'
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only

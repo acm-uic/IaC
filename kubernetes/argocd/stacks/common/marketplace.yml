@@ -10,7 +10,7 @@ spec:
     namespace: marketplace
     server: 'https://kubernetes.default.svc'
   sources:
-    - repoURL: 'https://github.com/acm-uic/marketplace.git'
+    - repoURL: 'https://acm.cs.uic.edu/helm'
       targetRevision: 0.1.0
       chart: 'marketplace'
       path: 'helm'
