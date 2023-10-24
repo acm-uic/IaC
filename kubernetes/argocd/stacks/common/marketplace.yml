@@ -19,7 +19,7 @@ spec:
           - $values/kubernetes/argocd/stacks/marketplace/values.yml
     - path: kubernetes/argocd/stacks/marketplace
       repoURL: 'git@github.com:acm-uic/IaC.git'
-      targetRevision: HEAD
+      targetRevision: feature/marketplace
       ref: values
       directory:
         recurse: true
