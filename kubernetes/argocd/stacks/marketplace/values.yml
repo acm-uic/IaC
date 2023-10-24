@@ -4,3 +4,6 @@ persistence:
     - ReadWriteMany
 imagePullSecrets:
   - name: pull-creds
+
+service:
+  port: 3000
