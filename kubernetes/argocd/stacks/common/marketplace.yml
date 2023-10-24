@@ -11,7 +11,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   sources:
     - repoURL: 'https://acm.cs.uic.edu/helm'
-      targetRevision: 0.1.1
+      targetRevision: 0.1.2
       chart: 'marketplace'
       path: 'helm'
       helm:
