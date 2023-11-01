@@ -26,6 +26,10 @@ spec:
             PathPrefix(`/api`)
         - name: ingressRoute.dashboard.entryPoints[0]
           value: web
+        - name: providers.kubernetesIngress.allowExternalNameServices
+          value: "true"
+        - name: providers.kubernetesCRD.allowExternalNameServices
+          value: "true"
   project: default
   syncPolicy:
     automated:
