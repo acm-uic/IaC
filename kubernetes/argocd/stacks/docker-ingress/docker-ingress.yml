@@ -1,0 +1,71 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingress-forwarder
+---
+# https://crt.the-mori.com/index/2021-09-17-kubernetes-traefik-forward-traffic-external-ip
+kind: Service
+apiVersion: v1
+metadata:
+  name: docker2
+  namespace: ingress-forwarder
+spec:
+  type: ExternalName
+  ports:
+    - name: docker2
+      port: 80
+      targetPort: 80
+  externalName: 172.29.1.224
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: flourishconf
+  namespace: ingress-forwarder
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`flourishconf.com`)
+      kind: Rule
+      services:
+        - name: docker2
+          namespace: ingress-forwarder
+          passHostHeader: true
+          kind: Service
+          port: 80
+          scheme: http
+---
+# https://crt.the-mori.com/index/2021-09-17-kubernetes-traefik-forward-traffic-external-ip
+kind: Service
+apiVersion: v1
+metadata:
+  name: docker1
+  namespace: ingress-forwarder
+spec:
+  type: ExternalName
+  ports:
+    - name: docker1
+      port: 443
+      targetPort: 443
+  externalName: 172.29.0.31
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: sparkhacksatuic
+  namespace: ingress-forwarder
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: "Host(`sparkhacksatuic.com`) || Host(`www.sparkhacksatuic.com`)"
+      kind: Rule
+      services:
+        - name: docker1
+          namespace: ingress-forwarder
+          passHostHeader: true
+          kind: Service
+          port: 443
+          scheme: https
