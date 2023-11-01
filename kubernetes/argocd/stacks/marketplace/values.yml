@@ -1,0 +1,6 @@
+---
+persistence:
+  accessModes:
+    - ReadWriteMany
+imagePullSecrets:
+  - name: pull-creds
