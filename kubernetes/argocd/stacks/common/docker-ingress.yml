@@ -58,7 +58,7 @@ metadata:
   namespace: ingress-forwarder
 spec:
   entryPoints:
-    - web
+    - websecure
   routes:
     - match: "Host(`sparkhacksatuic.com`) || Host(`www.sparkhacksatuic.com`)"
       kind: Rule
