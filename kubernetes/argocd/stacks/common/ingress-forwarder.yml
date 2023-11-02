@@ -2,16 +2,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: docker-ingress
+  name: ingress-forwarder
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
     name: ''
-    namespace: docker-ingress
+    namespace: ingress-forwarder
     server: 'https://kubernetes.default.svc'
   sources:
-    - path: kubernetes/argocd/stacks/docker-ingress
+    - path: kubernetes/argocd/stacks/ingress-forwarder
       repoURL: 'git@github.com:acm-uic/IaC.git'
       targetRevision: HEAD
       directory:
