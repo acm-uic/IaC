@@ -19,3 +19,7 @@ podAnnotations:
     }
     {{- end }}
 extraArgs: ["--azure-config-file=/vault/secrets/azure.json"]
+sources:
+  - service
+  - ingress
+  - traefik-proxy
