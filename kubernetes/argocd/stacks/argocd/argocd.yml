@@ -24,3 +24,5 @@ spec:
       scheme: http
       strategy: RoundRobin
       weight: 10
+  tls:
+    secretName: argocd-server-tls
