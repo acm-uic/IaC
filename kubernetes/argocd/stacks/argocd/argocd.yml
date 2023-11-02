@@ -4,6 +4,8 @@ kind: IngressRoute
 metadata:
   name: argocd
   namespace: argocd
+  annotations:
+    external-dns.alpha.kubernetes.io/target: app.acmuic.org
 spec:
   entryPoints:
     - websecure
