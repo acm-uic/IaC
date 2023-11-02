@@ -1,0 +1,26 @@
+---
+redis-ha:
+  enabled: true
+controller:
+  replicas: 1
+server:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+repoServer:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+applicationSet:
+  replicaCount: 2
+configs:
+  params:
+    server.insecure: true
+  cm:
+    timeout.reconciliation: 0s
+  secret:
+    githubSecret: "TotallyNotASecret"
+  rbac:
+    policy.csv: |
+      p, role:none, *, *, */*, deny
+      g, ACMLANAdmins, role:admin
