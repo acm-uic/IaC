@@ -1,0 +1,24 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - kind: Rule
+    match: Host(`cd.acmuic.org`)
+    priority: 10
+    services:
+    - kind: Service
+      name: argocd-server
+      namespace: argocd
+      passHostHeader: true
+      port: 80
+      responseForwarding:
+        flushInterval: 1ms
+      scheme: http
+      strategy: RoundRobin
+      weight: 10

@@ -1,0 +1,54 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    name: ''
+    namespace: argocd
+    server: 'https://kubernetes.default.svc'
+  sources:
+    - repoURL: 'https://argoproj.github.io/argo-helm'
+      targetRevision: 5.50.0
+      chart: argo-cd
+      helm:
+        parameters:
+          - name: "server.service.annotations.external-dns\\.alpha\\.kubernetes\\.io/hostname"
+            value: "cd.acmuic.org"
+          - name: "redis-ha.enabled"
+            value: "true"
+          - name: "controller.replicas"
+            value: "1"
+          - name: "server.autoscaling.enabled"
+            value: "true"
+          - name: "server.autoscaling.minReplicas"
+            value: "2"
+          - name: "repoServer.autoscaling.enabled"
+            value: "true"
+          - name: "repoServer.autoscaling.minReplicas"
+            value: "2"
+          - name: "applicationSet.replicaCount"
+            value: "2"
+          - name: "configs.params.server\\.insecure"
+            value: "true"
+          - name: "server.config.kustomize\\.buildOptions"
+            value: "--enable-helm"
+          - name: "configs.cm.timeout\\.reconciliation"
+            value: "0s"
+          - name: "configs.secret.githubSecret"
+            value: "TotallyNotASecret"
+    - path: kubernetes/argocd/stacks/argocd
+      repoURL: 'git@github.com:acm-uic/IaC.git'
+      targetRevision: HEAD
+      directory:
+        recurse: true
+        include: '*.yml'
+        exclude: values.yml
+  project: system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
