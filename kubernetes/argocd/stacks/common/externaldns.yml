@@ -16,7 +16,8 @@ spec:
       helm:
         valueFiles:
           - $values/kubernetes/argocd/stacks/externaldns/values.yml
-    - repoURL: 'git@github.com:acm-uic/IaC.git'
+    - path: kubernetes/argocd/stacks/externaldns
+      repoURL: 'git@github.com:acm-uic/IaC.git'
       targetRevision: HEAD
       ref: values
       directory:
