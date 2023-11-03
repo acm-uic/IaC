@@ -14,22 +14,21 @@ spec:
   destination:
     namespace: traefik
     server: 'https://kubernetes.default.svc'
-  source:
-    repoURL: 'https://traefik.github.io/charts'
-    targetRevision: 23.1.0
-    chart: traefik
-    helm:
-      parameters:
-        - name: ingressRoute.dashboard.matchRule
-          value: >-
-            Host(`traefik.acmuic.org`) && PathPrefix(`/dashboard`) ||
-            PathPrefix(`/api`)
-        - name: ingressRoute.dashboard.entryPoints[0]
-          value: web
-        - name: providers.kubernetesIngress.allowExternalNameServices
-          value: "true"
-        - name: providers.kubernetesCRD.allowExternalNameServices
-          value: "true"
+  sources:
+    - repoURL: 'https://traefik.github.io/charts'
+      targetRevision: 23.1.0
+      chart: traefik
+      helm:
+        valueFiles:
+          - $values/kubernetes/argocd/stacks/traefik/values.yml
+    - path: kubernetes/argocd/stacks/traefik
+      repoURL: 'git@github.com:acm-uic/IaC.git'
+      targetRevision: HEAD
+      ref: values
+      directory:
+        recurse: true
+        include: '*.yml'
+        exclude: values.yml
   project: default
   syncPolicy:
     automated:

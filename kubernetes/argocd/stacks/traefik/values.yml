@@ -1,0 +1,15 @@
+---
+ingressRoute:
+  dashboard:
+    matchRule: Host(`traefik.acmuic.org`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+    entryPoints:
+      - websecure
+providers:
+  kubernetesIngress:
+    allowExternalNameServices: true
+  kubernetesCRD:
+    allowExternalNameServices: true
+tlsStore:
+  default:
+    defaultCertificate:
+      secretName: default-cert
