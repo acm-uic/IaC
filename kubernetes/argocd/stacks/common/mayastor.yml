@@ -32,7 +32,7 @@ spec:
           value: nfs-csi
   project: default
   syncPolicy:
-    automated: false
+    automated: {}
 ---
 apiVersion: "openebs.io/v1alpha1"
 kind: DiskPool
