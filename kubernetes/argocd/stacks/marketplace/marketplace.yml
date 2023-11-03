@@ -17,13 +17,25 @@ spec:
   routes:
   - kind: Rule
     match: Host(`marketplace.acmuic.org`)
-    priority: 10
     services:
     - kind: Service
       name: marketplace
       namespace: marketplace
       passHostHeader: true
       port: 3000
+      responseForwarding:
+        flushInterval: 1ms
+      scheme: http
+      strategy: RoundRobin
+      weight: 10
+  - kind: Rule
+    match: Host(`marketplace.acmuic.org`) && PathPrefix(`/api`)
+    services:
+    - kind: Service
+      name: pocketbase
+      namespace: marketplace
+      passHostHeader: true
+      port: 80
       responseForwarding:
         flushInterval: 1ms
       scheme: http
