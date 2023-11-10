@@ -96,7 +96,7 @@ spec:
         - name: typesense
           image: "docker.io/typesense/typesense:0.25.1"
           command:
-            ['sh', '-c']
+            ['bash', '-c']
           args:
             ['source /vault/secrets/config && /opt/typesense-server']
           ports:
@@ -149,6 +149,8 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+  selector:
+    app.kubernetes.io/name: typesense
 ---
 apiVersion: v1
 kind: ServiceAccount
