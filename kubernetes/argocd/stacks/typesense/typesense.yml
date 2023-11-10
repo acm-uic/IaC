@@ -95,6 +95,10 @@ spec:
       containers:
         - name: typesense
           image: "docker.io/typesense/typesense:0.25.1"
+          command:
+            ['sh', '-c']
+          args:
+            ['source /vault/secrets/config && /opt/typesense-server']
           ports:
             - name: http
               containerPort: 8108
