@@ -16,3 +16,6 @@ resource "azurerm_dns_cname_record" "flourishconf_acmuic_org" {
   record              = "docker1.acmuic.org"
 }
 
+output "azurerm_dns_zone_acm_uic" {
+  value = data.azurerm_dns_zone.acmuic_org
+}

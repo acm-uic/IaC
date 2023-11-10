@@ -1,0 +1,153 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: typesense
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: typesense
+  namespace: typesense
+  annotations:
+    external-dns.alpha.kubernetes.io/target: app.acmuic.org
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`typesense.acmuic.org`)
+      services:
+        - kind: Service
+          name: typesense
+          namespace: typesense
+          passHostHeader: true
+          port: 8108
+          responseForwarding:
+            flushInterval: 1ms
+          scheme: http
+          strategy: RoundRobin
+          weight: 10
+  tls:
+    secretName: typesense-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: typesense-tls
+  namespace: typesense
+spec:
+  dnsNames:
+    - typesense.acmuic.org
+  secretName: typesense-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: typesense-vault-cert
+  namespace: typesense
+spec:
+  dnsNames:
+    - "typesense.acmuic.org"
+    - "*.typesense.svc"
+  ipAddresses:
+    - 127.0.0.1
+  usages:
+    - server auth
+    - digital signature
+    - key encipherment
+  secretName: typesense-vault-cert
+  issuerRef:
+    kind: ClusterIssuer
+    name: acmuic-self-ca
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: typesense
+  app.kubernetes.io/name: typesense
+  namespace: typesense
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: typesense
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: 'true'
+        vault.hashicorp.com/tls-secret: 'typesense-vault-cert'
+        vault.hashicorp.com/role: 'typesense'
+        vault.hashicorp.com/agent-inject-secret-config: 'kv/typesense_api_key/key'
+        vault.hashicorp.com/ca-cert: '/vault/tls/ca.crt'
+        # Environment variable export template
+        vault.hashicorp.com/agent-inject-template-config: |
+          {{- with secret "kv/typesense_api_key/key" -}}
+            export TYPESENSE_API_KEY="{{ .Data.key }}"
+          {{- end }}
+      labels:
+        app.kubernetes.io/name: typesense
+    spec:
+      serviceAccountName: typesense
+      containers:
+        - name: typesense
+          image: "docker.io/typesense/typesense:0.25.1"
+          ports:
+            - name: http
+              containerPort: 8108
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          env:
+            - name: TYPESENSE_DATA_DIR
+              value: /data
+          volumeMounts:
+            - mountPath: /data
+              name: typesense-data
+              subpath: typesense
+          resources:
+            limits:
+              cpu: 2
+              memory: 1024Mi
+            requests:
+              cpu: 1
+              memory: 512Mi
+      volumes:
+        - name: typesense-data
+          persistentVolumeClaim:
+            claimName: typesense-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: typesense-data
+spec:
+  storageClassName: nfs-csi
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: typesense
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8108
+      targetPort: http
+      protocol: TCP
+      name: http
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: typesense
+  namespace: typesense
