@@ -43,6 +43,7 @@ Once the service principal is created, store the following secrets:
 # Create federated credentials for the service principal
 az rest --method POST --uri 'https://graph.microsoft.com/beta/applications/<APPLICATION-OBJECT-ID>/federatedIdentityCredentials' --body '{"name":"acm-uic-iac-main","issuer":"https://token.actions.githubusercontent.com","subject":"repo:acm-uic/IaC:ref:refs/heads/main","description":"","audiences":["api://AzureADTokenExchange"]}'
 az rest --method POST --uri 'https://graph.microsoft.com/beta/applications/<APPLICATION-OBJECT-ID>/federatedIdentityCredentials' --body '{"name":"acm-uic-iac-pulls","issuer":"https://token.actions.githubusercontent.com","subject":"repo:acm-uic/IaC:pull_request","description":"","audiences":["api://AzureADTokenExchange"]}'
+az rest --method POST --uri 'https://graph.microsoft.com/beta/applications/<APPLICATION-OBJECT-ID>/federatedIdentityCredentials' --body '{"name":"acm-uic-iac-env-prod","issuer":"https://token.actions.githubusercontent.com","subject":"repo:acm-uic/IaC:environment:prod","description":"","audiences":["api://AzureADTokenExchange"]}'
 ```
 
 Once the secrets are in place, ensure the appropriate pipelines have permission to access these secrets.
