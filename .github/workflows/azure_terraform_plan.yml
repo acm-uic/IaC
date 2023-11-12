@@ -22,7 +22,6 @@ jobs:
       matrix:
         stack:
           - acm-general
-          - typesense
 
     defaults:
       run:
