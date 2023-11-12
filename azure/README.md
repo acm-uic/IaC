@@ -34,11 +34,16 @@ The output includes credentials that you must protect. Be sure that you do not i
 }
 ```
 
-Once the service principal is created, store the following secrets in your CI/CD platform:
+Once the service principal is created, store the following secrets:
 * `AZURE_AD_CLIENT_ID` – This will be the `appId` from above
-* `AZURE_AD_CLIENT_SECRET` – This will be the `password` from above
 * `AZURE_AD_TENANT_ID` – The Azure AD tenant ID to where the service principal was created. This is the `tenant` from above.
 * `AZURE_SUBSCRIPTION_ID` – Subscription ID of where you want to deploy the Terraform. This can be found in the output of `az account subscription list`.
+
+```bash
+# Create federated credentials for the service principal
+az rest --method POST --uri 'https://graph.microsoft.com/beta/applications/<APPLICATION-OBJECT-ID>/federatedIdentityCredentials' --body '{"name":"acm-uic-iac-main","issuer":"https://token.actions.githubusercontent.com","subject":"repo:acm-uic/IaC:ref:refs/heads/main","description":"","audiences":["api://AzureADTokenExchange"]}'
+az rest --method POST --uri 'https://graph.microsoft.com/beta/applications/<APPLICATION-OBJECT-ID>/federatedIdentityCredentials' --body '{"name":"acm-uic-iac-pulls","issuer":"https://token.actions.githubusercontent.com","subject":"repo:acm-uic/IaC:pull_request","description":"","audiences":["api://AzureADTokenExchange"]}'
+```
 
 Once the secrets are in place, ensure the appropriate pipelines have permission to access these secrets.
 They can usually be defined as environment variables for use by the pipelines.
