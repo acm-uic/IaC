@@ -5,16 +5,22 @@ on:
     branches:
       - main
     paths:
+      - '.github/workflows/azure_terraform_apply.yml'
       - 'azure/terraform/stacks/**'
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
 
 jobs:
   terraform:
     name: 'Terraform Apply'
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+      ARM_USE_OIDC: true
       TF_WORKSPACE: prod
       TF_IN_AUTOMATION: true
       TF_INPUT: 0
@@ -33,7 +39,14 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Azure CLI setup
+        uses: azure/login@v1
+        with:
+          client-id: ${{ env.ARM_CLIENT_ID }}
+          tenant-id: ${{ env.ARM_TENANT_ID }}
+          subscription-id: ${{ env.ARM_SUBSCRIPTION_ID }}
 
       - name: 'Terraform Format'
         id: fmt
