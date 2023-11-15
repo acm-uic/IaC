@@ -1,0 +1,25 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: radius
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: radius
+    server: 'https://kubernetes.default.svc'
+  sources:
+    - path: kubernetes/argocd/stacks/radius
+      repoURL: 'git@github.com:acm-uic/IaC.git'
+      targetRevision: HEAD
+      ref: values
+      directory:
+        recurse: true
+        include: '*.yml'
+  project: sigweb
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+

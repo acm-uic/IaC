@@ -1,0 +1,121 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: radius
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: radius-vault-cert
+  namespace: radius
+spec:
+  dnsNames:
+    - "radius.acmuic.org"
+    - "*.radius.svc"
+  ipAddresses:
+    - 127.0.0.1
+  usages:
+    - server auth
+    - digital signature
+    - key encipherment
+  secretName: radius-vault-cert
+  issuerRef:
+    kind: ClusterIssuer
+    name: acmuic-self-ca
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radius
+  namespace: radius
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: radius
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: 'true'
+        vault.hashicorp.com/tls-secret: 'radius-vault-cert'
+        vault.hashicorp.com/role: 'radius'
+        vault.hashicorp.com/agent-inject-secret-config: 'kv/radius'
+        vault.hashicorp.com/ca-cert: '/vault/tls/ca.crt'
+        # Environment variable export template
+        vault.hashicorp.com/agent-inject-template-config: |
+          {{- with secret "kv/radius" -}}
+            cat /templates/clients | sed 's/VAULT_REPLACE_CLIENT_SECRET_REPLACE_VAULT/'"{{ .Data.data.clientSecret }}"'/' > /etc/raddb/clients.conf
+            cat /templates/ldap | sed 's/VAULT_REPLACE_LDAP_PASSWORD_REPLACE_VAULT/'"{{ .Data.data.ldapPassword }}"'/' | sed 's/VAULT_REPLACE_LDAP_IDENTITY_REPLACE_VAULT/'"{{ .Data.data.ldapIdentity }}"'/' > /etc/raddb/mods-enabled/ldap
+          {{- end }}
+      labels:
+        app.kubernetes.io/name: radius
+    spec:
+      serviceAccountName: radius
+      containers:
+        - name: radius
+          image: docker.io/freeradius/freeradius-server:latest-3.2
+          command: ["bash", "-c"]
+          args: ["source /vault/secrets/config && freeradius -X"]
+          ports:
+            - name: radius
+              protocol: UDP
+              containerPort: 1812
+            - name: radius-acct
+              protocol: UDP
+              containerPort: 1813
+          resources:
+            limits:
+              cpu: '1'
+              memory: 512Mi
+            requests:
+              cpu: '500m'
+              memory: 300Mi
+          volumeMounts:
+            - name: raddb-sites-enabled-default
+              mountPath: /etc/raddb/sites-enabled/default
+              subPath: raddb-sites-enabled-default
+            - name: raddb-mods-enabled-ldap
+              mountPath: /templates/ldap
+              subPath: raddb-mods-enabled-ldap
+            - name: raddb-clients
+              mountPath: /templates/clients
+              subPath: raddb-clients
+      volumes:
+        - name: raddb-sites-enabled-default
+          configMap:
+            name: radius-config
+        - name: raddb-mods-enabled-ldap
+          configMap:
+            name: radius-config
+        - name: raddb-clients
+          configMap:
+            name: radius-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: radius
+  namespace: radius
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 172.29.8.102
+  ports:
+    - name: radius
+      protocol: UDP
+      port: 1812
+      targetPort: 1812
+    - name: radius-acct
+      protocol: UDP
+      port: 1813
+      targetPort: 1813
+  selector:
+    app.kubernetes.io/name: radius
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: radius
+  namespace: radius
