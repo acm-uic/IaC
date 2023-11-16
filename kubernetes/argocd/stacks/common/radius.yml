@@ -17,7 +17,7 @@ spec:
       directory:
         recurse: true
         include: '*.yml'
-  project: sigweb
+  project: infrastructure
   syncPolicy:
     automated:
       prune: true
