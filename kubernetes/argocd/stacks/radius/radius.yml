@@ -58,7 +58,7 @@ spec:
         - name: radius
           image: docker.io/freeradius/freeradius-server:latest-3.2
           command: ["bash", "-c"]
-          args: ["source /vault/secrets/config && freeradius -X"]
+          args: ["source /vault/secrets/config && freeradius"]
           ports:
             - name: radius
               protocol: UDP
