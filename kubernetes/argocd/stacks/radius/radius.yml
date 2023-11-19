@@ -11,7 +11,6 @@ metadata:
   namespace: radius
 spec:
   dnsNames:
-    - "radius.acmuic.org"
     - "*.radius.svc"
   ipAddresses:
     - 127.0.0.1
@@ -39,26 +38,39 @@ spec:
   template:
     metadata:
       annotations:
-        vault.hashicorp.com/agent-inject: 'true'
-        vault.hashicorp.com/tls-secret: 'radius-vault-cert'
-        vault.hashicorp.com/role: 'radius'
-        vault.hashicorp.com/agent-inject-secret-config: 'kv/radius'
-        vault.hashicorp.com/ca-cert: '/vault/tls/ca.crt'
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/tls-secret: "radius-vault-cert"
+        vault.hashicorp.com/role: "radius"
+        vault.hashicorp.com/agent-inject-secret-config: "kv/radius"
+        vault.hashicorp.com/ca-cert: "/vault/tls/ca.crt"
         # Environment variable export template
         vault.hashicorp.com/agent-inject-template-config: |
           {{- with secret "kv/radius" -}}
-            cat /templates/clients | sed 's/VAULT_REPLACE_CLIENT_SECRET_REPLACE_VAULT/'"{{ .Data.data.clientSecret }}"'/' > /etc/raddb/clients.conf
-            cat /templates/ldap | sed 's/VAULT_REPLACE_LDAP_PASSWORD_REPLACE_VAULT/'"{{ .Data.data.ldapPassword }}"'/' | sed 's/VAULT_REPLACE_LDAP_IDENTITY_REPLACE_VAULT/'"{{ .Data.data.ldapIdentity }}"'/' > /etc/raddb/mods-enabled/ldap
+            cat /templates/clients | sed 's/VAULT_REPLACE_CLIENT_SECRET_REPLACE_VAULT/'"{{ .Data.data.clientSecret }}"'/' > /etc/freeradius/3.0/clients.conf
+            cat /templates/ldap | sed 's/VAULT_REPLACE_LDAP_PASSWORD_REPLACE_VAULT/'"{{ .Data.data.ldapPassword }}"'/' | sed 's/VAULT_REPLACE_LDAP_IDENTITY_REPLACE_VAULT/'"{{ .Data.data.ldapIdentity }}"'/' > /etc/freeradius/3.0/mods-enabled/ldap
+            export AD_USERNAME="{{ .Data.data.ldapUsername }}"
+            export AD_PASSWORD="{{ .Data.data.ldapPassword }}"
           {{- end }}
       labels:
         app.kubernetes.io/name: radius
     spec:
       serviceAccountName: radius
+      shareProcessNamespace: true
+      hostname: radius
       containers:
         - name: radius
-          image: docker.io/freeradius/freeradius-server:latest-3.2
-          command: ["bash", "-c"]
-          args: ["source /vault/secrets/config && freeradius"]
+          image: docker.io/bmiddha/freeradius-samba-ad-join:latest
+          command:
+            - "bash"
+            - "-c"
+            - "source /vault/secrets/config && ./docker-entrypoint.sh"
+          env:
+            - name: WORKGROUP
+              value: "ACMUIC"
+            - name: DOMAIN_NAME
+              value: "ACMUIC.ORG"
+            - name: ADMIN_SERVER
+              value: "ACTIVEDIRECTORY.ACMUIC.ORG"
           ports:
             - name: radius
               protocol: UDP
@@ -68,18 +80,21 @@ spec:
               containerPort: 1813
           resources:
             limits:
-              cpu: '1'
+              cpu: "1"
               memory: 512Mi
             requests:
-              cpu: '500m'
+              cpu: "500m"
               memory: 300Mi
           volumeMounts:
             - name: raddb-sites-enabled-default
-              mountPath: /etc/raddb/sites-enabled/default
+              mountPath: //etc/freeradius/3.0/sites-enabled/default
               subPath: raddb-sites-enabled-default
             - name: raddb-mods-enabled-ldap
               mountPath: /templates/ldap
               subPath: raddb-mods-enabled-ldap
+            - name: raddb-mods-enabled-mschap
+              mountPath: //etc/freeradius/3.0/mods-enabled/mschap
+              subPath: raddb-mods-enabled-mschap
             - name: raddb-clients
               mountPath: /templates/clients
               subPath: raddb-clients
@@ -91,6 +106,9 @@ spec:
           configMap:
             name: radius-config
         - name: raddb-clients
+          configMap:
+            name: radius-config
+        - name: raddb-mods-enabled-mschap
           configMap:
             name: radius-config
 ---
