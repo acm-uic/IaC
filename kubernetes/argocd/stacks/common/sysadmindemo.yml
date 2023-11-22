@@ -1,0 +1,26 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sysadmindemo
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: sysadmindemo
+    server: 'https://kubernetes.default.svc'
+  sources:
+    - path: kubernetes/argocd/stacks/sysadmindemo
+      repoURL: 'git@github.com:acm-uic/IaC.git'
+      targetRevision: HEAD
+      ref: values
+      directory:
+        recurse: true
+        include: '*.yml'
+        exclude: values.yml
+  project: sigsysadmin
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
