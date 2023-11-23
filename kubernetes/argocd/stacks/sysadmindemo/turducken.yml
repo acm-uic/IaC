@@ -34,7 +34,7 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: 🐔
+  name: xn--co8h
   annotations:
     external-dns.alpha.kubernetes.io/target: app.acmuic.org
 spec:
@@ -42,7 +42,7 @@ spec:
     - web
   routes:
   - kind: Rule
-    match: Host(`🐔.acmuic.org`)
+    match: Host(`xn--co8h.acmuic.org`)
     services:
     - kind: Service
       name: turducken-service
