@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: turkey-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: turkey-nginx
+  template:
+    metadata:
+      labels:
+        app: turkey-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: turkey-service
+spec:
+  selector:
+    app: turkey-nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: turkeydemo
+  annotations:
+    external-dns.alpha.kubernetes.io/target: app.acmuic.org
+spec:
+  entryPoints:
+    - web
+  routes:
+  - kind: Rule
+    match: Host(`turkeydemo.acmuic.org`)
+    services:
+    - kind: Service
+      name: turkey-service
+      namespace: sysadmindemo
+      port: 80
+      scheme: http
