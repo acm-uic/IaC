@@ -1,0 +1,165 @@
+# https://plausible.io/docs/self-hosting-configuration
+# https://github.com/plausible/hosting
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: plausible
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: plausible-vault-cert
+  namespace: plausible
+spec:
+  dnsNames:
+    - "*.plausible.svc"
+  ipAddresses:
+    - 127.0.0.1
+  usages:
+    - server auth
+    - digital signature
+    - key encipherment
+  secretName: plausible-vault-cert
+  issuerRef:
+    kind: ClusterIssuer
+    name: acmuic-self-ca
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plausible
+  namespace: plausible
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: plausible
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/tls-secret: "plausible-vault-cert"
+        vault.hashicorp.com/role: "plausible"
+        vault.hashicorp.com/agent-inject-secret-config: "kv/plausible"
+        vault.hashicorp.com/ca-cert: "/vault/tls/ca.crt"
+        # Environment variable export template
+        vault.hashicorp.com/agent-inject-template-config: |
+          {{- with secret "kv/plausible" -}}
+            export SECRET_KEY_BASE="{{ .Data.data.SECRET_KEY_BASE }}"
+            export DATABASE_URL="postgres://plausible:{{ .Data.data.POSTGRES_PLAUSIBLE_PASSWORD }}@postgres.plausible.svc.cluster.local:5432/plausible"
+          {{- end }}
+      labels:
+        app.kubernetes.io/name: plausible
+    spec:
+      serviceAccountName: plausible
+      containers:
+        - name: plausible
+          image: plausible/analytics:v2.0
+          command: ["/bin/sh"]
+          args:
+            [
+              "-c",
+              "source /vault/secrets/config && sleep 10 && /entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run",
+            ]
+          resources:
+            limits:
+              memory: "1024Mi"
+              cpu: "1"
+            requests:
+              memory: "800Mi"
+              cpu: "700m"
+          livenessProbe:
+            initialDelaySeconds: 10
+            httpGet:
+              path: /
+              port: 8000
+          readinessProbe:
+            initialDelaySeconds: 10
+            httpGet:
+              path: /
+              port: 8000
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: CLICKHOUSE_DATABASE_URL
+              value: http://clickhouse.plausible.svc.cluster.local:8123/plausible
+            - name: BASE_URL
+              value: https://plausible.acmuic.org
+            - name: DISABLE_REGISTRATION
+              value: invite_only
+            - name: MAILER_EMAIL
+              value: plausible@acmuic.org
+            - name: MAILER_NAME
+              value: Plausible Analytics - plausible.acmuic.org
+            - name: SMTP_HOST_ADDR
+              value: smtp.plausible.svc.cluster.local
+            - name: SMTP_HOST_PORT
+              value: "25"
+            # - name: SMTP_HOST_SSL_ENABLED
+            #   value: "false"
+            # - name: SMTP_USER_NAME
+            #   value: plausible@acmuic.org
+            # - name: SMTP_USER_PWD
+            #   value: ""
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plausible
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8000
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: plausible
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: plausible
+  namespace: plausible
+  annotations:
+    external-dns.alpha.kubernetes.io/target: app.acmuic.org
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`plausible.acmuic.org`)
+      services:
+        - kind: Service
+          name: plausible
+          namespace: plausible
+          passHostHeader: true
+          port: 8000
+          responseForwarding:
+            flushInterval: 1ms
+          scheme: http
+          strategy: RoundRobin
+          weight: 10
+  tls:
+    secretName: plausible-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: plausible-tls
+  namespace: plausible
+spec:
+  dnsNames:
+    - plausible.acmuic.org
+  secretName: plausible-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: plausible
+  namespace: plausible
