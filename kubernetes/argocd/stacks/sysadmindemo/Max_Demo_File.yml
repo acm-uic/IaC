@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: Hey-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: Hey-nginx
+  template:
+    metadata:
+      labels:
+        app: Hey-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: Hey-service
+spec:
+  selector:
+    app: Hey-nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: Heydemo
+  namespace: sysadmindemo
+  annotations:
+    external-dns.alpha.kubernetes.io/target: app.acmuic.org
+spec:
+  entryPoints:
+    - web
+  routes:
+  - kind: Rule
+    match: Host(`Heydemo.acmuic.org`)
+    services:
+    - kind: Service
+      name: Hey-service
+      namespace: sysadmindemo
+      port: 80
+      scheme: http
