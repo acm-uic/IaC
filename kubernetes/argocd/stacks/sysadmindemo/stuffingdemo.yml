@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stuffing-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stuffing-nginx # This needs to match.
+  template:
+    metadata:
+      labels:
+        app: stuffing-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stuffing-service
+spec:
+  selector:
+    app: stuffing-nginx # This.
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: stuffingdemo
+  namespace: sysadmindemo
+  annotations:
+    external-dns.alpha.kubernetes.io/target: app.acmuic.org
+spec:
+  entryPoints:
+    - web
+  routes:
+  - kind: Rule
+    match: Host(`stuffingdemo.acmuic.org`)
+    services:
+    - kind: Service
+      name: stuffing-service
+      namespace: sysadmindemo
+      port: 80
+      scheme: http
