@@ -1,0 +1,51 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: soham-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: turducken-nginx
+  template:
+    metadata:
+      labels:
+        app: turducken-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: turducken-service
+spec:
+  selector:
+    app: turducken-nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: 🐔
+  annotations:
+    external-dns.alpha.kubernetes.io/target: app.acmuic.org
+spec:
+  entryPoints:
+    - web
+  routes:
+  - kind: Rule
+    match: Host(`🐔.acmuic.org`)
+    services:
+    - kind: Service
+      name: turducken-service
+      port: 80
+      scheme: http
+  
