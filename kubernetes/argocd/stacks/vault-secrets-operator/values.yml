@@ -7,3 +7,8 @@ defaultVaultConnection:
   # Example: http://vault.default.svc.cluster.local:8200
   address: "https://vault.vault.svc.cluster.local:8200"
   skipTLSVerify: false
+
+defaultAuthMethod:
+  enabled: true
+  kubernetes:
+    role: "vault-secrets-operator"
