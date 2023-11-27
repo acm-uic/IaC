@@ -34,6 +34,7 @@ spec:
   sourceRepos:
   - 'git@github.com:acm-uic/IaC.git'
   - 'https://acm.cs.uic.edu/helm'
+  - 'https://helm.releases.hashicorp.com'
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
