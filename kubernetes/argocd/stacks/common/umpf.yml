@@ -2,21 +2,21 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: typesense
+  name: umpf
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: typesense
-    server: 'https://kubernetes.default.svc'
+    namespace: umpf
+    server: "https://kubernetes.default.svc"
   sources:
-    - path: kubernetes/argocd/stacks/typesense
-      repoURL: 'git@github.com:acm-uic/IaC.git'
+    - path: kubernetes/argocd/stacks/umpf
+      repoURL: "git@github.com:acm-uic/IaC.git"
       targetRevision: HEAD
       ref: values
       directory:
         recurse: true
-        include: '*.yml'
+        include: "*.yml"
   project: sigweb
   syncPolicy:
     automated:
