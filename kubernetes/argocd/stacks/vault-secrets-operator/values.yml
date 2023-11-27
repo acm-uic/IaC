@@ -9,5 +9,6 @@ defaultVaultConnection:
   skipTLSVerify: false
 
 defaultAuthMethod:
+  enabled: true
   kubernetes:
     role: "vault-secrets-operator"
