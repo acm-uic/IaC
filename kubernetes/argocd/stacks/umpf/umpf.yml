@@ -53,11 +53,11 @@ spec:
               port: http
           resources:
             limits:
-              cpu: '250m'
-              memory: 400Mi
+              cpu: '1000m'
+              memory: 1200Mi
             requests:
-              cpu: '200m'
-              memory: 300Mi
+              cpu: '850m'
+              memory: 1000Mi
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
