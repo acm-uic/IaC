@@ -127,6 +127,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  namespace: typesense
   name: typesense-data
 spec:
   storageClassName: nfs-csi
@@ -139,6 +140,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: typesense
   name: typesense
 spec:
   type: ClusterIP

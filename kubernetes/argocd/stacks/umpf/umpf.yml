@@ -1,0 +1,136 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: umpf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: umpf
+  name: umpf
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: umpf
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: umpf
+  namespace: umpf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: umpf
+  template:
+    metadata:
+      annotations:
+      labels:
+        app.kubernetes.io/name: umpf
+    spec:
+      imagePullSecrets:
+       - name: acmuic-azurecr-io
+      containers:
+        - name: umpf
+          image: "acmuic.azurecr.io/acm-uic/pathfinder:latest"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            limits:
+              cpu: '250m'
+              memory: 400Mi
+            requests:
+              cpu: '200m'
+              memory: 300Mi
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: umpf-tls
+  namespace: umpf
+spec:
+  dnsNames:
+    - umpf.acmuic.org
+  secretName: umpf-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: umpf
+  namespace: umpf
+  annotations:
+    external-dns.alpha.kubernetes.io/target: app.acmuic.org
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`umpf.acmuic.org`)
+      services:
+        - kind: Service
+          name: umpf
+          namespace: umpf
+          passHostHeader: true
+          port: 80
+          responseForwarding:
+            flushInterval: 1ms
+          scheme: http
+          strategy: RoundRobin
+          weight: 10
+  tls:
+    secretName: umpf-tls
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: umpf
+  namespace: umpf
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: umpf-vault-static-auth
+  namespace: umpf
+spec:
+  method: kubernetes
+  mount: kubernetes
+  namespace: umpf
+  kubernetes:
+    role: umpf
+    serviceAccount: umpf
+    # audiences:
+    #   - vault
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  namespace: umpf
+  name: acmuic-azurecr-io
+spec:
+  vaultAuthRef: umpf-vault-static-auth
+  type: kv-v2
+  mount: kv
+  path: acmuic.azurecr.io
+  destination:
+    name: acmuic-azurecr-io
+    create: true
+    type: "kubernetes.io/dockerconfigjson"
