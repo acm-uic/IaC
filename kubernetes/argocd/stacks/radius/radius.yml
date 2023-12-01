@@ -57,9 +57,11 @@ spec:
       serviceAccountName: radius
       shareProcessNamespace: true
       hostname: radius
+      imagePullSecrets:
+       - name: acmuic-azurecr-io
       containers:
         - name: radius
-          image: docker.io/bmiddha/freeradius-samba-ad-join:latest
+          image: acmuic.azurecr.io/acm-uic/freeradius-active-directory:latest
           command:
             - "bash"
             - "-c"
@@ -137,3 +139,33 @@ kind: ServiceAccount
 metadata:
   name: radius
   namespace: radius
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: radius-vault-static-auth
+  namespace: radius
+spec:
+  method: kubernetes
+  mount: kubernetes
+  namespace: radius
+  kubernetes:
+    role: radius
+    serviceAccount: radius
+    # audiences:
+    #   - vault
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  namespace: radius
+  name: acmuic-azurecr-io
+spec:
+  vaultAuthRef: radius-vault-static-auth
+  type: kv-v2
+  mount: kv
+  path: acmuic.azurecr.io
+  destination:
+    name: acmuic-azurecr-io
+    create: true
+    type: "kubernetes.io/dockerconfigjson"
