@@ -76,11 +76,61 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: sparkhacks-cert
+  namespace: ingress-forwarder
 spec:
   dnsNames:
     - www.sparkhacksatuic.com
     - sparkhacksatuic.com
   secretName: sparkhacks-cert
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: oven-temp-pi
+  namespace: ingress-forwarder
+spec:
+  type: ExternalName
+  ports:
+    - name: oven-temp-pi
+      port: 3000
+      targetPort: 3000
+  externalName: 10.7.45.116
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: oventemp
+  namespace: ingress-forwarder
+  annotations:
+    external-dns.alpha.kubernetes.io/target: app.acmuic.org
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: "Host(`oventemp.acmuic.org`)"
+      kind: Rule
+      services:
+        - name: oven-temp-pi
+          namespace: ingress-forwarder
+          passHostHeader: true
+          kind: Service
+          port: 3000
+          scheme: http
+  tls:
+    secretName: oventemp-cert
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: oventemp-cert
+  namespace: ingress-forwarder
+spec:
+  dnsNames:
+    - oventemp.acmuic.org
+  secretName: oventemp-cert
   issuerRef:
     kind: ClusterIssuer
     name: letsencrypt
