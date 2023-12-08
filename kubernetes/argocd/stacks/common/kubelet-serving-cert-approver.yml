@@ -1,0 +1,24 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubelet-serving-cert-approver
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: kubelet-serving-cert-approver
+    server: "https://kubernetes.default.svc"
+  source:
+    - path: kubernetes/argocd/stacks/kubelet-serving-cert-approver
+      repoURL: "git@github.com:acm-uic/IaC.git"
+      targetRevision: HEAD
+      ref: values
+      directory:
+        recurse: true
+        include: "*.yml"
+  project: infrastructure
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
