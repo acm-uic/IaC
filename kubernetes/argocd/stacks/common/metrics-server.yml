@@ -14,8 +14,6 @@ spec:
       targetRevision: 3.11.0
       chart: metrics-server
       helm:
-        valueFiles:
-          - $values/kubernetes/argocd/stacks/metrics-server/values.yml
     - path: kubernetes/argocd/stacks/metrics-server
       repoURL: "git@github.com:acm-uic/IaC.git"
       targetRevision: HEAD
