@@ -10,13 +10,13 @@ spec:
     namespace: kubelet-serving-cert-approver
     server: "https://kubernetes.default.svc"
   source:
-    - path: kubernetes/argocd/stacks/kubelet-serving-cert-approver
-      repoURL: "git@github.com:acm-uic/IaC.git"
-      targetRevision: HEAD
-      ref: values
-      directory:
-        recurse: true
-        include: "*.yml"
+    path: kubernetes/argocd/stacks/kubelet-serving-cert-approver
+    repoURL: "git@github.com:acm-uic/IaC.git"
+    targetRevision: HEAD
+    ref: values
+    directory:
+      recurse: true
+      include: "*.yml"
   project: infrastructure
   syncPolicy:
     automated:
