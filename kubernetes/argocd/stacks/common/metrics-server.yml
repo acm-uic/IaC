@@ -1,0 +1,30 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: metrics-server
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: metrics-server
+    server: "https://kubernetes.default.svc"
+  sources:
+    - repoURL: 'https://kubernetes-sigs.github.io/metrics-server/'
+      targetRevision: 3.11.0
+      chart: metrics-server
+      helm:
+        valueFiles:
+          - $values/kubernetes/argocd/stacks/metrics-server/values.yml
+    - path: kubernetes/argocd/stacks/metrics-server
+      repoURL: "git@github.com:acm-uic/IaC.git"
+      targetRevision: HEAD
+      ref: values
+      directory:
+        recurse: true
+        include: "*.yml"
+  project: sigweb
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
