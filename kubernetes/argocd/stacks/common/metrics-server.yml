@@ -21,6 +21,7 @@ spec:
       directory:
         recurse: true
         include: "*.yml"
+        jsonnet: {}
   project: infrastructure
   syncPolicy:
     automated:
