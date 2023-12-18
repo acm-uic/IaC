@@ -1,0 +1,33 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: lgtm
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: lgtm
+    server: "https://kubernetes.default.svc"
+  sources:
+    - repoURL: 'https://grafana.github.io/helm-charts'
+      targetRevision: 1.0.0
+      chart: 'grafana/lgtm-distributed'
+      helm:
+        valueFiles:
+          - $values/kubernetes/argocd/stacks/lgtm/values.yml
+    - path: kubernetes/argocd/stacks/lgtm
+      repoURL: "git@github.com:acm-uic/IaC.git"
+      targetRevision: HEAD
+      ref: values
+      directory:
+        recurse: true
+        include: "*.yml"
+        jsonnet: {}
+  project: infrastructure
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

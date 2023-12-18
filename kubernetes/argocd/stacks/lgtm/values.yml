@@ -1,0 +1,9 @@
+---
+grafana:
+  enabled: true
+loki:
+  enabled: true
+mimir:
+  enabled: true
+tempo:
+  enabled: true
