@@ -7,7 +7,6 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    name: ''
     namespace: ingress-forwarder
     server: 'https://kubernetes.default.svc'
   sources:
