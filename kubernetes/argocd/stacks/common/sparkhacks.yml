@@ -12,7 +12,7 @@ spec:
   sources:
     - path: kubernetes/argocd/stacks/sparkhacks
       repoURL: 'git@github.com:acm-uic/IaC.git'
-      targetRevision: feature/sparkhacks-2023-in-k8s
+      targetRevision: HEAD
       directory:
         recurse: true
         include: '*.yml'
