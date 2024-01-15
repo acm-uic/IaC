@@ -51,41 +51,6 @@ spec:
       targetPort: 443
   externalName: 172.29.0.31
 ---
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: sparkhacksatuic
-  namespace: ingress-forwarder
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: "Host(`sparkhacksatuic.com`) || Host(`www.sparkhacksatuic.com`)"
-      kind: Rule
-      services:
-        - name: docker1
-          namespace: ingress-forwarder
-          passHostHeader: true
-          kind: Service
-          port: 443
-          scheme: https
-  tls:
-    secretName: sparkhacks-cert
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: sparkhacks-cert
-  namespace: ingress-forwarder
-spec:
-  dnsNames:
-    - www.sparkhacksatuic.com
-    - sparkhacksatuic.com
-  secretName: sparkhacks-cert
-  issuerRef:
-    kind: ClusterIssuer
-    name: letsencrypt
----
 kind: Service
 apiVersion: v1
 metadata:
