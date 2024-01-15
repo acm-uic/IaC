@@ -1,0 +1,93 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sparkhacks-2023
+  namespace: sparkhacks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sparkhacks-2023
+  template:
+    metadata:
+      annotations:
+      labels:
+        app.kubernetes.io/name: sparkhacks-2023
+    spec:
+      containers:
+        - name: sparkhacks-2023
+          image: "ghcr.io/acm-uic/sparkhacks-2023:main"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            limits:
+              cpu: '500m'
+              memory: 512Mi
+            requests:
+              cpu: '100m'
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: sparkhacks
+  name: sparkhacks-2023
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: sparkhacks-2023
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: sparkhacks
+  namespace: sparkhacks
+  annotations:
+    external-dns.alpha.kubernetes.io/target: app.acmuic.org
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`sparkhacksatuic.com`) || Host(`www.sparkhacksatuic.com`)"
+      services:
+        - kind: Service
+          name: sparkhacks
+          namespace: sparkhacks
+          passHostHeader: true
+          port: http
+          responseForwarding:
+            flushInterval: 1ms
+          scheme: http
+          strategy: RoundRobin
+          weight: 10
+  tls:
+    secretName: sparkhacks-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sparkhacks-tls
+spec:
+  dnsNames:
+    - sparkhacks.acmuic.org
+  secretName: sparkhacks-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
