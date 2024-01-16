@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sparkhacks-2024
+  namespace: sparkhacks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sparkhacks-2024
+  template:
+    metadata:
+      annotations:
+      labels:
+        app.kubernetes.io/name: sparkhacks-2024
+    spec:
+      containers:
+        - name: sparkhacks-2024
+          image: "ghcr.io/sparkhacks/sparkweb:main"
+          ports:
+            - name: http
+              containerPort: 4321
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            limits:
+              cpu: '500m'
+              memory: 512Mi
+            requests:
+              cpu: '100m'
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: sparkhacks
+  name: sparkhacks-2024
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: sparkhacks-2024
