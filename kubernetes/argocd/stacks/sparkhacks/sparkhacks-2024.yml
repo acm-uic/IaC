@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: sparkhacks-2024
-          image: "docker pull ghcr.io/sparkhacks/sparkweb:main"
+          image: "ghcr.io/sparkhacks/sparkweb:main"
           ports:
             - name: http
               containerPort: 4321
