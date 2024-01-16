@@ -68,7 +68,7 @@ spec:
       match: "Host(`sparkhacksatuic.com`) || Host(`www.sparkhacksatuic.com`)"
       services:
         - kind: Service
-          name: sparkhacks-2023
+          name: sparkhacks-2024 # Perhaps move to new file.
           namespace: sparkhacks
           passHostHeader: true
           port: http
