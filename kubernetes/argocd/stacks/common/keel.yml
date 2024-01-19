@@ -17,6 +17,7 @@ spec:
   sources:
     - repoURL: 'https://charts.keel.sh'
       chart: 'keel'
+      targetRevision: '1.0.3'
   project: default
   syncPolicy:
     automated:
