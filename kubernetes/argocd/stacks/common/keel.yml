@@ -54,4 +54,4 @@ spec:
           strategy: RoundRobin
           weight: 10
   tls:
-    secretName: sparkhacks-tls
+    secretName: keel-tls
