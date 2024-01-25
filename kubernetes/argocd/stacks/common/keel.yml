@@ -28,3 +28,30 @@ spec:
     automated:
       prune: true
       selfHeal: true
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: keelsh
+  namespace: keelsh
+  annotations:
+    external-dns.alpha.kubernetes.io/target: keel.acmuic.org
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`keel.acmuic.org`) || Host(`www.keel.acmuic.org`)"
+      services:
+        - kind: Service
+          name: keel
+          namespace: keel
+          passHostHeader: true
+          port: http
+          responseForwarding:
+            flushInterval: 1ms
+          scheme: http
+          strategy: RoundRobin
+          weight: 10
+  tls:
+    secretName: sparkhacks-tls
