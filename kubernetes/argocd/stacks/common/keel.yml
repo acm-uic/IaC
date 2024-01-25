@@ -45,9 +45,9 @@ spec:
       services:
         - kind: Service
           name: keel
-          namespace: keel
+          namespace: keelsh
           passHostHeader: true
-          port: http
+          port: keel
           responseForwarding:
             flushInterval: 1ms
           scheme: http
@@ -55,3 +55,15 @@ spec:
           weight: 10
   tls:
     secretName: keel-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: keel-tls
+spec:
+  dnsNames:
+    - keel.acmuic.org
+  secretName: keel-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
