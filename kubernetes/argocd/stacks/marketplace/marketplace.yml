@@ -29,7 +29,7 @@ spec:
       strategy: RoundRobin
       weight: 10
   - kind: Rule
-    match: Host(`marketplace.acmuic.org`) && PathPrefix(`/api`)
+    match: "Host(`marketplace.acmuic.org`) && (PathPrefix(`/api`) || PathPrefix(`/_`))"
     services:
     - kind: Service
       name: pocketbase
