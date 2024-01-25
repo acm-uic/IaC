@@ -18,6 +18,11 @@ spec:
     - repoURL: 'https://charts.keel.sh'
       chart: 'keel'
       targetRevision: '1.0.3'
+      helm:
+        values: |
+          service:
+            enabled: true
+            type: ClusterIP
   project: default
   syncPolicy:
     automated:
