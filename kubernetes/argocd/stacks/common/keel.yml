@@ -35,7 +35,7 @@ metadata:
   name: keelsh
   namespace: keelsh
   annotations:
-    external-dns.alpha.kubernetes.io/target: keel.acmuic.org
+    external-dns.alpha.kubernetes.io/target: app.acmuic.org
 spec:
   entryPoints:
     - websecure
