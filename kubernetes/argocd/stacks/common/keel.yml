@@ -23,9 +23,6 @@ spec:
           service:
             enabled: true
             type: ClusterIP
-          webhook:
-            enabled: true
-            endpoint: "https://discordapp.com/api/webhooks/1200508489924104233/84A02-xSjWGhg05XjYTALQrVy5vzpPTL1PwIa9WHAU9U3pCLnG_Q1LLD00dEz837FtCq"
   project: default
   syncPolicy:
     automated:
