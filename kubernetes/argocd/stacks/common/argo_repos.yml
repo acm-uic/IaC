@@ -105,3 +105,15 @@ stringData:
   name: external-dns
   url: https://kubernetes-sigs.github.io/external-dns/
   type: helm
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keel
+  namespace: keelsh
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  name: keel
+  url: https://charts.keel.sh
+  type: helm
