@@ -19,29 +19,30 @@ spec:
       annotations:
       labels:
         app.kubernetes.io/name: sparkhacks-2024
-      containers:
-        - name: sparkhacks-2024
-          image: "ghcr.io/sparkhacks/sparkweb:main"
-          imagePullPolicy: Always
-          ports:
-            - name: http
-              containerPort: 4321
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-          resources:
-            limits:
-              cpu: '500m'
-              memory: 512Mi
-            requests:
-              cpu: '100m'
-              memory: 256Mi
+      spec:
+        containers:
+          - name: sparkhacks-2024
+            image: "ghcr.io/sparkhacks/sparkweb:main"
+            imagePullPolicy: Always
+            ports:
+              - name: http
+                containerPort: 4321
+                protocol: TCP
+            livenessProbe:
+              httpGet:
+                path: /
+                port: http
+            readinessProbe:
+              httpGet:
+                path: /
+                port: http
+            resources:
+              limits:
+                cpu: '500m'
+                memory: 512Mi
+              requests:
+                cpu: '100m'
+                memory: 256Mi
 ---
 apiVersion: v1
 kind: Service
