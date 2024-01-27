@@ -8,6 +8,8 @@ metadata:
     keel.sh/policy: force
     keel.sh/trigger: poll
 spec:
+  strategy:
+    type: Recreate # hell on earth.
   replicas: 1
   selector:
     matchLabels:
@@ -17,9 +19,6 @@ spec:
       annotations:
       labels:
         app.kubernetes.io/name: sparkhacks-2024
-    spec:
-      strategy:
-        type: Recreate # hell on earth.
       containers:
         - name: sparkhacks-2024
           image: "ghcr.io/sparkhacks/sparkweb:main"
