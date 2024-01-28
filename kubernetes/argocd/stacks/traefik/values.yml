@@ -15,5 +15,4 @@ tlsStore:
       secretName: default-cert
 ports:
   web:
-    redirectTo:
-      port: websecure
+    redirectTo: websecure # old syntax!
