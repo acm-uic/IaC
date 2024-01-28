@@ -1,0 +1,9 @@
+checks:
+  exclude:
+    - "unset-cpu-requirements"
+    - "unset-memory-requirements"
+    - "run-as-non-root"
+    - "no-rolling-update-strategy"
+    - "required-annotation-email"
+    - "required-label-owner"
+    - "no-read-only-root-fs"

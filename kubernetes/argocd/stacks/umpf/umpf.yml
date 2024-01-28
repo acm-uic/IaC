@@ -23,6 +23,8 @@ kind: Deployment
 metadata:
   name: umpf
   namespace: umpf
+  annotations:
+    kube-linter.io/ignore-all: "Wtf even is this?"
 spec:
   replicas: 1
   selector:

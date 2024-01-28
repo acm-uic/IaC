@@ -17,4 +17,5 @@ jobs:
       - name: Scan yamls
         uses: stackrox/kube-linter-action@v1
         with:
-          directory: ./kubernetes/**
+          directory: ./kubernetes
+          config: ./.github/kubelintcfg.yml
