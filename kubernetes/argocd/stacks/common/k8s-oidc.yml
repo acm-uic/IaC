@@ -1,0 +1,24 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: workload-identity
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: plausible
+    server: "https://kubernetes.default.svc"
+  sources:
+    - path: kubernetes/argocd/stacks/workload-identity
+      repoURL: "git@github.com:acm-uic/IaC.git"
+      targetRevision: HEAD
+      ref: values
+      directory:
+        recurse: true
+        include: "*.yml"
+  project: infrastructure
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
