@@ -1,0 +1,27 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: azure-workload-identity-system
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: azure-workload-identity-webhook
+spec:
+  destination:
+    namespace: azure-workload-identity-system
+    server: 'https://kubernetes.default.svc'
+  sources:
+    - repoURL: 'https://azure.github.io/azure-workload-identity/charts'
+      chart: 'workload-identity-webhook'
+      targetRevision: '1.0.3'
+      helm:
+        values: |
+          azureTenantID: cad5e02f-bae4-42d6-a06e-4377dd3e386f
+  project: infrastructure
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+---
