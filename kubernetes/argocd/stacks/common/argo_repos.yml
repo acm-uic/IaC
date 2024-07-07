@@ -117,3 +117,16 @@ stringData:
   name: keel
   url: https://charts.keel.sh
   type: helm
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: azure-workload-identity
+  namespace: azure-workload-identity-system
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  name: azure-workload-identity
+  url: https://azure.github.io/azure-workload-identity/charts
+  type: helm
+---
