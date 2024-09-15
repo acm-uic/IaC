@@ -40,7 +40,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: mayastor-3
+  storageClassName: nfs-csi
   resources:
     requests:
       storage: 1Gi
