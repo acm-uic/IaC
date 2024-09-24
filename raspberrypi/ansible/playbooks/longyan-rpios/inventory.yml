@@ -1,4 +1,0 @@
-all:
-  hosts:
-    longyan.acmuic.org:
-      ansible_ssh_user: acmadmin

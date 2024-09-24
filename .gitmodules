@@ -1,0 +1,3 @@
+[submodule "raspberrypi/ansible/playbooks/longyan-playbook"]
+	path = raspberrypi/ansible/playbooks/longyan-playbook
+	url = https://github.com/lugatuic/longyan-playbook.git
