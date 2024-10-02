@@ -1,0 +1,10 @@
+---
+- name: Pi Router Setup
+  hosts: all
+  tasks:
+    - name: Install Kea
+      become: true
+      apt:
+        name: kea
+        state: present
+        update_cache: true
