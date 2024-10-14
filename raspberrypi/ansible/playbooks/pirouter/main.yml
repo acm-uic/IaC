@@ -8,3 +8,64 @@
         name: kea
         state: present
         update_cache: true
+
+    - name: Install NVIM
+      become: true
+      apt:
+        name: neovim
+        state: present
+        update_cache: true
+
+    - name: Install Nginx
+      become: true
+      apt:
+        name: nginx
+        state: present
+        update_cache: true
+
+    - name: Install network detection script
+      become: true
+      copy:
+        src: files/network-detect.sh
+        dest: /usr/local/bin/network-detect.sh
+        mode: 0755
+
+    - name: Install network detection service
+      become: true
+      copy:
+        src: files/network-detect.service
+        dest: /etc/systemd/system/network-detect.service
+        mode: 0644
+
+    - name: Enable network detection service
+      become: true
+      systemd:
+        name: network-detect
+        enabled: true
+        daemon_reload: true
+
+    - name: Disable auto startup of Kea DHCP6 server
+      become: true
+      systemd:
+        name: kea-dhcp6-server
+        enabled: false
+
+    - name: Disable auto startup of Kea DHCP4 server
+      become: true
+      systemd:
+        name: kea-dhcp4-server
+        enabled: false
+
+    - name: Download netboot.xyx.efi and place it in the nginx web root
+      become: true
+      get_url:
+        url: https://boot.netboot.xyz/ipxe/netboot.xyz-snp.efi
+        dest: /var/www/html/netboot.xyz.efi
+        mode: 0755
+
+    - name: Set Kea DHCP6 server configuration
+      become: true
+      copy:
+        src: files/kea-config.conf
+        dest: /etc/kea/kea-dhcp6.conf
+        mode: 0644

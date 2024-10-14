@@ -18,5 +18,5 @@ ansible-galaxy install -r requirements.yml
 ### Run
 
 ```bash
-ansible-playbook -i inventory main.yml
+ansible-playbook -i inventory.yml main.yml --ask-pass
 ```

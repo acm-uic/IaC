@@ -1,0 +1,11 @@
+[Unit]
+Description=Network Router Detection Service
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/network-detect.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
