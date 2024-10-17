@@ -81,4 +81,23 @@ spec:
   # A role which provides read-only access to all applications in the project
   - name: read-only
     description: Read-only privileges to sparkhacks
-
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: bmes
+  namespace: argocd
+spec:
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  destinations:
+  - namespace: 'bmes-wordpress'
+    server: '*'
+  sourceRepos:
+  - 'git@github.com:acm-uic/IaC.git'
+  - 'https://acm.cs.uic.edu/helm'
+  roles:
+  # A role which provides read-only access to all applications in the project
+  - name: read-only
+    description: Read-only privileges to sparkhacks

@@ -1,0 +1,26 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bmes-wordpress
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: bmes-wordpress
+    server: 'https://kubernetes.default.svc'
+  sources:
+    - path: kubernetes/argocd/stacks/bmes-wordpress
+      repoURL: 'git@github.com:acm-uic/IaC.git'
+      targetRevision: HEAD
+      directory:
+        recurse: true
+        include: '*.yml'
+        exclude: values.yml
+  project: bmes
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
