@@ -61,6 +61,10 @@ spec:
               value: "notASecret"
             - name: MYSQL_DATABASE
               value: "wordpress"
+            - name: MYSQL_USER
+              value: "wordpress"
+            - name: MYSQL_USER_PASSWORD
+              value: "alsoNotASecret"
         - name: wordpress
           image: wordpress:6.6-apache
           imagePullPolicy: Always
@@ -77,9 +81,9 @@ spec:
             - name: WORDPRESS_DEBUG
               value: "1"
             - name: WORDPRESS_DB_USER
-              value: "root"
+              value: "wordpress"
             - name: WORDPRESS_DB_PASSWORD
-              value: "notASecret"
+              value: "alsoNotASecret"
             - name: WORDPRESS_DB_NAME
               value: "wordpress"
           resources:
