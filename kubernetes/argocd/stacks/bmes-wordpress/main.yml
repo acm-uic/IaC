@@ -52,7 +52,7 @@ spec:
             claimName: database-pvc
       containers:
         - name: wordpress-db
-          image: mysql:9.1
+          image: lscr.io/linuxserver/mariadb:latest
           volumeMounts:
             - name: wp-db
               mountPath: /var/lib/mysql
@@ -73,7 +73,9 @@ spec:
               mountPath: /var/www/html
           env:
             - name: WORDPRESS_DB_HOST
-              value: "localhost"
+              value: "localhost:3306"
+            - name: WORDPRESS_DEBUG
+              value: 1
             - name: WORDPRESS_DB_USER
               value: "root"
             - name: WORDPRESS_DB_PASSWORD
