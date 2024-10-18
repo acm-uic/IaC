@@ -119,7 +119,7 @@ spec:
       match: "Host(`convergehealth.cc`) || Host(`www.convergehealth.cc`)"
       services:
         - kind: Service
-          name: bmes # Perhaps move to new file.
+          name: wordpress
           namespace: bmes-wordpress
           passHostHeader: true
           port: http
