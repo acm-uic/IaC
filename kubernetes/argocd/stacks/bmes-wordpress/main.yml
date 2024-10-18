@@ -73,7 +73,7 @@ spec:
               mountPath: /var/www/html
           env:
             - name: WORDPRESS_DB_HOST
-              value: "localhost:3306"
+              value: "127.0.0.1:3306"
             - name: WORDPRESS_DEBUG
               value: "1"
             - name: WORDPRESS_DB_USER
