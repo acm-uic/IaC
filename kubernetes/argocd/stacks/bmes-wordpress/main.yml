@@ -1,0 +1,138 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-pvc
+  namespace: bmes-wordpress
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: mayastor-3
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database-pvc
+  namespace: bmes-wordpress
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: mayastor-3
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bmes-website
+  namespace: bmes-wordpress
+spec:
+  strategy:
+    type: Recreate # hell on earth.
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: bmes-website
+  template:
+    metadata:
+      annotations:
+      labels:
+        app.kubernetes.io/name: bmes-website
+    spec:
+      volumes:
+        - name: wp-data
+          persistentVolumeClaim:
+            claimName: wordpress-pvc
+        - name: wp-db
+          persistentVolumeClaim:
+            claimName: database-pvc
+      containers:
+        - name: wordpress-db
+          image: lscr.io/linuxserver/mariadb:latest
+          volumeMounts:
+            - name: wp-db
+              mountPath: /var/lib/mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "notASecret"
+            - name: MYSQL_DATABASE
+              value: "wordpress"
+            - name: MYSQL_USER
+              value: "wordpress"
+            - name: MYSQL_USER_PASSWORD
+              value: "alsoNotASecret"
+        - name: wordpress
+          image: wordpress:6.6-apache
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - name: wp-data
+              mountPath: /var/www/html
+          env:
+            - name: WORDPRESS_DB_HOST
+              value: "127.0.0.1:3306"
+            - name: WORDPRESS_DEBUG
+              value: "1"
+            - name: WORDPRESS_DB_USER
+              value: "wordpress"
+            - name: WORDPRESS_DB_PASSWORD
+              value: "alsoNotASecret"
+            - name: WORDPRESS_DB_NAME
+              value: "wordpress"
+          resources:
+            limits:
+              cpu: '1000m'
+              memory: 1024Mi
+            requests:
+              cpu: '100m'
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: bmes-wordpress
+  name: wordpress
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: bmes-website
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: bmes
+  namespace: bmes-wordpress
+  annotations:
+    external-dns.alpha.kubernetes.io/target: app.acmuic.org
+spec:
+  entryPoints:
+    - websecure
+    - web
+  routes:
+    - kind: Rule
+      match: "Host(`convergehealth.cc`) || Host(`www.convergehealth.cc`)"
+      services:
+        - kind: Service
+          name: wordpress
+          namespace: bmes-wordpress
+          passHostHeader: true
+          port: http
+          responseForwarding:
+            flushInterval: 1ms
+          scheme: http
+          strategy: RoundRobin
+          weight: 10
+  tls:
+    secretName: bmes-tls
