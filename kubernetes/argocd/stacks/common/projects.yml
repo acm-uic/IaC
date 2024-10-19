@@ -100,4 +100,4 @@ spec:
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
-    description: Read-only privileges to sparkhacks
+    description: Read-only privileges to bmes-wordpress
