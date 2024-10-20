@@ -73,7 +73,7 @@ spec:
       initContainers:
         - name: sql-init
           image: busybox:latest
-          command: ["sh", "-c", "cp /cfgmap/setup.sql /config/initdb.d/ && cat /cfgmap/htaccess-append >> /data/.htaccess"]
+          command: ["sh", "-c", "cp /cfgmap/setup.sql /config/initdb.d/setup.sql && cat /cfgmap/htaccess-append >> /data/.htaccess"]
           volumeMounts:
             - name: wp-db
               mountPath: /config
