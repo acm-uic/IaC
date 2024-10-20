@@ -73,7 +73,7 @@ spec:
       initContainers:
         - name: sql-init
           image: busybox:latest
-          command: ["sh", "-c", "mkdir /config/initdb.d && cat /cfgmap/setup.sql > /config/initdb.d/setup.sql && cat /cfgmap/htaccess-append >> /data/.htaccess"]
+          command: ["sh", "-c", "mkdir -p /config/initdb.d && cat /cfgmap/setup.sql > /config/initdb.d/setup.sql && cat /cfgmap/htaccess-append >> /data/.htaccess"]
           volumeMounts:
             - name: wp-db
               mountPath: /config
@@ -86,7 +86,7 @@ spec:
           image: lscr.io/linuxserver/mariadb:latest
           volumeMounts:
             - name: wp-db
-              mountPath: /var/lib/mysql
+              mountPath: /config
           env:
             - name: MYSQL_ROOT_PASSWORD
               value: "notASecret"
