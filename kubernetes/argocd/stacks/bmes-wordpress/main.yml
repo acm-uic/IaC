@@ -25,6 +25,23 @@ spec:
     requests:
       storage: 2Gi
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wordpress-cfg
+  namespace: bmes-wordpress
+data:
+  setup.sql: |
+    create database wordpress;
+    create user 'wordpress'@'localhost' identified by 'alsoNotASecret';
+    grant all privileges on *.* to 'wordpress'@'localhost';
+    flush privileges;
+  htaccess-append: |
+    php_value upload_max_filesize 2048M
+    php_value post_max_size 2048M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -50,6 +67,20 @@ spec:
         - name: wp-db
           persistentVolumeClaim:
             claimName: database-pvc
+        - name: configs
+          configMap:
+            name: wordpress-cfg
+      initContainers:
+        - name: sql-init
+          image: busybox:latest
+          command: ["sh", "-c", "cp /cfgmap/setup.sql /config/initdb.d/ && cat /cfgmap/htaccess-append >> /data/.htaccess"]
+          volumeMounts:
+            - name: wp-db
+              mountPath: /config
+            - name: wp-data
+              mountPath: /data
+            - name: configs
+              mountPath: /cfgmap
       containers:
         - name: wordpress-db
           image: lscr.io/linuxserver/mariadb:latest
