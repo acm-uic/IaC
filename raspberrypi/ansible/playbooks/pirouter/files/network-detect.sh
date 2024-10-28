@@ -12,6 +12,7 @@ if [ "$(systemctl is-active NetworkManager-wait-online.service)" == "failed" ]; 
 
     echo "Network is down, starting DHCP server"
     systemctl start kea-dhcp6-server
+    systemctl start radvd
 else
     echo "Network is up, skipping DHCP server startup"
 fi

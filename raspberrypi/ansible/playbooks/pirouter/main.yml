@@ -69,3 +69,31 @@
         src: files/kea-config.conf
         dest: /etc/kea/kea-dhcp6.conf
         mode: 0644
+
+    - name: Install RADVD service
+      become: true
+      apt:
+        name: radvd
+        state: present
+        update_cache: true
+
+    - name: Disable RADVD service
+      become: true
+      systemd:
+        name: radvd
+        enabled: false
+
+    - name: Configure RADVD service
+      become: true
+      copy:
+        src: files/radvd.conf
+        dest: /etc/radvd.conf
+        mode: 0644
+
+    - name: Enable IPv6 forwarding
+      become: true
+      sysctl:
+        name: net.ipv6.conf.all.forwarding
+        value: 1
+        state: present
+
