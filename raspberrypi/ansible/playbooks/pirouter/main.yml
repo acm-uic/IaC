@@ -54,11 +54,11 @@
         enabled: false
       when: install_network_detection
 
-    - name: Disable auto startup of Kea DHCP4 server
+    - name: Enable auto startup of Kea DHCP4 server
       become: true
       systemd:
         name: kea-dhcp4-server
-        enabled: false
+        enabled: true
 
     - name: Download netboot.xyx.efi and place it in the nginx web root
       become: true
@@ -70,8 +70,15 @@
     - name: Set Kea DHCP6 server configuration
       become: true
       template:
-        src: kea-config.conf.j2
+        src: kea-dhcp6.conf.j2
         dest: /etc/kea/kea-dhcp6.conf
+        mode: 0644
+
+    - name: Set Kea DHCP4 server configuration
+      become: true
+      template:
+        src: kea-dhcp4.conf.j2
+        dest: /etc/kea/kea-dhcp4.conf
         mode: 0644
 
     - name: Install RADVD service

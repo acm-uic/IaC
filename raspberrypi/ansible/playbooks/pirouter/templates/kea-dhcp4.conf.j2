@@ -1,0 +1,67 @@
+{
+  "Dhcp4": {
+    "interfaces-config": {
+      "interfaces": [ "{{dhcp_ethernet_interface}}" ]
+    },
+    "lease-database": {
+      "type": "memfile",
+      "persist": true,
+      "name": "/var/lib/kea/dhcp4.leases"
+    },
+    "valid-lifetime": 28800,
+    "subnet4": [
+      {
+        "subnet": "172.28.0.0/24",
+        "pools": [
+          {
+            "pool": "172.28.0.10 - 172.28.0.250"
+          }
+        ],
+        "reservations": [
+          {
+            "hw-address": "1a:1b:1c:1d:1e:1f",
+            "ip-address": "172.28.0.9"
+          }
+        ]
+      }
+    ],
+    "client-classes": [
+      {
+        "name": "a-ipxe",
+        "test": "substring(option[15].hex, 2, 4) == 'iPXE'",
+        "option-data": [
+        {
+          "space": "dhcp4",
+          "name": "bootfile-url",
+          "code": 59,
+          "data": "http://172.28.0.1/boot.cfg"
+        }
+        ]
+      },
+      {
+        "name": "b-efi",
+        "test": "option[61].hex == 0x0007",
+        "option-data": [
+        {
+          "space": "dhcp4",
+          "name": "bootfile-url",
+          "code": 59,
+          "data": "http://172.28.0.1/netboot.xyz.efi"
+        }
+        ]
+      }
+      ],
+    "loggers": [
+      {
+        "name": "kea-dhcp4",
+        "output_options": [
+          {
+            "output": "/var/log/kea/kea-dhcp4.log"
+            "maxver": 10
+          }
+        ],
+        "severity": "DEBUG"
+      }
+    ]
+  }
+}
