@@ -26,37 +26,55 @@
       }
     ],
     "client-classes": [
-      {
-        "name": "a-ipxe",
-        "test": "substring(option[15].hex, 2, 4) == 'iPXE'",
+    {
+        "name": "iPXE",
+        "test": "option[175].exists",
         "option-data": [
-        {
-          "space": "dhcp4",
-          "name": "bootfile-url",
-          "code": 59,
-          "data": "http://172.28.0.1/boot.cfg"
-        }
+            {
+                "name": "tftp-server-name",
+                "data": "172.28.0.1"
+            },
+            {
+                "name": "boot-file-name",
+                "data": "http://boot.netboot.xyz"
+            }
         ]
-      },
-      {
-        "name": "b-efi",
-        "test": "option[61].hex == 0x0007",
+    },
+    {
+        "name": "UEFI clients",
+        "test": "option[93].hex == 0x0007 and not option[175].exists",
         "option-data": [
-        {
-          "space": "dhcp4",
-          "name": "bootfile-url",
-          "code": 59,
-          "data": "http://172.28.0.1/netboot.xyz.efi"
-        }
+            {
+                "name": "tftp-server-name",
+                "data": "172.28.0.1"
+            },
+            {
+                "name": "boot-file-name",
+                "data": "ipxe.efi"
+            }
         ]
-      }
-      ],
+    },
+    {
+        "name": "BIOS clients",
+        "test": "option[93].hex == 0x0000 and not option[175].exists",
+        "option-data": [
+            {
+                "name": "tftp-server-name",
+                "data": "172.28.0.1"
+            },
+            {
+                "name": "boot-file-name",
+                "data": "undionly.kpxe"
+            }
+        ]
+    }
+    ],
     "loggers": [
       {
         "name": "kea-dhcp4",
         "output_options": [
           {
-            "output": "/var/log/kea/kea-dhcp4.log"
+            "output": "/var/log/kea/kea-dhcp4.log",
             "maxver": 10
           }
         ],

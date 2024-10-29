@@ -2,7 +2,7 @@
 all:
   hosts:
     pirouter.acmuic.org:
-      ansible_host: 10.0.1.135
+      ansible_host: 10.0.1.136
       ansible_ssh_user: acmadmin
       dhcp_ethernet_interface: eth0
       install_network_detection: false
