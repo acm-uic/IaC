@@ -2,7 +2,7 @@
 
 # This script detects if the network is up or not. If not, we will host our own DHCP server
 
-ETHERNET_INTERFACE=eth0
+ETHERNET_INTERFACE={{dhcp_ethernet_interface}}
 
 # Check if NetworkManager-wait-online.service is running
 if [ "$(systemctl is-active NetworkManager-wait-online.service)" == "failed" ]; then

@@ -1,7 +1,7 @@
 {
   "Dhcp6": {
     "interfaces-config": {
-      "interfaces": [ "eth0" ]
+      "interfaces": [ "{{dhcp_ethernet_interface}}" ]
     },
       "lease-database": {
         "type": "memfile",
@@ -14,7 +14,7 @@
       "subnet6": [
       {
         "subnet": "fdc5:2d46:cdc1:b358::/64",
-        "interface-id": "eth0",
+        "interface-id": "{{dhcp_ethernet_interface}}",
         "pools": [
         {
           "pool": "fdc5:2d46:cdc1:b358::1000-fdc5:2d46:cdc1:b358::2000"

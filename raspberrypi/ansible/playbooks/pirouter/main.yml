@@ -25,10 +25,11 @@
 
     - name: Install network detection script
       become: true
-      copy:
-        src: files/network-detect.sh
+      template:
+        src: network-detect.sh.j2
         dest: /usr/local/bin/network-detect.sh
         mode: 0755
+      when: install_network_detection
 
     - name: Install network detection service
       become: true
@@ -36,6 +37,7 @@
         src: files/network-detect.service
         dest: /etc/systemd/system/network-detect.service
         mode: 0644
+      when: install_network_detection
 
     - name: Enable network detection service
       become: true
@@ -43,12 +45,14 @@
         name: network-detect
         enabled: true
         daemon_reload: true
+      when: install_network_detection
 
     - name: Disable auto startup of Kea DHCP6 server
       become: true
       systemd:
         name: kea-dhcp6-server
         enabled: false
+      when: install_network_detection
 
     - name: Disable auto startup of Kea DHCP4 server
       become: true
@@ -65,8 +69,8 @@
 
     - name: Set Kea DHCP6 server configuration
       become: true
-      copy:
-        src: files/kea-config.conf
+      template:
+        src: kea-config.conf.j2
         dest: /etc/kea/kea-dhcp6.conf
         mode: 0644
 
@@ -82,11 +86,12 @@
       systemd:
         name: radvd
         enabled: false
+      when: install_network_detection
 
     - name: Configure RADVD service
       become: true
-      copy:
-        src: files/radvd.conf
+      template:
+        src: radvd.conf.j2
         dest: /etc/radvd.conf
         mode: 0644
 
