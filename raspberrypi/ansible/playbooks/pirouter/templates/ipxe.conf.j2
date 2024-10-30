@@ -1,0 +1,4 @@
+#!ipxe
+set conn_type http
+chain --autofree http://172.28.0.1/menu.ipxe || echo HTTP failed, localbooting...
+exit

@@ -1,0 +1,33 @@
+#!ipxe
+
+set base-url http://172.28.0.1
+set space:hex 20:20
+set space ${space:string}
+
+menu SIGSysAdmin Rack Project - Fall 2024
+item --gap Default:
+item local ${space} Boot from local hdd
+item --gap Proxmox Install Options:
+item pve Proxmox Install
+item pve_debug Proxmox Install (Debug)
+item pve_tui Proxmox Install (TUI)
+choose --default local --timeout 300000 target && goto ${target}
+
+:pve
+initrd ${base-url}/proxmox/initrd
+chain ${base-url}/proxmox/linux26 vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=silent initrd=initrd
+boot
+
+:pve_debug
+initrd ${base-url}/proxmox/initrd
+chain ${base-url}/proxmox/linux26 vga=791 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=verbose proxdebug initrd=initrd
+boot
+
+:pve_tui
+initrd ${base-url}/proxmox/initrd
+chain ${base-url}/proxmox/linux26 vga=788 video=vesafb:ywrap,mtrr ramdisk_size=16777216 rw quiet splash=verbose proxtui initrd=initrd
+boot
+
+:local
+echo Booting from local disks ...
+exit 1

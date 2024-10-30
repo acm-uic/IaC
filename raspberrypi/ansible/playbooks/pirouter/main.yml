@@ -65,7 +65,7 @@
       get_url:
         url: https://boot.netboot.xyz/ipxe/netboot.xyz-snp.efi
         dest: /var/www/html/netboot.xyz.efi
-        mode: 0755
+        mode: 0644
 
     - name: Set Kea DHCP6 server configuration
       become: true
@@ -109,3 +109,112 @@
         value: 1
         state: present
 
+    - name: Install tftpd-hpa
+      become: true
+      apt:
+        name: tftpd-hpa
+        state: present
+        update_cache: true
+
+    - name: Download ipxe.efi for UEFI clients
+      become: true
+      get_url:
+        url: https://boot.ipxe.org/ipxe.efi
+        dest: /srv/tftp/ipxe.efi
+        mode: 0755
+
+    - name: Download undionly.kpxe for BIOS clients
+      become: true
+      get_url:
+        url: https://boot.ipxe.org/undionly.kpxe
+        dest: /srv/tftp/undionly.kpxe
+        mode: 0755
+
+    - name: Copy iPXE chainloading config - HTTP
+      become: true
+      template:
+        src: ipxe.conf.j2
+        dest: /var/www/html/ipxe.conf
+        mode: 0644
+
+    - name: Copy iPXE menu - HTTP
+      become: true
+      template:
+        src: menu.ipxe.j2
+        dest: /var/www/html/menu.ipxe
+        mode: 0644
+
+    - name: Copy boot.cfg variables - HTTP
+      become: true
+      template:
+        src: boot.cfg.j2
+        dest: /var/www/html/boot.cfg
+        mode: 0644
+
+    - name: Copy netinfo.ipxe menu - HTTP
+      become: true
+      template:
+        src: netinfo.ipxe.j2
+        dest: /var/www/html/netinfo.ipxe
+        mode: 0644
+
+    - name: Download Proxmox ISO netboot prepper script
+      get_url:
+        url: https://raw.githubusercontent.com/morph027/pve-iso-2-pxe/refs/heads/master/pve-iso-2-pxe.sh
+        dest: /home/acmadmin/pve-iso-2-pxe.sh
+        mode: 0755
+
+    - name: Download Proxmox ISO
+      get_url:
+        url: https://enterprise.proxmox.com/iso/proxmox-ve_8.2-2.iso
+        dest: /home/acmadmin/proxmox-ve_8.2-2.iso
+        mode: 0644
+
+    - name: Install Prepper dependencies - cpio
+      become: true
+      apt:
+        name: cpio
+        state: present
+        update_cache: true
+
+    - name: Install Prepper dependencies - file
+      become: true
+      apt:
+        name: file
+        state: present
+        update_cache: true
+
+    - name: Install Prepper dependencies - zstd
+      become: true
+      apt:
+        name: zstd
+        state: present
+        update_cache: true
+
+    - name: Install Prepper dependencies - gzip
+      become: true
+      apt:
+        name: gzip
+        state: present
+        update_cache: true
+
+    - name: Install Prepper dependencies - genisoimage
+      become: true
+      apt:
+        name: genisoimage
+        state: present
+        update_cache: true
+
+    - name: Download TrueNAS Scale ISO
+      become: true
+      get_url:
+        url: https://download.sys.truenas.net/TrueNAS-SCALE-Dragonfish/24.04.2.3/TrueNAS-SCALE-24.04.2.3.iso
+        dest: /var/www/html/TrueNAS-SCALE-24.04.2.3.iso
+        mode: 0644
+
+    - name: Install index page for web server
+      become: true
+      copy:
+        src: index.html
+        dest: /var/www/html/index.html
+        mode: 0644
