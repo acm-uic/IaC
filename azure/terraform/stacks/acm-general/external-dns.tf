@@ -8,7 +8,7 @@ resource "azuread_application" "externaldns" {
 }
 
 resource "azuread_service_principal" "externaldns" {
-  application_id               = azuread_application.externaldns.application_id
+  client_id                    = azuread_application.externaldns.client_id
   app_role_assignment_required = false
   owners                       = distinct(concat([data.azuread_client_config.current.object_id], var.additional_owner_ids))
   description                  = "Service Principal for ExternalDNS within on-prem Kubernetes"
@@ -43,8 +43,8 @@ output "externaldns_sp_keyid" {
   value = azuread_service_principal_password.externaldns.key_id
 }
 
-output "externaldns_sp_appid" {
-  value = azuread_application.externaldns.application_id
+output "externaldns_sp_clientid" {
+  value = azuread_application.externaldns.client_id
 }
 
 output "externaldns_sp_password" {
