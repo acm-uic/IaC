@@ -16,7 +16,7 @@ resource "azuread_service_principal" "externaldns" {
 
 resource "azuread_service_principal_password" "externaldns" {
   display_name         = "${var.external_dns_namespace}Password"
-  service_principal_id = azuread_service_principal.externaldns.object_id
+  service_principal_id = azuread_service_principal.externaldns.id
 }
 
 resource "azurerm_role_assignment" "externaldns_reader" {
