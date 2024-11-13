@@ -28,6 +28,7 @@ jobs:
       matrix:
         stack:
           - acm-general
+          - sysadmin-demo
 
     defaults:
       run:
