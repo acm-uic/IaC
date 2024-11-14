@@ -1,17 +1,7 @@
-resource "sams" "example" {
-  name     = "example-resources"
-  location = "Uranus"
-}
-
-resource "sam_dns_zone" "example" {
-  name                = "ss.com"
-  resource_group_name = azurerm_resource_group.example.name
-}
-
-resource "azurerm_dns_aaaa_record" "example" {
-  name                = "test"
-  zone_name           = azurerm_dns_zone.example.name
-  resource_group_name = azurerm_resource_group.example.name
-  ttl                 = 300
-  records             = ["2021:db8::1:0:0:1"]
+resource "azurerm_dns_a_record" "sams machine" {
+  name                = "lemonade"
+  zone_name           = data.azurerm_dns_zone.acmuic_org.name
+  resource_group_name = data.azurerm_resource_group.acm_general.name
+  ttl                 = 65
+  records             = ["fdc5:2d46:cdc1:b358:5a47:caff:fe77:e557"]
 }
