@@ -17,6 +17,9 @@ resource "azuread_service_principal" "pfsense" {
   owners      = var.additional_owner_ids
 }
 
+# This password exires every 2 years
+# You'll need to update this in pfSense manually:
+# Services > Acme Certificates > (edit the cert) > Domain SAN list > (expand(+) DNS-Azure (Microsoft) > Client Secret
 resource "azuread_service_principal_password" "pfsense" {
   service_principal_id = azuread_service_principal.pfsense.id
   display_name         = "pfsensePassword"
@@ -35,6 +38,6 @@ output "pfsense_service_principal_id" {
 }
 
 output "pfsense_service_principal_password" {
-  value = azuread_service_principal_password.pfsense.value
+  value     = azuread_service_principal_password.pfsense.value
   sensitive = true
 }
