@@ -140,30 +140,30 @@ spec:
   selector:
     app.kubernetes.io/name: bmes-website
 ---
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: bmes
-  namespace: bmes-wordpress
-  annotations:
-    external-dns.alpha.kubernetes.io/target: app.acmuic.org
-spec:
-  entryPoints:
-    - websecure
-    - web
-  routes:
-    - kind: Rule
-      match: "Host(`convergehealth.cc`) || Host(`www.convergehealth.cc`)"
-      services:
-        - kind: Service
-          name: wordpress
-          namespace: bmes-wordpress
-          passHostHeader: true
-          port: http
-          responseForwarding:
-            flushInterval: 1ms
-          scheme: http
-          strategy: RoundRobin
-          weight: 10
-  tls:
-    secretName: bmes-tls
+#apiVersion: traefik.containo.us/v1alpha1
+#kind: IngressRoute
+#metadata:
+#  name: bmes
+#  namespace: bmes-wordpress
+#  annotations:
+#    external-dns.alpha.kubernetes.io/target: app.acmuic.org
+#spec:
+#  entryPoints:
+#    - websecure
+#    - web
+#  routes:
+#    - kind: Rule
+#      match: "Host(`convergehealth.cc`) || Host(`www.convergehealth.cc`)"
+#      services:
+#        - kind: Service
+#          name: wordpress
+#          namespace: bmes-wordpress
+#          passHostHeader: true
+#          port: http
+#          responseForwarding:
+#            flushInterval: 1ms
+#          scheme: http
+#          strategy: RoundRobin
+#          weight: 10
+#  tls:
+#    secretName: bmes-tls

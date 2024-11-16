@@ -1,0 +1,33 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bmes-site
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: bmes-site
+    server: 'https://kubernetes.default.svc'
+  sources:
+    - repoURL: 'https://acm.cs.uic.edu/helm'
+      targetRevision: 0.1.0
+      chart: 'convergehealth'
+      path: 'helm'
+      helm:
+        valueFiles:
+          - $values/kubernetes/argocd/stacks/bmes-site/values.yml
+    - path: kubernetes/argocd/stacks/bmes-site
+      repoURL: 'git@github.com:acm-uic/IaC.git'
+      targetRevision: HEAD
+      ref: values
+      directory:
+        recurse: true
+        include: '*.yml'
+        exclude: values.yml
+  project: sigweb
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+

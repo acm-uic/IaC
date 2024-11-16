@@ -1,0 +1,45 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bmes-site
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: bmes
+  namespace: bmes-site
+  annotations:
+    external-dns.alpha.kubernetes.io/target: app.acmuic.org
+spec:
+  entryPoints:
+    - websecure
+    - web
+  routes:
+    - kind: Rule
+      match: "Host(`convergehealth.cc`) || Host(`www.convergehealth.cc`)"
+      services:
+        - kind: Service
+          name: convergehealth
+          namespace: bmes-site
+          passHostHeader: true
+          port: http
+          responseForwarding:
+            flushInterval: 1ms
+          scheme: http
+          strategy: RoundRobin
+          weight: 10
+  tls:
+    secretName: bmes-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: bmes-tls
+spec:
+  dnsNames:
+    - convergehealth.cc
+  secretName: bmes-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
