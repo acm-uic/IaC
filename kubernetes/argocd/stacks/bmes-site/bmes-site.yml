@@ -29,6 +29,17 @@ spec:
       match: "Host(`convergehealth.cc`) || Host(`www.convergehealth.cc`)"
       middlewares:
         - name: https-redirect
+      services:
+        - kind: Service
+          name: bmes-site-convergehealth
+          namespace: bmes-site
+          passHostHeader: true
+          port: http
+          responseForwarding:
+            flushInterval: 1ms
+          scheme: http
+          strategy: RoundRobin
+          weight: 10
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
