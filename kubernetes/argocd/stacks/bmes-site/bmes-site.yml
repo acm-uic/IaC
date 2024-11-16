@@ -17,6 +17,22 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
+  name: bmes-redirect
+  namespace: bmes-site
+  annotations:
+    external-dns.alpha.kubernetes.io/target: app.acmuic.org
+spec:
+  entryPoints:
+    - web
+  routes:
+    - kind: Rule
+      match: "Host(`convergehealth.cc`) || Host(`www.convergehealth.cc`)"
+      middlewares:
+        - name: https-redirect
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
   name: bmes
   namespace: bmes-site
   annotations:
@@ -24,7 +40,6 @@ metadata:
 spec:
   entryPoints:
     - websecure
-    - web
   routes:
     - kind: Rule
       match: "Host(`convergehealth.cc`) || Host(`www.convergehealth.cc`)"
@@ -39,8 +54,6 @@ spec:
           scheme: http
           strategy: RoundRobin
           weight: 10
-      middlewares:
-        - name: https-redirect
   tls:
     secretName: bmes-tls
 ---
