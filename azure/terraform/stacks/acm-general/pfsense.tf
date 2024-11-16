@@ -3,9 +3,6 @@
 # This is a service principal that is used by PFSense to manage DNS records
 # for the ACME challenges.
 
-
-# az ad sp create-for-rbac --name pfsenseServiceApp --role "DNS Zone Contributor" --scopes /subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/acme-general/providers/Microsoft.Network/dnszones/acme.chase.net
-
 resource "azuread_application" "pfsense" {
   display_name = "pfsenseServiceApp"
   owners       = var.additional_owner_ids
