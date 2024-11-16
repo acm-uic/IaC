@@ -20,7 +20,7 @@ spec:
       match: "Host(`convergehealth.cc`) || Host(`www.convergehealth.cc`)"
       services:
         - kind: Service
-          name: convergehealth
+          name: bmes-site-convergehealth
           namespace: bmes-site
           passHostHeader: true
           port: http
