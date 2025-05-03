@@ -1,0 +1,23 @@
+---
+- hosts: all
+  roles:
+    - role: ping
+      check_mode: no
+
+    - role: custom_facts
+      check_mode: no
+
+    - role: package-prep           
+                                
+
+    - role: novideo
+      when: fact_need_nvidia
+
+    - role: ldap
+      when: fact_need_realm
+
+    - role: sharedfs
+      when: fact_need_sharedfs
+
+    - role: mungeing
+      when: fact_need_mungeing

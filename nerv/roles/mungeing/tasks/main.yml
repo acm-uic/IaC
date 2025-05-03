@@ -1,0 +1,31 @@
+---
+- name: Install munge
+  dnf:
+    name:
+      - munge
+    state: present
+
+- name: Fetch mungekey from vault
+  delegate_to: localhost
+  community.hashi_vault.vault_kv2_get:
+    url: https://vault.acmuic.org
+    path: ansible-nerv/mungekey
+    engine_mount_point: "kv"
+    validate_certs: false
+  register: munge_secret
+
+
+- name: Create mungekey
+  ansible.builtin.copy:
+    content: "{{ munge_secret.secret.key | b64decode }}"
+    dest: /etc/munge/munge.key
+    owner: munge
+    group: munge
+    mode: "0600"
+
+- name: Start munge.service
+  ansible.builtin.systemd_service:
+    name: munge
+    enabled: true
+    state: "started"
+    

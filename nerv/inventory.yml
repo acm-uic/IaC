@@ -1,0 +1,19 @@
+all:
+  hosts:
+    alpha.acmuic.org:
+    bravo.acmuic.org:
+    charlie.acmuic.org:
+    delta.acmuic.org:
+    asuka.acmuic.org:
+    misato.acmuic.org:
+    shinji.acmuic.org: 
+  vars:
+    ansible_user: root
+    ansible_connection: ssh
+    ansible_ssh_private_key_file: "./id_nerv"
+    ansible_python_interpreter: auto_silent
+
+login:
+  hosts:
+    delta.acmuic.org:
+    

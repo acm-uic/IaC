@@ -1,0 +1,90 @@
+---
+- name: Install packages necessary for AD
+  dnf:
+    name:
+      - adcli
+      - realmd
+      - sssd
+      - oddjob
+      - oddjob-mkhomedir
+      - samba-common-tools
+      - krb5-workstation
+      - authselect-compat
+    state: present
+
+- name: Get password from Vault
+  community.hashi_vault.vault_kv2_get:
+    url: https://vault.acmuic.org
+    path: ansible-nerv/realm-join-password
+    engine_mount_point: "kv"
+    validate_certs: false
+  register: vault_info
+
+- name: Join realm if not currently
+  register: realm_join
+  shell: "echo {{ vault_info.secret.key }} | realm join -U nslcduser ACMUIC.ORG"
+  when: fact_need_realm
+
+- name: Dont use FQDN for usernames
+  ansible.builtin.lineinfile:
+    line: "use_fully_qualified_names = True"
+    state: absent
+    backup: yes
+    path: "/etc/sssd/sssd.conf"
+
+- name: Dont use FQDN for home dirs
+  ansible.builtin.lineinfile:
+    line: "fallback_homedir = /home/%u@%d"
+    state: absent
+    path: "/etc/sssd/sssd.conf"
+
+- name: Use only username for home directory
+  ansible.builtin.blockinfile:
+    path: "/etc/sssd/sssd.conf"
+    append_newline: true
+    block: |
+      fallback_homedir = /home/%u
+      override_homedir = /home/%u
+
+- name: Permit groups
+  changed_when: false
+  shell: "realm permit -g ACMLanAdmins"
+
+- name: Copy sudoers
+  copy:
+    src: ad_sudoers
+    dest: /etc/sudoers.d/ad_sudoers
+    validate: /usr/sbin/visudo -csf %s
+
+- name: Reboot
+  ansible.builtin.reboot:
+    post_reboot_delay: 300
+    reboot_timeout: 1200
+   
+
+# - name: Copy mkhomedir
+#   register: mkhomedir_copy
+#   become: yes
+#   copy:
+#     src: mkhomedir
+#     dest: /usr/share/pam-configs/mkhomedir
+# - name: Update PAM
+#   become: yes
+#   when: mkhomedir_copy.changed
+#   shell: pam-auth-update --enable mkhomedir
+# - name: Restart sssd
+#   when: realm_join.changed or mkhomedir_copy.changed
+#   systemd:
+#     state: restarted
+#     name: sssd
+#   ignore_errors: yes
+# - name: Permit groups
+#   become: yes
+#   changed_when: false
+#   shell: "realm permit -g {{permittedADGroups}}"
+# - name: Copy sudoers
+#   become: yes
+#   copy:
+#     src: ad_sudoers
+#     dest: /etc/sudoers.d/ad_sudoers
+#     validate: /usr/sbin/visudo -csf %s

@@ -1,0 +1,36 @@
+---
+-  name: Check if Nvidia Drivers are installed
+   shell: "dnf module -q --installed list | grep nvidia"
+   changed_when: false
+   failed_when: false
+   register: is_nvidia
+
+-  name: Check if realm connected
+   shell: "realm list | head -n 1 | tr -d '\\n'"
+   changed_when: false
+   register: realm_check
+
+-  name: Check if home is NFS
+   shell: "findmnt /home --type nfs"
+   changed_when: false
+   register: nfs_check
+   ignore_errors: yes
+   failed_when: false
+
+- name: Check if munged
+  ansible.builtin.stat:
+    path: /etc/munge/munge.key
+  register: munge_check
+
+-  name: Set all facts
+   set_fact:
+         fact_need_nvidia: "{{ is_nvidia.rc != 0 }}"
+         fact_need_realm: "{{ realm_check.stdout != 'acmuic.org' }}"
+         fact_need_sharedfs: "{{ nfs_check.rc != 0 }}"
+         fact_need_mungeing: "{{ not munge_check.stat.exists }}"
+
+
+- name: Display all Ansible facts
+  debug:
+    var: hostvars[inventory_hostname]
+                             

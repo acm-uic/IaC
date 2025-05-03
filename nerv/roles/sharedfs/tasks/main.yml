@@ -1,0 +1,26 @@
+---
+- name: Remove existing /home mount
+  ansible.posix.mount:
+    path: /home
+    state: absent
+    backup: true
+
+- name: Install NFS utils package
+  dnf:
+    name:
+      - nfs-utils
+    state: present
+
+- name: Add NFS mount at /home
+  ansible.posix.mount:
+    src: "truenas.acmuic.org:/mnt/pool/nerv"
+    path: "/home"
+    # opts: "defaults,user=root,owner=root"
+    state: mounted
+    fstype: nfs
+    boot: true
+
+# - name: Reboot
+#   ansible.builtin.reboot:
+#     post_reboot_delay: 300
+#     reboot_timeout: 1200

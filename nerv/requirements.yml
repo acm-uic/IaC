@@ -1,0 +1,2 @@
+roles:
+  - src: https://github.com/nvidia/ansible-role-nvidia-driver

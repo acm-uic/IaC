@@ -1,0 +1,29 @@
+---
+- name: Add nvidia repo
+  command: "dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/cuda-rhel9.repo"
+
+- name: Make cache
+  command: dnf makecache
+
+- name: fuck this bullshit
+  command: "dnf update -y --nobest --allowerasing"
+
+- name: Install Driver
+  command: "dnf module install -y --nobest nvidia-driver:latest"
+
+- name: Install other packages
+  dnf:
+    name:
+      - freeglut-devel
+      - libX11-devel
+      - libXi-devel
+      - libXmu-devel
+      - make
+      - mesa-libGLU-devel
+      - freeimage-devel
+    state: present
+
+- name: Reboot
+  ansible.builtin.reboot:
+    post_reboot_delay: 300
+    reboot_timeout: 1200

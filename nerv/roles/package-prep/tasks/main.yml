@@ -1,0 +1,32 @@
+---
+- name: Update
+  command: "dnf update -y --allowerasing --nobest"
+
+  
+- name: Install DNF-Plugin-Core and EPEL-Release
+  dnf:
+    name: 
+      - dnf-plugins-core 
+      - epel-release  
+      - python3-libdnf
+    state: latest      
+ 
+- name: Enable powertools
+  command: dnf config-manager --set-enabled crb
+
+- name: Make cache
+  command: dnf makecache
+  
+- name: Add EPEL
+  dnf:
+    name: epel-release
+    state: present
+
+- name: Upgrade
+  command: "dnf update -y --allowerasing --nobest"
+
+
+- name: Install hvac
+  dnf:
+    name:
+      - python3-hvac
