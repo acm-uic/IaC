@@ -1,0 +1,7 @@
+---
+- name: Configure Cafe Manager
+  hosts: cafe-manager
+  gather_facts: false
+  roles:
+    - role: common-archlinux
+      #    - role: common-acmadmin

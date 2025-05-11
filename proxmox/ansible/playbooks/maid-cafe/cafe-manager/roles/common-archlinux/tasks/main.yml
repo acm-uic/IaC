@@ -1,0 +1,18 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for role/common-archlinux
+
+- name: Initialize pacman with pacmkey
+  raw: pacman-key --init
+  become: yes
+  become_user: root
+
+- name: Populate pacman default keyring
+  raw: pacman-key --populate archlinux
+  become: yes
+  become_user: root
+
+- name: Refresh pacman keyring
+  raw: pacman-key --refresh-keys
+  become: yes
+  become_user: root

@@ -1,0 +1,6 @@
+---
+manager:
+  hosts:
+    cafe-manager:
+      ansible_host: 172.25.3.60
+      ansible_user: root
