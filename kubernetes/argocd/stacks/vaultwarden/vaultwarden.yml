@@ -1,4 +1,43 @@
 ---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+  annotations:
+    external-dns.alpha.kubernetes.io/target: app.acmuic.org
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`bitwarden.acmuic.org`)"
+      services:
+        - kind: Service
+          name: vaultwarden
+          namespace: vaultwarden
+          passHostHeader: true
+          port: http
+          responseForwarding:
+            flushInterval: 1ms
+          scheme: http
+          strategy: RoundRobin
+          weight: 10
+  tls:
+    secretName: vaultwarden-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vaultwarden-tls
+spec:
+  dnsNames:
+    - bitwarden.acmuic.org
+  secretName: vaultwarden-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
