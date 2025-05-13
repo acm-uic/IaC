@@ -81,6 +81,7 @@ spec:
               value: 'https://bitwarden.acmuic.org'
           ports:
             - containerPort: 80
+              name: http
           volumeMounts:
             - name: vaultwarden-data
               mountPath: /data
