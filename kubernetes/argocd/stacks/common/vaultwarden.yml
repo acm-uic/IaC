@@ -17,7 +17,7 @@ spec:
         recurse: true
         include: '*.yml'
         exclude: values.yml
-  project: vaultwarden
+  project: default
   syncPolicy:
     automated:
       prune: true
