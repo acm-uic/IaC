@@ -36,7 +36,7 @@ spec:
   secretName: vaultwarden-tls
   issuerRef:
     kind: ClusterIssuer
-    name: letsencrypt
+    name: acmuic-self-ca
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
