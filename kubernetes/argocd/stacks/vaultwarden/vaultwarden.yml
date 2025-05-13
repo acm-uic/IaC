@@ -1,0 +1,60 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vaultwarden-pvc
+  namespace: vaultwarden
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: nfs
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+spec:
+  strategy:
+    type: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vaultwarden
+  template:
+    metadata:
+      annotations:
+        labels:
+          app.kubernetes.io/name: vaultwarden
+    spec:
+      volumes:
+        - name: vaultwarden-data
+          persistentVolumeClaim:
+            claimName: vaultwarden-pvc
+      containers:
+        - name: vaultwarden
+          image: vaultwarden/server:latest
+          env:
+            - name: DOMAIN
+              value: 'https://bitwarden.acmuic.org'
+          volumeMounts:
+            - name: vaultwarden-data
+              mountPath: /data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: vaultwarden
