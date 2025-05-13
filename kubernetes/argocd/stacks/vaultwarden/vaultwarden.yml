@@ -27,8 +27,8 @@ spec:
   template:
     metadata:
       annotations:
-        labels:
-          app.kubernetes.io/name: vaultwarden
+      labels:
+        app.kubernetes.io/name: vaultwarden
     spec:
       volumes:
         - name: vaultwarden-data
