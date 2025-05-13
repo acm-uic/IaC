@@ -11,7 +11,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   sources:
     - path: kubernetes/argocd/stacks/vaultwarden
-      repoURL: 'git@github.com:lowpolyneko/IaC.git'
+      repoURL: 'https://github.com/lowpolyneko/IaC'
       targetRevision: feature/vaultwarden
       directory:
         recurse: true
