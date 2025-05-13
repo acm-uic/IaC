@@ -79,6 +79,8 @@ spec:
           env:
             - name: DOMAIN
               value: 'https://bitwarden.acmuic.org'
+          ports:
+            - containerPort: 80
           volumeMounts:
             - name: vaultwarden-data
               mountPath: /data
