@@ -79,12 +79,60 @@ spec:
           env:
             - name: DOMAIN
               value: 'https://bitwarden.acmuic.org'
+            - name: ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vaultwarden-admin-token
+                  key: admin_token
           ports:
             - containerPort: 80
               name: http
           volumeMounts:
             - name: vaultwarden-data
               mountPath: /data
+        - name: vaultwarden-ldap
+          image: vividboarder/vaultwarden_ldap:latest
+          env:
+            - name: APP_VAULTWARDEN_URL
+              value: 'https://bitwarden.acmuic.org'
+            - name: APP_VAULTWARDEN_ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vaultwarden-admin-token
+                  key: admin_token
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: vaultwarden-vault-static-auth
+  namespace: vaultwarden
+spec:
+  method: kubernetes
+  mount: kubernetes
+  namespace: vaultwarden
+  kubernetes:
+    role: vaultwarden
+    serviceAccount: vaultwarden
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: vaultwarden-admin-token
+  namespace: vaultwarden
+spec:
+  vaultAuthRef: vaultwarden-vault-static-auth
+  type: kv-v2
+  mount: kv
+  path: vaultwarden
+  destination:
+    name: vaultwarden-admin-token
+    create: true
 ---
 apiVersion: v1
 kind: Service
