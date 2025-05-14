@@ -100,6 +100,23 @@ spec:
                 secretKeyRef:
                   name: vaultwarden-admin-token
                   key: admin_token
+            - name: APP_LDAP_HOST
+              value: 'activedirectory.acmuic.org'
+            - name: APP_LDAP_BIND_DN
+                secretKeyRef:
+                  name: vaultwarden-admin-token
+                  key: ldap_user
+            - name: APP_LDAP_BIND_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: vaultwarden-admin-token
+                  key: ldap_password
+            - name: APP_LDAP_SEARCH_BASE_DN
+              value: 'dc=acmuic,dc=org'
+            - name: APP_LDAP_SEARCH_FILTER
+              value: 'memberOf=CN=ACMLANAdmins,OU=ACMGroups,DC=acmuic,DC=org'
+            - name: APP_LDAP_MAIL_FIELD
+              value: 'userPrincipalName'
 ---
 apiVersion: v1
 kind: ServiceAccount
