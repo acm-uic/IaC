@@ -103,6 +103,7 @@ spec:
             - name: APP_LDAP_HOST
               value: 'activedirectory.acmuic.org'
             - name: APP_LDAP_BIND_DN
+              valueFrom:
                 secretKeyRef:
                   name: vaultwarden-admin-token
                   key: ldap_user
