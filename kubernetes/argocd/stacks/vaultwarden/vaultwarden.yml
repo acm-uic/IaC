@@ -94,9 +94,7 @@ spec:
           image: vividboarder/vaultwarden_ldap:latest
           env:
             - name: APP_VAULTWARDEN_URL
-              value: 'https://bitwarden.acmuic.org'
-            - name: APP_LDAP_NO_TLS_VERIFY
-              value: 'false'
+              value: 'http://localhost'
             - name: APP_VAULTWARDEN_ADMIN_TOKEN
               valueFrom:
                 secretKeyRef:
