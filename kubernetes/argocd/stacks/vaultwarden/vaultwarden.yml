@@ -95,6 +95,8 @@ spec:
           env:
             - name: APP_VAULTWARDEN_URL
               value: 'https://bitwarden.acmuic.org'
+            - name: APP_LDAP_NO_TLS_VERIFY
+              value: 'false'
             - name: APP_VAULTWARDEN_ADMIN_TOKEN
               valueFrom:
                 secretKeyRef:
