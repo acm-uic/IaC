@@ -93,30 +93,30 @@ spec:
         - name: vaultwarden-ldap
           image: vividboarder/vaultwarden_ldap:latest
           env:
-            - name: APP_VAULTWARDEN_URL
+            - name: APP_vaultwarden_url
               value: 'http://vaultwarden.vaultwarden.svc.cluster.local'
-            - name: APP_VAULTWARDEN_ADMIN_TOKEN
+            - name: APP_vaultwarden_admin_token
               valueFrom:
                 secretKeyRef:
                   name: vaultwarden-admin-token
                   key: admin_token
-            - name: APP_LDAP_HOST
+            - name: APP_ldap_host
               value: 'activedirectory.acmuic.org'
-            - name: APP_LDAP_BIND_DN
+            - name: APP_ldap_bind_dn
               valueFrom:
                 secretKeyRef:
                   name: vaultwarden-admin-token
                   key: ldap_user
-            - name: APP_LDAP_BIND_PASSWORD
+            - name: APP_ldap_bind_password
               valueFrom:
                 secretKeyRef:
                   name: vaultwarden-admin-token
                   key: ldap_password
-            - name: APP_LDAP_SEARCH_BASE_DN
+            - name: APP_ldap_search_base_dn
               value: 'dc=acmuic,dc=org'
-            - name: APP_LDAP_SEARCH_FILTER
+            - name: APP_ldap_search_filter
               value: 'memberOf=CN=ACMLANAdmins,OU=ACMGroups,DC=acmuic,DC=org'
-            - name: APP_LDAP_MAIL_FIELD
+            - name: APP_ldap_mail_filter
               value: 'userPrincipalName'
 ---
 apiVersion: v1
