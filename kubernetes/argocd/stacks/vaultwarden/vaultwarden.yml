@@ -153,6 +153,8 @@ spec:
     create: true
     transformation:
       templateSpecs:
+        admin_token:
+          text:  '{{- get .Secrets "admin_token" | b64dec -}}'
         ldap_user:
           text:  '{{- get .Secrets "ldap_user" | b64dec -}}'
         ldap_password:
