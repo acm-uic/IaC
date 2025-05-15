@@ -66,16 +66,6 @@ spec:
   template:
     metadata:
       annotations:
-        vault.hashicorp.com/agent-inject: 'true'
-        vault.hashicorp.com/role: 'vaultwarden'
-        vault.hashicorp.com/agent-inject-secret-config: 'kv/vaultwarden'
-        vault.hashicorp.com/agent-inject-template-config: |
-          {{- with secret 'kv/vaultwarden' -}}
-            export ADMIN_TOKEN='{{ .Data.data.admin_token }}'
-            export APP_VAULTWARDEN_ADMIN_TOKEN='{{ .Data.data.admin_token }}'
-            export APP_LDAP_BIND_DN='{{ .Data.data.ldap_user }}'
-            export APP_LDAP_BIND_PASSWORD='{{ .Data.data.ldap_password }}'
-          {{- end }}
       labels:
         app.kubernetes.io/name: vaultwarden
     spec:
@@ -89,6 +79,11 @@ spec:
           env:
             - name: DOMAIN
               value: 'https://bitwarden.acmuic.org'
+            - name: ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vaultwarden-admin-token
+                  key: admin_token
           ports:
             - containerPort: 80
               name: http
@@ -100,8 +95,23 @@ spec:
           env:
             - name: APP_VAULTWARDEN_URL
               value: 'https://vaultwarden.vaultwarden.svc.cluster.local'
+            - name: APP_VAULTWARDEN_ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vaultwarden-admin-token
+                  key: admin_token
             - name: APP_LDAP_HOST
               value: 'activedirectory.acmuic.org'
+            - name: APP_LDAP_BIND_DN
+              valueFrom:
+                secretKeyRef:
+                  name: vaultwarden-admin-token
+                  key: ldap_user
+            - name: APP_LDAP_BIND_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: vaultwarden-admin-token
+                  key: ldap_password
             - name: APP_LDAP_SEARCH_BASE_DN
               value: 'dc=acmuic,dc=org'
             - name: APP_LDAP_SEARCH_FILTER
@@ -127,6 +137,20 @@ spec:
   kubernetes:
     role: vaultwarden
     serviceAccount: vaultwarden
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: vaultwarden-admin-token
+  namespace: vaultwarden
+spec:
+  vaultAuthRef: vaultwarden-vault-static-auth
+  type: kv-v2
+  mount: kv
+  path: vaultwarden
+  destination:
+    name: vaultwarden-admin-token
+    create: true
 ---
 apiVersion: v1
 kind: Service
