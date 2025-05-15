@@ -152,7 +152,7 @@ spec:
     name: vaultwarden-admin-token
     create: true
     transformation:
-      templateSpecs:
+      templates:
         ldap_user:
           text:  '{{- get .Secrets "ldap_user" | b64dec -}}'
         ldap_password:
