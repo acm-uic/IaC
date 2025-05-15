@@ -86,11 +86,6 @@ spec:
       containers:
         - name: vaultwarden
           image: vaultwarden/server:latest
-          command:
-            - 'sh'
-            - '-c'
-          args:
-            - 'source /vault/secrets/config && ./start.sh'
           env:
             - name: DOMAIN
               value: 'https://bitwarden.acmuic.org'
