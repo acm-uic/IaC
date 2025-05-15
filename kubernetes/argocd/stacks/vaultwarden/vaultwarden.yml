@@ -104,6 +104,8 @@ spec:
               value: 'activedirectory.acmuic.org'
             - name: APP_LDAP_SSL
               value: 'true'
+            - name: APP_LDAP_NO_TLS_VERIFY
+              value: 'true'
             - name: APP_LDAP_BIND_DN
               valueFrom:
                 secretKeyRef:
