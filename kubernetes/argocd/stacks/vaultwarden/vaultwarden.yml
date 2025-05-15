@@ -94,7 +94,7 @@ spec:
           image: vividboarder/vaultwarden_ldap:latest
           env:
             - name: APP_VAULTWARDEN_URL
-              value: 'https://vaultwarden.vaultwarden.svc.cluster.local'
+              value: 'http://vaultwarden.vaultwarden.svc.cluster.local'
             - name: APP_VAULTWARDEN_ADMIN_TOKEN
               valueFrom:
                 secretKeyRef:
