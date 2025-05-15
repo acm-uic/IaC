@@ -119,7 +119,7 @@ spec:
             - name: APP_LDAP_SEARCH_BASE_DN
               value: 'dc=acmuic,dc=org'
             - name: APP_LDAP_SEARCH_FILTER
-              value: 'memberOf=CN=ACMLANAdmins,OU=ACMGroups,DC=acmuic,DC=org'
+              value: '(&(objectClass=*)(sAMAccountName=*))'
             - name: APP_LDAP_MAIL_FIELD
               value: 'userPrincipalName'
 ---
