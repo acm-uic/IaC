@@ -116,7 +116,7 @@ spec:
               value: 'dc=acmuic,dc=org'
             - name: APP_ldap_search_filter
               value: 'memberOf=CN=ACMLANAdmins,OU=ACMGroups,DC=acmuic,DC=org'
-            - name: APP_ldap_mail_filter
+            - name: APP_ldap_mail_field
               value: 'userPrincipalName'
 ---
 apiVersion: v1
