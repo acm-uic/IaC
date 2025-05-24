@@ -4,11 +4,11 @@ resource "proxmox_vm_qemu" "k8s_01" {
   clone_id    = "101"
 
   # VM Settings
-  onboot  = true
+  onboot = true
 
   # CPU settings
   cpu {
-    type = "x86-64-v2-AES"
+    type  = "x86-64-v2-AES"
     cores = 4
   }
 
