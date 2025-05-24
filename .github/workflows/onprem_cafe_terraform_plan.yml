@@ -12,8 +12,8 @@ permissions:
   pull-requests: write
 
 jobs:
-  terraform:
-    name: 'Terraform PR Plan'
+  tofu:
+    name: 'Tofu PR Plan'
     runs-on: maid-cafe
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
@@ -47,23 +47,23 @@ jobs:
           tenant-id: ${{ env.ARM_TENANT_ID }}
           subscription-id: ${{ env.ARM_SUBSCRIPTION_ID }}
 
-      - name: 'Terraform Format'
+      - name: 'Tofu Format'
         id: fmt
-        uses: dflook/terraform-fmt-check@v1
+        uses: dflook/tofu-fmt-check@v1
         with:
           path: "proxmox/terraform/stacks/${{ matrix.stack }}"
           workspace: ${{ env.TF_WORKSPACE }}
 
-      - name: 'Terraform Validate'
+      - name: 'Tofu Validate'
         id: validate
-        uses: dflook/terraform-validate@v1
+        uses: dflook/tofu-validate@v1
         with:
           path: "proxmox/terraform/stacks/${{ matrix.stack }}"
           workspace: ${{ env.TF_WORKSPACE }}
 
-      - name: 'Terraform Plan'
+      - name: 'Tofu Plan'
         id: plan
-        uses: dflook/terraform-plan@v1
+        uses: dflook/tofu-plan@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

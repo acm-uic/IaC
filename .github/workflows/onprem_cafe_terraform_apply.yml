@@ -1,5 +1,5 @@
 ---
-name: 'Terraform Apply for Maid Café'
+name: 'Tofu Apply for Maid Café'
 on:
   push:
     branches:
@@ -14,8 +14,8 @@ permissions:
   pull-requests: write
 
 jobs:
-  terraform:
-    name: 'Terraform Apply'
+  tofu:
+    name: 'Tofu Apply'
     runs-on: maid-cafe
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
@@ -50,23 +50,23 @@ jobs:
           tenant-id: ${{ env.ARM_TENANT_ID }}
           subscription-id: ${{ env.ARM_SUBSCRIPTION_ID }}
 
-      - name: 'Terraform Format'
+      - name: 'Tofu Format'
         id: fmt
-        uses: dflook/terraform-fmt-check@v1
+        uses: dflook/tofu-fmt-check@v1
         with:
           path: "proxmox/terraform/stacks/${{ matrix.stack }}"
           workspace: ${{ env.TF_WORKSPACE }}
 
-      - name: 'Terraform Validate'
+      - name: 'Tofu Validate'
         id: validate
-        uses: dflook/terraform-validate@v1
+        uses: dflook/tofu-validate@v1
         with:
           path: "proxmox/terraform/stacks/${{ matrix.stack }}"
           workspace: ${{ env.TF_WORKSPACE }}
 
-      - name: 'Terraform Apply'
+      - name: 'Tofu Apply'
         id: apply
-        uses: dflook/terraform-apply@v1
+        uses: dflook/tofu-apply@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
