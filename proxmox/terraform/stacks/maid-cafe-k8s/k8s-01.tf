@@ -1,11 +1,11 @@
 resource "proxmox_vm_qemu" "k8s_01" {
   name        = "k8s-01"
   target_node = "boba"
-  clone_id    = "101"
 
   # VM Settings
-  onboot = true
-  memory = 4096
+  onboot   = true
+  memory   = 4096
+  vm_state = "stopped"
 
   # CPU settings
   cpu {
