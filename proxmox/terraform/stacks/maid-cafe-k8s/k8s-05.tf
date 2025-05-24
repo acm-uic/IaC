@@ -1,17 +1,17 @@
-resource "proxmox_vm_qemu" "k8s_01" {
-  name        = "k8s-01"
+resource "proxmox_vm_qemu" "k8s_05" {
+  name        = "k8s-05"
   target_node = "boba"
 
   # VM Settings
   onboot   = true
-  memory   = 4096
+  memory   = 16384
   vm_state = "stopped"
   pool     = "Kubernetes"
 
   # CPU settings
   cpu {
     type  = "x86-64-v2-AES"
-    cores = 4
+    cores = 8
   }
 
   # BIOS/Boot settings
@@ -35,7 +35,8 @@ resource "proxmox_vm_qemu" "k8s_01" {
     model    = "virtio"
     bridge   = "speed2"
     firewall = true
-    macaddr  = "BC:24:11:84:15:8B"
+    tag      = 9
+    macaddr  = "BC:24:11:58:3F:9C"
   }
 
   # Main disk (virtio0)
