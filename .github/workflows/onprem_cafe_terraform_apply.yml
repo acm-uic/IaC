@@ -7,6 +7,12 @@ on:
     paths:
       - '.github/workflows/onprem_cafe_terraform_apply.yml'
       - 'proxmox/terraform/stacks/**'
+  workflow_dispatch:
+    inputs:
+      auto-approve:
+        description: 'Auto-approve'
+        required: false
+        default: false
 
 permissions:
   contents: read
@@ -73,3 +79,4 @@ jobs:
           path: "proxmox/terraform/stacks/${{ matrix.stack }}"
           workspace: ${{ env.TF_WORKSPACE }}
           var_file: "proxmox/terraform/stacks/${{ matrix.stack }}/configuration/${{ env.TF_WORKSPACE }}.tfvars"
+          auto_approve: ${{ github.event.inputs.auto-approve }}
