@@ -4,12 +4,13 @@ resource "proxmox_vm_qemu" "k8s_01" {
   clone_id    = "101"
 
   # VM Settings
-  cores   = 4
-  sockets = 1
-  memory  = 4096
-  cpu     = "x86-64-v2-AES"
-  numa    = false
   onboot  = true
+
+  # CPU settings
+  cpu {
+    type = "x86-64-v2-AES"
+    cores = 4
+  }
 
   # BIOS/Boot settings
   bios = "ovmf"
@@ -22,12 +23,13 @@ resource "proxmox_vm_qemu" "k8s_01" {
   }
 
   # TPM
-  tpmstate0 {
+  tpm_state {
     storage = "ceph"
   }
 
   # Network settings
   network {
+    id       = 0
     model    = "virtio"
     bridge   = "speed2"
     firewall = true
@@ -36,21 +38,26 @@ resource "proxmox_vm_qemu" "k8s_01" {
 
   # Main disk (virtio0)
   disk {
-    type     = "virtio"
+    slot     = "virtio0"
+    type     = "disk"
     storage  = "ceph"
     size     = "100G"
-    iothread = 1
+    iothread = true
   }
 
   # SCSI hardware
   scsihw = "virtio-scsi-single"
 
   # OS type
-  ostype = "l26"
+  os_type = "l26"
 
   # CD-ROM (ide2)
-  cdrom {
-    iso = "cephfs:iso/taloslinux-cached-amd64-20250522.iso"
+  disk {
+    slot     = "ide2"
+    type     = "cdrom"
+    storage  = "cephfs"
+    readonly = true
+    iso      = "cephfs:iso/taloslinux-cached-amd64-20250522.iso"
   }
 
   # Increase default timeout for VM creation
