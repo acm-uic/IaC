@@ -1,0 +1,72 @@
+---
+name: 'Tofu Plan for Maid Café'
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/onprem_cafe_terraform_plan.yml'
+      - 'proxmox/terraform/stacks/**'
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+
+jobs:
+  tofu:
+    name: 'Tofu PR Plan'
+    runs-on: maid-cafe
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+      ARM_USE_OIDC: true
+      TF_VAR_proxmox_api_token_id: ${{ secrets.PM_CAFE_API_TOKEN_ID}}
+      TF_VAR_proxmox_api_token_secret: ${{ secrets.PM_CAFE_API_TOKEN_SECRET }}
+      TF_WORKSPACE: prod
+      TF_IN_AUTOMATION: true
+      TF_INPUT: 0
+
+    strategy:
+      matrix:
+        stack:
+          - maid-cafe-k8s
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: proxmox/terraform/stacks/${{ matrix.stack }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure CLI setup
+        uses: azure/login@v1
+        with:
+          client-id: ${{ env.ARM_CLIENT_ID }}
+          tenant-id: ${{ env.ARM_TENANT_ID }}
+          subscription-id: ${{ env.ARM_SUBSCRIPTION_ID }}
+
+      - name: 'Tofu Format'
+        id: fmt
+        uses: dflook/tofu-fmt-check@v1
+        with:
+          path: "proxmox/terraform/stacks/${{ matrix.stack }}"
+          workspace: ${{ env.TF_WORKSPACE }}
+
+      - name: 'Tofu Validate'
+        id: validate
+        uses: dflook/tofu-validate@v1
+        with:
+          path: "proxmox/terraform/stacks/${{ matrix.stack }}"
+          workspace: ${{ env.TF_WORKSPACE }}
+
+      - name: 'Tofu Plan'
+        id: plan
+        uses: dflook/tofu-plan@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path: "proxmox/terraform/stacks/${{ matrix.stack }}"
+          workspace: ${{ env.TF_WORKSPACE }}
+          var_file: "proxmox/terraform/stacks/${{ matrix.stack }}/configuration/${{ env.TF_WORKSPACE }}.tfvars"
