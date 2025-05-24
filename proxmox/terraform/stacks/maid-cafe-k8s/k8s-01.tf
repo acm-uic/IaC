@@ -60,9 +60,4 @@ resource "proxmox_vm_qemu" "k8s_01" {
     iso  = "cephfs:iso/taloslinux-cached-amd64-20250522.iso"
   }
 
-  # Increase default timeout for VM creation
-  timeouts {
-    create = "10m"
-    delete = "5m"
-  }
 }
