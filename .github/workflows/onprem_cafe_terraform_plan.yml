@@ -1,5 +1,5 @@
 ---
-name: 'Terraform Plan for Maid Café'
+name: 'Tofu Plan for Maid Café'
 on:
   pull_request:
     paths:
