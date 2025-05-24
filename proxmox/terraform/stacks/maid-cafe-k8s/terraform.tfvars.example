@@ -1,0 +1,10 @@
+proxmox_api_url          = "https://proxmox.example.com:8006/api2/json"
+proxmox_api_token_id      = "your-username@pam!your-token-id"
+proxmox_api_token_secret  = "your-token-secret"
+target_node               = "pve"
+template_name             = "ubuntu-cloud-template"
+vm_name                   = "maid-cafe-vm"
+vm_cores                  = 2
+vm_memory                 = 2048
+vm_disk_size              = "20G"
+ssh_public_key            = "ssh-rsa AAAAB3NzaC1yc2E... your-public-key"
