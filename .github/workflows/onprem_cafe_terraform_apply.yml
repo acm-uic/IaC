@@ -27,7 +27,6 @@ jobs:
       TF_WORKSPACE: prod
       TF_IN_AUTOMATION: true
       TF_INPUT: 0
-    runs-on: ubuntu-latest
     environment: prod
 
     strategy:
