@@ -5,6 +5,7 @@ resource "proxmox_vm_qemu" "k8s_01" {
 
   # VM Settings
   onboot = true
+  memory = 4096
 
   # CPU settings
   cpu {
@@ -53,11 +54,9 @@ resource "proxmox_vm_qemu" "k8s_01" {
 
   # CD-ROM (ide2)
   disk {
-    slot     = "ide2"
-    type     = "cdrom"
-    storage  = "cephfs"
-    readonly = true
-    iso      = "cephfs:iso/taloslinux-cached-amd64-20250522.iso"
+    slot = "ide2"
+    type = "cdrom"
+    iso  = "cephfs:iso/taloslinux-cached-amd64-20250522.iso"
   }
 
   # Increase default timeout for VM creation
