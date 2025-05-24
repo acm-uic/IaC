@@ -1,6 +1,6 @@
-resource "proxmox_vm_qemu" "k8s_01" {
-  name        = "k8s-01"
-  target_node = "boba"
+resource "proxmox_vm_qemu" "k8s_03" {
+  name        = "k8s-03"
+  target_node = "coffee"
 
   # VM Settings
   onboot   = true
@@ -35,7 +35,7 @@ resource "proxmox_vm_qemu" "k8s_01" {
     model    = "virtio"
     bridge   = "speed2"
     firewall = true
-    macaddr  = "BC:24:11:84:15:8B"
+    macaddr  = "BC:24:11:E4:10:66"
   }
 
   # Main disk (virtio0)
