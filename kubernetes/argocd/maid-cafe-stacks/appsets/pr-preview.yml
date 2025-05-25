@@ -8,11 +8,12 @@ spec:
   goTemplateOptions: ["missingkey=error"]
   generators:
     - pullRequest:
-        owner: acm-uic
-        repo: IaC
-        labels:
-          - preview
-        requeueAfterSeconds: 500
+        github:
+          owner: acm-uic
+          repo: IaC
+          labels:
+            - ':wheel_of_dharma: k8s'
+        requeueAfterSeconds: 60
   template:
     metadata:
       name: 'pr-{{.branch}}-{{.number}}'
