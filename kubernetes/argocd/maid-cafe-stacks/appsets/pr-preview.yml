@@ -13,6 +13,7 @@ spec:
           repo: IaC
           labels:
             - ':wheel_of_dharma: k8s'
+            - ':eyes: preview'
         requeueAfterSeconds: 60
   template:
     metadata:
