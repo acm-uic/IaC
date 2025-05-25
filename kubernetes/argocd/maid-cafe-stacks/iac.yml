@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: IaC
+  name: iac
   namespace: argocd
 spec:
   destination:
