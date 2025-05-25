@@ -15,17 +15,17 @@ spec:
         requeueAfterSeconds: 500
   template:
     metadata:
-      name: 'pr-{{branch}}-{{number}}'
+      name: 'pr-{{.branch}}-{{.number}}'
       namespace: argocd
     spec:
       source:
-        repoUrl: 'git@github.com:acm-uic/IaC.git'
-        targetRevision: '{{head_sha}}'
+        repoURL: 'git@github.com:acm-uic/IaC.git'
+        targetRevision: '{{.head_sha}}'
         path: kubernetes/argocd/maid-cafe-stacks/appsets
       project: default
       destination:
         server: https://kubernetes.default.svc
-        namespace: 'pr-{{branch}}-{{number}}'
+        namespace: 'pr-{{.branch}}-{{.number}}'
       syncPolicy:
         syncOptions:
           - CreateNamespace=true
