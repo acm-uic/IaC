@@ -13,19 +13,19 @@ spec:
         labels:
           - preview
         requeueAfterSeconds: 500
-      template:
-        metadata:
-          name: 'pr-{{branch}}-{{number}}'
-          namespace: argocd
-        spec:
-          source:
-            repoUrl: 'git@github.com:acm-uic/IaC.git'
-            targetRevision: '{{head_sha}}'
-            path: kubernetes/argocd/maid-cafe-stacks/appsets
-            project: default
-          destination:
-            server: https://kubernetes.default.svc
-            namespace: 'pr-{{branch}}-{{number}}'
-          syncPolicy:
-            syncOptions:
-              - CreateNamespace=true
+  template:
+    metadata:
+      name: 'pr-{{branch}}-{{number}}'
+      namespace: argocd
+    spec:
+      source:
+        repoUrl: 'git@github.com:acm-uic/IaC.git'
+        targetRevision: '{{head_sha}}'
+        path: kubernetes/argocd/maid-cafe-stacks/appsets
+        project: default
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: 'pr-{{branch}}-{{number}}'
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
