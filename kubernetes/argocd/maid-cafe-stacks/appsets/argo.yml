@@ -1,0 +1,47 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: pr-preview
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - pullRequest:
+        github:
+          owner: acm-uic
+          repo: IaC
+          labels:
+            - ':wheel_of_dharma: k8s'
+            - ':eyes: preview'
+        requeueAfterSeconds: 60
+  template:
+    metadata:
+      name: '{{if ne .head_short_sha .target_branch_sha}}pr-{{.number}}-{{end}}argocd'
+      namespace: argocd
+    spec:
+      sources:
+        - repoURL: 'https://argoproj.github.io/argo-helm'
+          targetRevision: 8.0.10
+          chart: argo-cd
+          helm:
+            valueFiles:
+              - $values/kubernetes/argocd/maid-cafe-stacks/helm_charts/argocd/values.yml
+        - path: kubernetes/argocd/maid-cafe-stacks/helm_charts/argocd
+          repoURL: 'git@github.com:acm-uic/IaC.git'
+          targetRevision: '{{.head_sha}}'
+          ref: values
+          directory:
+            recurse: true
+            include: '*.yml'
+            exclude: values.yml
+      project: default
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{if ne .head_short_sha .target_branch_sha}}pr-{{end}}{{.branch_slug}}-{{.number}}'
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+        automated:
+          prune: true
+          selfHeal: true
