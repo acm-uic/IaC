@@ -1,0 +1,33 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: pr-preview
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - pullRequest:
+        github:
+          owner: acm-uic
+          repo: IaC
+          labels:
+            - ':wheel_of_dharma: k8s'
+            - ':eyes: preview'
+        requeueAfterSeconds: 60
+  template:
+    metadata:
+      name: '{{if ne .head_short_sha .target_branch_sha}}pr-{{end}}{{.branch_slug}}-{{.number}}'
+      namespace: argocd
+    spec:
+      source:
+        repoURL: 'git@github.com:acm-uic/IaC.git'
+        targetRevision: '{{.head_sha}}'
+        path: kubernetes/argocd/maid-cafe-stacks/appsets
+      project: default
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{if ne .head_short_sha .target_branch_sha}}pr-{{end}}{{.branch_slug}}-{{.number}}'
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
