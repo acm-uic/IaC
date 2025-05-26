@@ -61,4 +61,10 @@ resource "proxmox_vm_qemu" "k8s_07" {
     iso  = "cephfs:iso/taloslinux-cached-amd64-20250522.iso"
   }
 
+  lifecycle {
+    ignore_changes = [
+      vm_state,
+    ]
+  }
+
 }
