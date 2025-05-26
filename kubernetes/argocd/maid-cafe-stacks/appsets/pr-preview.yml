@@ -17,7 +17,7 @@ spec:
         requeueAfterSeconds: 60
   template:
     metadata:
-      name: 'pr-{{.branch}}-{{.number}}'
+      name: '{{if ne .head_short_sha .target_branch_sha}}pr-{{end}}{{.branch_slug}}-{{.number}}'
       namespace: argocd
     spec:
       source:
@@ -27,7 +27,7 @@ spec:
       project: default
       destination:
         server: https://kubernetes.default.svc
-        namespace: 'pr-{{.branch}}-{{.number}}'
+        namespace: '{{if ne .head_short_sha .target_branch_sha}}pr-{{end}}{{.branch_slug}}-{{.number}}'
       syncPolicy:
         syncOptions:
           - CreateNamespace=true
