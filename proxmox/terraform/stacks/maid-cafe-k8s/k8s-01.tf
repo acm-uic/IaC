@@ -35,6 +35,7 @@ resource "proxmox_vm_qemu" "k8s_01" {
     model    = "virtio"
     bridge   = "speed2"
     firewall = true
+    tag      = 9
     macaddr  = "BC:24:11:84:15:8B"
   }
 
@@ -57,7 +58,7 @@ resource "proxmox_vm_qemu" "k8s_01" {
   disk {
     slot = "ide2"
     type = "cdrom"
-    iso  = "cephfs:iso/taloslinux-cached-amd64-20250522.iso"
+    iso  = "cephfs:iso/taloslinux-cached-amd64-20250528.iso"
   }
 
   lifecycle {
