@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/onprem_cafe_terraform_plan.yml'
       - 'proxmox/terraform/stacks/**'
+  workflow_dispatch:
 
 permissions:
   contents: read
