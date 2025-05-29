@@ -58,7 +58,7 @@ resource "proxmox_vm_qemu" "k8s_06" {
   disk {
     slot = "ide2"
     type = "cdrom"
-    iso  = "cephfs:iso/taloslinux-cached-amd64-20250522.iso"
+    iso  = "cephfs:iso/taloslinux-cached-amd64-20250528.iso"
   }
 
   lifecycle {
