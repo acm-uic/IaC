@@ -1,0 +1,140 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+  annotations:
+    external-dns.alpha.kubernetes.io/target: app.acmuic.org
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`bitwarden.acmuic.org`)"
+      services:
+        - kind: Service
+          name: vaultwarden
+          namespace: vaultwarden
+          passHostHeader: true
+          port: http
+          responseForwarding:
+            flushInterval: 1ms
+          scheme: http
+          strategy: RoundRobin
+          weight: 10
+  tls:
+    secretName: vaultwarden-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vaultwarden-tls
+spec:
+  dnsNames:
+    - bitwarden.acmuic.org
+  secretName: vaultwarden-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: acmuic-self-ca
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vaultwarden-pvc
+  namespace: vaultwarden
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: nfs
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+spec:
+  strategy:
+    type: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vaultwarden
+  template:
+    metadata:
+      annotations:
+      labels:
+        app.kubernetes.io/name: vaultwarden
+    spec:
+      volumes:
+        - name: vaultwarden-data
+          persistentVolumeClaim:
+            claimName: vaultwarden-pvc
+      containers:
+        - name: vaultwarden
+          image: vaultwarden/server:latest
+          env:
+            - name: DOMAIN
+              value: 'https://bitwarden.acmuic.org'
+            - name: ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: vaultwarden-admin-token
+                  key: admin_token
+          ports:
+            - containerPort: 80
+              name: http
+          volumeMounts:
+            - name: vaultwarden-data
+              mountPath: /data
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: vaultwarden-vault-static-auth
+  namespace: vaultwarden
+spec:
+  method: kubernetes
+  mount: kubernetes
+  namespace: vaultwarden
+  kubernetes:
+    role: vaultwarden
+    serviceAccount: vaultwarden
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: vaultwarden-admin-token
+  namespace: vaultwarden
+spec:
+  vaultAuthRef: vaultwarden-vault-static-auth
+  type: kv-v2
+  mount: kv
+  path: vaultwarden
+  destination:
+    name: vaultwarden-admin-token
+    create: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: vaultwarden
