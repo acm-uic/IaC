@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: pr-preview
+  name: argocd
 spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
@@ -22,7 +22,7 @@ spec:
     spec:
       sources:
         - repoURL: 'https://argoproj.github.io/argo-helm'
-          targetRevision: 8.0.10
+          targetRevision: 8.0.14
           chart: argo-cd
           helm:
             valueFiles:
