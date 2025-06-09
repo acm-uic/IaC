@@ -1,0 +1,11 @@
+---
+# Default variables for proxmox_ha_services role
+
+# Whether to manage HA services
+manage_ha_services: true
+
+# Whether to disable HA services for single node setup
+disable_ha_single_node: true
+
+# Whether to disable Corosync for single node setup
+disable_corosync_single_node: true

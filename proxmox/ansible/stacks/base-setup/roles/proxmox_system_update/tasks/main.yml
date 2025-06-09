@@ -1,0 +1,51 @@
+---
+- name: Check Proxmox VE version compatibility
+  shell: pveversion | grep -Eq "pve-manager/8\.[0-4](\.[0-9]+)*"
+  register: pve_version_check
+  failed_when: pve_version_check.rc != 0
+  changed_when: false
+  when: update_system | bool
+  tags:
+    - update
+    - version-check
+
+- name: Update APT package cache
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+  when: update_system | bool
+  tags:
+    - update
+    - apt
+
+- name: Perform full system upgrade
+  apt:
+    upgrade: dist
+    autoremove: true
+    autoclean: true
+  register: system_upgrade
+  when: update_system | bool
+  tags:
+    - update
+    - upgrade
+
+- name: Check if reboot is required
+  stat:
+    path: /var/run/reboot-required
+  register: reboot_required
+  when: update_system | bool
+  tags:
+    - update
+    - reboot
+
+- name: Reboot system after update
+  reboot:
+    reboot_timeout: "{{ reboot_timeout }}"
+    post_reboot_delay: 30
+  when:
+    - update_system | bool
+    - reboot_after_update | bool
+    - (reboot_required.stat.exists or system_upgrade.changed)
+  tags:
+    - update
+    - reboot

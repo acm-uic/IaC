@@ -1,0 +1,7 @@
+---
+- name: reinstall proxmox widget toolkit
+  apt:
+    name: proxmox-widget-toolkit
+    state: present
+    force: true
+  listen: "reinstall proxmox widget toolkit"

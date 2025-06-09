@@ -1,0 +1,11 @@
+---
+# Default variables for proxmox_system_update role
+
+# Whether to update the system
+update_system: true
+
+# Whether to reboot after update
+reboot_after_update: false
+
+# Timeout for reboot (in seconds)
+reboot_timeout: 600

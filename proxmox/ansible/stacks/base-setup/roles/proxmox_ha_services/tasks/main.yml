@@ -1,0 +1,60 @@
+---
+- name: Check if pve-ha-lrm service is active
+  systemd:
+    name: pve-ha-lrm
+  register: pve_ha_lrm_status
+  when: manage_ha_services | bool
+  tags:
+    - ha
+    - services
+
+- name: Enable high availability services
+  systemd:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - pve-ha-lrm
+    - pve-ha-crm
+    - corosync
+  when:
+    - manage_ha_services | bool
+    - not disable_ha_single_node | bool
+    - pve_ha_lrm_status.status.ActiveState != "active"
+  tags:
+    - ha
+    - services
+    - enable
+
+- name: Disable high availability services for single node
+  systemd:
+    name: "{{ item }}"
+    enabled: false
+    state: stopped
+  loop:
+    - pve-ha-lrm
+    - pve-ha-crm
+  when:
+    - manage_ha_services | bool
+    - disable_ha_single_node | bool
+    - pve_ha_lrm_status.status.ActiveState == "active"
+  tags:
+    - ha
+    - services
+    - disable
+
+- name: Disable Corosync for single node
+  systemd:
+    name: corosync
+    enabled: false
+    state: stopped
+  when:
+    - manage_ha_services | bool
+    - disable_ha_single_node | bool
+    - disable_corosync_single_node | bool
+    - pve_ha_lrm_status.status.ActiveState == "active"
+  tags:
+    - ha
+    - services
+    - corosync
+    - disable

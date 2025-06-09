@@ -1,0 +1,17 @@
+---
+# Default variables for proxmox_sources role
+
+# Whether to correct the main Debian sources
+correct_sources: true
+
+# Whether to disable the enterprise repository
+disable_enterprise: true
+
+# Whether to enable the no-subscription repository
+enable_no_subscription: true
+
+# Whether to correct the Ceph package sources
+correct_ceph_sources: true
+
+# Whether to add the pvetest repository (disabled by default)
+add_pvetest_repo: false

@@ -1,0 +1,31 @@
+---
+- name: Proxmox VE Post-Install Configuration
+  hosts: proxmox_hosts
+  become: true
+  gather_facts: true
+
+  vars:
+    # Repository configuration options
+    correct_sources: true
+    disable_enterprise: true
+    enable_no_subscription: true
+    correct_ceph_sources: true
+    add_pvetest_repo: true
+
+    # Subscription nag configuration
+    disable_subscription_nag: true
+
+    # High availability configuration
+    manage_ha_services: true
+    disable_ha_single_node: false
+    disable_corosync_single_node: false
+
+    # System update configuration
+    update_system: true
+    reboot_after_update: false
+
+  roles:
+    - proxmox_sources
+    - proxmox_subscription_nag
+    - proxmox_ha_services
+    - proxmox_system_update

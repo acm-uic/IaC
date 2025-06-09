@@ -1,0 +1,30 @@
+---
+- name: Check if subscription nag script already exists
+  stat:
+    path: /etc/apt/apt.conf.d/no-nag-script
+  register: nag_script_exists
+  tags:
+    - subscription
+    - nag
+
+- name: Configure APT post-invoke hook to disable subscription nag
+  copy:
+    dest: /etc/apt/apt.conf.d/no-nag-script
+    content: 'DPkg::Post-Invoke { "dpkg -V proxmox-widget-toolkit | grep -q '\''/proxmoxlib\.js$'\''; if [ $? -eq 1 ]; then { echo '\''Removing subscription nag from UI...'\''; sed -i '\''/.*data\.status.*{/{s/\!//;s/active/NoMoreNagging/}'\'' /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js; }; fi"; };'
+    backup: true
+  when:
+    - disable_subscription_nag | bool
+    - not nag_script_exists.stat.exists
+  notify: reinstall proxmox widget toolkit
+  tags:
+    - subscription
+    - nag
+
+- name: Flush handlers to ensure widget toolkit is reinstalled
+  meta: flush_handlers
+  when:
+    - disable_subscription_nag | bool
+    - not nag_script_exists.stat.exists
+  tags:
+    - subscription
+    - nag

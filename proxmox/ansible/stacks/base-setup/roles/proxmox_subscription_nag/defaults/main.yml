@@ -1,0 +1,5 @@
+---
+# Default variables for proxmox_subscription_nag role
+
+# Whether to disable the subscription nag message
+disable_subscription_nag: true
