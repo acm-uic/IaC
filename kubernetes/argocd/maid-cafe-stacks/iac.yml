@@ -12,7 +12,7 @@ spec:
   source:
     path: kubernetes/argocd/maid-cafe-stacks/appsets
     repoURL: 'git@github.com:acm-uic/IaC.git' 
-    targetRevision: 'feature/maid-cafe-argo-helm'
+    targetRevision: 'main'
   syncPolicy:
     automated:
       prune: true
