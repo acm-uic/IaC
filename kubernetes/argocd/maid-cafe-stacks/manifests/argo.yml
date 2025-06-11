@@ -1,0 +1,32 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: 'argocd'
+  namespace: argocd
+spec:
+  sources:
+    - repoURL: 'https://argoproj.github.io/argo-helm'
+      targetRevision: 8.0.14
+      chart: argo-cd
+      helm:
+        valueFiles:
+          - $values/kubernetes/argocd/maid-cafe-stacks/helm_charts/argocd/values.yml
+    - path: kubernetes/argocd/maid-cafe-stacks/helm_charts/argocd
+      repoURL: 'git@github.com:acm-uic/IaC.git'
+      targetRevision: 'main'
+      ref: values
+      directory:
+        recurse: true
+        include: '*.yml'
+        exclude: values.yml
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: arogcd
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      prune: true
+      selfHeal: true
