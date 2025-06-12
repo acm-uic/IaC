@@ -34,7 +34,7 @@ The repo is split by major technologies to better organize the various codebases
 
 ## Maid Café (junior) mobile rack
 
-Maid Cafe is the server stack in the rack labeled "junior." (currently underneath "nempty" the recycling rack) on the back wall of the current acm office.
+Maid Café is the server stack in the rack labeled "junior." (currently underneath "nempty" the recycling rack) on the back wall of the current ACM office.
 
 It consists of 5 hypervisors (proxmox) and raspberry PIs (wifi enabled: maidcafe) with ipv6!!!
 
