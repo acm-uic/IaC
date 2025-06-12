@@ -23,7 +23,7 @@ spec:
   project: default
   destination:
     server: https://kubernetes.default.svc
-    namespace: arogcd
+    namespace: argocd
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
