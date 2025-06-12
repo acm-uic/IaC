@@ -32,7 +32,7 @@ The repo is split by major technologies to better organize the various codebases
 ```
 
 
-## Maid Cafe (junior) mobile rack
+## Maid Café (junior) mobile rack
 
 Maid Cafe is the server stack in the rack labeled "junior." (currently underneath "nempty" the recycling rack) on the back wall of the current acm office.
 
