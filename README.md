@@ -30,3 +30,16 @@ The repo is split by major technologies to better organize the various codebases
     └── ansible - This is where all Ansible code resides for deployed Raspberry Pis
         └── playbooks - This folder is a folder of folders, each subfolder contains Ansible playbooks to configure Raspberry Pis
 ```
+
+
+## Maid Café (junior) mobile rack
+
+Maid Café is the server stack in the rack labeled "junior." (currently underneath "nempty" the recycling rack) on the back wall of the current ACM office.
+
+It consists of 5 hypervisors (proxmox) and raspberry PIs (wifi enabled: maidcafe) with ipv6!!!
+
+We are (as you can see in the code) implementing kubernetes on this cluster:
+
+  see helm charts for deployed applications
+
+  argocd for orchestration of deployment on kubernetes.
