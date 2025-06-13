@@ -24,7 +24,7 @@ spec:
         recurse: true
         include: '*.yml'
         exclude: values.yml
-  project: default
+  project: system
   syncPolicy:
     automated:
       prune: true
