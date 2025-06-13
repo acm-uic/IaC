@@ -1,0 +1,49 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bitnami
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  name: bitnami
+  url: https://charts.bitnami.com/bitnami
+  type: helm
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: external-dns
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  name: external-dns
+  url: https://kubernetes-sigs.github.io/external-dns/
+  type: helm
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: azure-workload-identity
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  name: azure-workload-identity
+  url: https://azure.github.io/azure-workload-identity/charts
+  type: helm
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cilium
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  name: cilium
+  url: https://helm.cilium.io/
+  type: helm
+---

@@ -1,0 +1,31 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cilium
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: kube-system
+    server: https://kubernetes.default.svc
+  sources:
+    - repoURL: 'https://helm.cilium.io/'
+      targetRevision: 1.17.4
+      chart: cilium
+      helm:
+        valueFiles:
+          - $values/kubernetes/argocd/maid-cafe-stacks/helm_charts/cilium/values.yml
+    - path: kubernetes/argocd/maid-cafe-stacks/helm_charts/cilium
+      repoURL: 'git@github.com:acm-uic/IaC.git'
+      targetRevision: HEAD
+      ref: values
+      directory:
+        recurse: true
+        include: '*.yml'
+        exclude: values.yml
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
