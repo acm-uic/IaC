@@ -8,7 +8,7 @@ spec:
   destination:
     namespace: argocd
     server: https://kubernetes.default.svc
-  project: default
+  project: system
   sources:
     - path: kubernetes/argocd/maid-cafe-stacks/appsets
       repoURL: 'git@github.com:acm-uic/IaC.git' 
