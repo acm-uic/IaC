@@ -1,0 +1,31 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: metallb
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: metallb-system
+    server: https://kubernetes.default.svc
+  sources:
+    - repoURL: 'https://metallb.github.io/metallb'
+      targetRevision: 0.15.2
+      chart: metallb
+      helm:
+        valueFiles:
+          - $values/kubernetes/argocd/maid-cafe-stacks/helm_charts/metallb/values.yml
+    - path: kubernetes/argocd/maid-cafe-stacks/helm_charts/metallb
+      repoURL: 'git@github.com:acm-uic/IaC.git'
+      targetRevision: HEAD
+      ref: values
+      directory:
+        recurse: true
+        include: '*.yml'
+        exclude: values.yml
+  project: system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

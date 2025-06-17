@@ -47,3 +47,14 @@ stringData:
   url: https://helm.cilium.io/
   type: helm
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: metallb
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  name: metallb
+  url: https://metallb.github.io/metallb
+  type: helm
