@@ -1,7 +1,4 @@
 ---
-frrk8s:
-  enabled: true
-
 speaker:
   frr:
     enabled: true
