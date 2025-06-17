@@ -21,11 +21,7 @@ spec:
   - fd2b:9a1d:cafe:9::7d2-fd2b:9a1d:cafe:9::1000
 ---
 apiVersion: metallb.io/v1beta1
-kind: BGPAdvertisement
+kind: L2Advertisement
 metadata:
-  name: maid-cafe-bgp
+  name: maid-cafe-l2
   namespace: metallb-system
-spec:
-  ipAddressPools:
-    - maid-cafe-pool
-  aggregationLength: 32
