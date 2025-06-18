@@ -9,3 +9,14 @@ spec:
       stop: "172.25.9.254"
     - start: "fd2b:9a1d:cafe:9::7d2"
       stop: "fd2b:9a1d:cafe:9::1000"
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: Gateway
+metadata:
+  name: maid-cafe-gateway
+spec:
+  gatewayClassName: cilium
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
