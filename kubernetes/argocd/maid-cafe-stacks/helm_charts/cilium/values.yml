@@ -39,3 +39,9 @@ gatewayAPI:
 ingressController:
   default: true
   enabled: true
+
+l2announcements:
+  enabled: true
+
+ipv6:
+  enabled: true
