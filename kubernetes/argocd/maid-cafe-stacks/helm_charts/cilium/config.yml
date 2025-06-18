@@ -4,7 +4,7 @@ kind: CiliumLoadBalancerIPPool
 metadata:
   name: "maid-cafe-pool"
 spec:
-  cidrs:
+  blocks:
     - start: "172.25.9.31"
       stop: "172.25.9.254"
     - start: "fd2b:9a1d:cafe:9::7d2"
