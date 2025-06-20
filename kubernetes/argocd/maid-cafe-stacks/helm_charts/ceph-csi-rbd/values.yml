@@ -1,0 +1,10 @@
+---
+
+instanceID: acm-maid-cafe
+
+storageClass:
+  create: true
+  name: ceph-rbd
+  provisionerSecretNamespace: ceph-csi-rbd
+  controllerExpandSecretNamespace: ceph-csi-rbd
+  nodeStageSecretNamespace: ceph-csi-rbd

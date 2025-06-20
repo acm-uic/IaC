@@ -1,0 +1,31 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ceph-csi-rbd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: ceph-csi-rbd
+    server: https://kubernetes.default.svc
+  sources:
+    - repoURL: 'https://ceph.github.io/csi-charts'
+      targetRevision: 3.14.0
+      chart: ceph-csi-rbd
+      helm:
+        valueFiles:
+          - $values/kubernetes/argocd/maid-cafe-stacks/helm_charts/ceph-csi-rbd/values.yml
+    - path: kubernetes/argocd/maid-cafe-stacks/helm_charts/ceph-csi-rbd
+      repoURL: 'git@github.com:acm-uic/IaC.git'
+      targetRevision: HEAD
+      ref: values
+      directory:
+        recurse: true
+        include: '*.yml'
+        exclude: values.yml
+  project: system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
