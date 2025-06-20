@@ -30,7 +30,7 @@ spec:
       prune: true
       selfHeal: true
   ignoreDifferences:
-    - group: core
+    - group: ""
       kind: Service
       jqPathExpressions:
-        - .spec.ports[].nodePort
+        - '.spec.ports[] | select(.nodePort != null) | .nodePort'
