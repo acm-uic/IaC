@@ -9,6 +9,7 @@ storageClass:
   controllerExpandSecretNamespace: ceph-csi-rbd
   nodeStageSecretNamespace: ceph-csi-rbd
   clusterID: 7acc144e-b8df-4a78-9db7-47dd5a8cd854
+  pool: kubernetes
 
 csiConfig:
   - clusterID: 7acc144e-b8df-4a78-9db7-47dd5a8cd854
