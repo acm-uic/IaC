@@ -9,3 +9,12 @@ storageClass:
   controllerExpandSecretNamespace: ceph-csi-rbd
   nodeStageSecretNamespace: ceph-csi-rbd
   clusterID: 7acc144e-b8df-4a78-9db7-47dd5a8cd854
+
+csiConfig:
+  - clusterID: 7acc144e-b8df-4a78-9db7-47dd5a8cd854
+    monitors:
+      -172.25.8.2:6789
+      -172.25.8.3:6789
+      -172.25.8.4:6789
+      -172.25.8.5:6789
+      -172.25.8.6:6789
