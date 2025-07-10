@@ -157,7 +157,7 @@ spec:
             - name: WORDPRESS_DB_NAME
               value: "edtwordpress"
           command: ["/bin/sh"]
-          args: ["-c", "docker-php-ext-install pdo_mysql && docker-entrypoint.sh apache2-foreground"]
+          args: ["-c", "docker-php-ext-install pdo_mysql && apache2-foreground"]
 ---
 apiVersion: v1
 kind: ServiceAccount
