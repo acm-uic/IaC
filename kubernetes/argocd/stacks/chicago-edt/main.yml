@@ -156,6 +156,8 @@ spec:
                   key: db_password
             - name: WORDPRESS_DB_NAME
               value: "edtwordpress"
+          command: ["/bin/sh"]
+          args: ["-c", "docker-php-ext-install pdo_mysql && docker-php-ext-enable pdo_mysql && ./docker-entrypoint.sh"]
 ---
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultAuth
