@@ -93,7 +93,8 @@ spec:
         app.kubernetes.io/name: chicago-edt
     spec:
       securityContext:
-        fsGroup: 1
+        runAsUser: 1
+        runAsGroup: 1
       volumes:
         - name: wp-data
           persistentVolumeClaim:
