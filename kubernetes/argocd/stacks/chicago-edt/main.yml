@@ -132,6 +132,7 @@ spec:
                   key: db_password
             - name: MYSQL_RANDOM_ROOT_PASSWORD
               value: "1"
+          command: ["mariadb"]
         - name: wordpress
           image: wordpress@sha256:483ce1761cdf5580e0259f68498d6e5e331dd6038fe339c9538420a26f21275f
           ports:
