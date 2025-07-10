@@ -1,0 +1,200 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: chicago-edt-ingress
+  namespace: chicago-edt
+  annotations:
+    external-dns.alpha.kubernetes.io/target: app.acmuic.org
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: "Host(`edtvm.acmuic.org`)"
+      services:
+        - kind: Service
+          name: chicago-edt-svc
+          namespace: chicago-edt
+          passHostHeader: true
+          port: http
+          responseForwarding:
+            flushInterval: 1ms
+          scheme: http
+          strategy: RoundRobin
+          weight: 10
+  tls:
+    secretName: chicago-edt-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: chicago-edt-tls
+spec:
+  dnsNames:
+    - edtvm.acmuic.org
+  secretName: chicago-edt-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: acmuic-self-ca
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wordpress-pvc
+  namespace: chicago-edt
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: nfs
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database-pvc
+  namespace: chicago-edt
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: nfs
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wordpress-cfg
+  namespace: chicago-edt
+data:
+  htaccess-append: |
+    php_value upload_max_filesize 2048M
+    php_value post_max_size 2048M
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chicago-edt
+  namespace: chicago-edt
+spec:
+  strategy:
+    type:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: chicago-edt
+  template:
+    metadata:
+      annotations:
+      labels:
+        app.kubernetes.io/name: chicago-edt
+    spec:
+      volumes:
+        - name: wp-data
+          persistentVolumeClaim:
+            claimName: wordpress-pvc
+        - name: wp-db
+          persistentVolumeClaim:
+            claimName: database-pvc
+        - name: configs
+          configMap:
+            name: wordpress-cfg
+      initContainers:
+        - name: htaccess-init
+          image: busybox:latest
+          command: ["sh", "-c", "cat /cfgmap/htaccess-append | tee -a /data/.htaccess"]
+          volumeMounts:
+            - name: wp-data
+              mountPath: /data
+            - name: configs
+              mountPath: /cfgmap
+      containers:
+        - name: wordpress-db
+          image: mariadb@sha256:6e177005751b9055a5af897a57f8433a54b1c219c08a8433efa53cd4c7206ddd
+          volumeMounts:
+            - name: wp-db
+              mountPath: /var/lib/mysql
+          env:
+            - name: MYSQL_DATABASE
+              value: "edtwordpress"
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: chicago-edt-db-creds
+                  key: db_user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chicago-edt-db-creds
+                  key: db_password
+            - name: MYSQL_RANDOM_ROOT_PASSWORD
+              value: "1"
+        - name: wordpress
+          image: wordpress@sha256:483ce1761cdf5580e0259f68498d6e5e331dd6038fe339c9538420a26f21275f
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - name: wp-data
+              mountPath: /var/www/html
+          env:
+            - name: WORDPRESS_DB_HOST
+              value: "localhost:3306"
+            - name: WORDPRESS_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: chicago-edt-db-creds
+                  key: db_user
+            - name: WORDPRESS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chicago-edt-db-creds
+                  key: db_password
+            - name: WORDPRESS_DB_NAME
+              value: "edtwordpress"
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: chicago-edt-vault-static-auth
+  namespace: chicago-edt
+spec:
+  method: kubernetes
+  mount: kubernetes
+  namespace: chicago-edt
+  kubernetes:
+    role: chicago-edt
+    serviceAccount: chicago-edt
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: chicago-edt-db-creds
+  namespace: chicago-edt
+spec:
+  vaultAuthRef: chicago-edt-vault-static-auth
+  type: kv-v2
+  mount: kv
+  path: chicago-edt
+  destination:
+    name: chicago-edt-db-creds
+    create: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chicago-edt-svc
+  namespace: chicago-edt
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: chicago-edt

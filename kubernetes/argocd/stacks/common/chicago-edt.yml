@@ -1,0 +1,26 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: chicago-edt
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: chicago-edt
+    server: 'https://kubernetes.default.svc'
+  sources:
+    - path: kubernetes/argocd/stacks/chicago-edt
+      repoURL: 'git@github.com:acm-uic/IaC.git'
+      targetRevision: HEAD
+      directory:
+        recurse: true
+        include: '*.yml'
+        exclude: values.yml
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
