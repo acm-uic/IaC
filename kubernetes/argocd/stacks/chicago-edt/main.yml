@@ -92,6 +92,9 @@ spec:
       labels:
         app.kubernetes.io/name: chicago-edt
     spec:
+      securityContext:
+        runAsUser: 1
+        runAsGroup: 1
       volumes:
         - name: wp-data
           persistentVolumeClaim:
