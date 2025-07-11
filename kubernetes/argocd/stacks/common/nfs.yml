@@ -13,38 +13,6 @@ metadata:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: nfs-subdir-external-provisioner
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  destination:
-    namespace: nfs
-    server: 'https://kubernetes.default.svc'
-  source:
-    repoURL: 'https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner'
-    targetRevision: 4.0.18
-    chart: nfs-subdir-external-provisioner
-    helm:
-      parameters:
-        - name: nfs.server
-          value: truenas.acmuic.org
-        - name: nfs.path
-          value: /mnt/pool/kubernetes-storage
-        - name: storageClass.name
-          value: nfs
-        - name: storageClass.accessModes
-          value: ReadWriteMany
-        - name: nfs.mountOptions[0]
-          value: nfsvers=4
-  project: default
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
   name: csi-driver-nfs
   annotations:
     argocd.argoproj.io/sync-wave: "1"
