@@ -46,7 +46,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: nfs-csi
+  storageClassName: nfs-right-perms-csi
   resources:
     requests:
       storage: 20Gi
@@ -59,10 +59,10 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: nfs-csi
+  storageClassName: nfs-right-perms-csi
   resources:
     requests:
-      storage: 2Gi
+      storage: 10Gi
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -92,9 +92,6 @@ spec:
       labels:
         app.kubernetes.io/name: chicago-edt
     spec:
-      securityContext:
-        runAsUser: 1
-        runAsGroup: 1
       volumes:
         - name: wp-data
           persistentVolumeClaim:
@@ -160,7 +157,7 @@ spec:
             - name: WORDPRESS_DB_NAME
               value: "edtwordpress"
           command: ["/bin/sh"]
-          args: ["-c", "docker-php-ext-install pdo_mysql && apache2-foreground"]
+          args: ["-c", "docker-php-ext-install pdo_mysql && docker-entrypoint.sh apache2-foreground"]
 ---
 apiVersion: v1
 kind: ServiceAccount
