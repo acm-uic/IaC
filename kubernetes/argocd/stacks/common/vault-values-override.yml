@@ -78,7 +78,7 @@ server:
     azure.workload.identity/use: "true"
   serviceAccount:
     annotations:
-      azure.workload.identity/client-id: 399e1023-bcf4-4ed7-9374-3a6de2f03cd7
+      azure.workload.identity/client-id: 399e1023-bcf4-4ed7-9374-3a6de2f03cd7 # https://portal.azure.com/#@acmuic.org/resource/subscriptions/2f98793b-7e2f-4f03-ac5b-7b2ec934dcd7/resourceGroups/acm-general/providers/Microsoft.ManagedIdentity/userAssignedIdentities/on-prem-k8s-vault/overview
   volumes:
     - name: userconfig-vault-ha-tls
       secret:
