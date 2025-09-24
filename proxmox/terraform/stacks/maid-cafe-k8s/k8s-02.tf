@@ -64,6 +64,7 @@ resource "proxmox_vm_qemu" "k8s_02" {
   lifecycle {
     ignore_changes = [
       vm_state,
+      disk,
     ]
   }
 
