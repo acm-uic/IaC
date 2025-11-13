@@ -44,3 +44,13 @@ ingressController:
 
 l2announcements:
   enabled: true
+
+envoy:
+  enabled: true
+  securityContext:
+    capabilities:
+      keepCapNetBindService: true
+      envoy:
+      - NET_ADMIN
+      - SYS_ADMIN
+      - NET_BIND_SERVICE
