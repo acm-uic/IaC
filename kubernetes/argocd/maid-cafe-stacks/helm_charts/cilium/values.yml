@@ -42,6 +42,3 @@ ingressController:
 
 l2announcements:
   enabled: true
-
-ipv6:
-  enabled: true
