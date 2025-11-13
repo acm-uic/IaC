@@ -22,13 +22,11 @@ spec:
          namespaces:
            from: All
     - name: https
+      hostname: "*.cafe.acmuic.org"
       port: 443
-      protocol: HTTPS
+      protocol: TLS
       allowedRoutes:
         namespaces:
           from: All
       tls:
-        mode: Terminate
-        certificateRefs:
-        - kind: Secret
-          name: maid-cafe-gateway-tls
+        mode: Passthrough
