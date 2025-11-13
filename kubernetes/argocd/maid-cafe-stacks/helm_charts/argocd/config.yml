@@ -6,6 +6,7 @@ metadata:
 spec:
   parentRefs:
   - name: maid-cafe-gateway
+    namespace: kube-system
   hostnames:
   - cd.cafe.acmuic.org
   rules:
