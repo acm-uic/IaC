@@ -6,6 +6,8 @@ metadata:
 spec:
   parentRefs:
   - name: maid-cafe-gateway
+  hostnames:
+  - cd.cafe.acmuic.org
   rules:
   - backendRefs:
     - name: argocd-server
