@@ -35,6 +35,8 @@ gatewayAPI:
   enabled: true
   enableAlpn: true
   enableAppProtocol: true
+  hostNetwork:
+    enabled: true
 
 ingressController:
   default: true
