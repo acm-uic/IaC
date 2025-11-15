@@ -17,3 +17,7 @@ repoServer:
 
 applicationSet:
   replicas: 2
+
+configs:
+  params:
+    server.insecure: true
