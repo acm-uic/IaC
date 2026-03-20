@@ -35,12 +35,3 @@ resource "azurerm_dns_cname_record" "playground_acmuic_org" {
   ttl                 = 300
   record              = "acm.cs.uic.edu"
 }
-
-
-resource "azurerm_dns_cname_record" "status_acmuic_org" {
-  name                = "status"
-  zone_name           = data.azurerm_dns_zone.acmuic_org.name
-  resource_group_name = azurerm_resource_group.acm_general.name
-  ttl                 = 300
-  record              = "acm-uic.github.io"
-}
