@@ -36,7 +36,6 @@ resource "azurerm_dns_cname_record" "playground_acmuic_org" {
   record              = "acm.cs.uic.edu"
 }
 
-
 resource "azurerm_dns_cname_record" "status_acmuic_org" {
   name                = "status"
   zone_name           = data.azurerm_dns_zone.acmuic_org.name
