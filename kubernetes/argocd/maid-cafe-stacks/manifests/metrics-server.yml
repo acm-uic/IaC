@@ -15,7 +15,7 @@ spec:
       chart: metrics-server
       helm:
         valueFiles:
-          - $values/kubernetes/metrics-server/maid-cafe-stacks/helm_charts/metrics-server/values.yml
+          - $values/kubernetes/argocd/maid-cafe-stacks/helm_charts/metrics-server/values.yml
     - path: kubernetes/argocd/maid-cafe-stacks/helm_charts/metrics-server
       repoURL: 'git@github.com:acm-uic/IaC.git'
       targetRevision: HEAD
