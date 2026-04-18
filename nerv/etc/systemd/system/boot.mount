@@ -1,0 +1,11 @@
+[Unit]
+Description="Mount boot partition"
+
+[Mount]
+What=LABEL=boot
+Where=/boot
+Type=auto
+Options=defaults
+
+[Install]
+WantedBy=local-fs.target

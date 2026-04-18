@@ -1,0 +1,23 @@
+[Unit]
+Description=Deal with bootc problems
+After=multi-user.target
+
+[Service]
+Type=oneshot
+# Command to execute
+ExecStart="bash /etc/nerv-runtime-cfg.sh"
+User=root
+Group=root
+# Working directory
+WorkingDirectory=/
+# Keep the service marked as active after it completes
+RemainAfterExit=yes
+# Restart policy (usually no for oneshot)
+Restart=no
+# Standard output handling
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+# Install in multi-user target for late initialization
+WantedBy=multi-user.target

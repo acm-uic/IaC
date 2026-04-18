@@ -1,0 +1,26 @@
+[Unit]
+Description=Start Vault Agent with auto-auth
+After=network-online.target
+After=nerv-realm-join.service
+# Fail loudly if these preconditions are not met.
+AssertPathExists=/etc/krb5.keytab
+AssertPathExists=/etc/vault-agent/config.hcl.in
+AssertPathExists=/etc/vault-agent/run.sh
+AssertFileIsExecutable=/usr/local/bin/vault
+
+# Run vault agent as a background service to keep logged in.
+# Uses kerberos login method.
+# A shell script wrapper is needed to get the machine "username"
+# which in AD is hostname all caps + '$'
+# Eg. "FOO$" if foo is /etc/hostname
+
+[Service]
+# This is a belt-and-suspenders to make sure the script is executable.
+ExecStartPre=/usr/bin/chmod +x /etc/vault-agent/run.sh
+# Run the wrapper script which will 'exec' vault agent
+ExecStart=/usr/bin/bash /etc/vault-agent/run.sh
+WorkingDirectory=/etc/vault-agent
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

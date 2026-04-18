@@ -1,0 +1,14 @@
+[Unit]
+Description=Mount NFS share from truenas.acmuic.org
+After=network-online.target
+After=my-setup.service
+Wants=network-online.target
+
+[Mount]
+What=truenas.acmuic.org:/mnt/pool/nerv
+Where=/shared
+Type=nfs
+Options=rw,noatime,vers=4.2,rsize=1048576,wsize=1048576,namlen=255,hard,proto=tcp,timeo=100,retrans=2,sec=sys,async,nconnect=16,actimeo=120,clientaddr=0.0.0.0
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,49 @@
+#!/usr/bin/env sh
+
+echo '##### POST INSTALL #####'
+
+# change hostname for each machine!
+MY_HOSTNAME="HOSTNAME"
+SOURCE_IMAGE="REGISTRY.IO/REPO/baseos:latest"
+AZURE_CR_PASSWD="CONTAINER_REG_PASSWD"
+REALM_JOIN_PASSWD="ACTIVEDIRECTORY_BIND_PASSWORD"
+
+mkdir -p /var/secrets
+mkdir -p /var/etc
+
+echo "$MY_HOSTNAME" > /var/etc/hostname
+
+
+echo "$REALM_JOIN_PASSWD" > /var/secrets/realm-join-password
+
+
+maybe_hostname=$(cat /etc/hostname)
+
+
+# Registry secrets
+# cat <<EOF > /var/secrets/auth.json 
+# Posix SH dont have heredoc lmao
+# Make sure base64 doesnt have trailing newline.... Thanks bash
+echo '
+{
+	"auths": {
+		 "acmuic.azurecr.io" : {
+		 		     "auth": "REGISTRY_PASSWD_BASE64"
+		 }
+	}	
+}' > /var/secrets/auth.json
+# EOF
+
+echo "$AZURE_CR_PASSWD" > /var/secrets/registry-login
+
+# ln -s /var/secrets/auth.json /etc/containers/auth.json
+# mkdir -p ${XDG_RUNTIME_DIR}/containers
+# ln -s /var/secrets/auth.json "/run/user/0/containers/auth.json"
+# ln -s /var/secrets/auth.json /etc/ostree/auth.json
+
+echo "podman login REGISTRY_URL -u acmuic -p $AZURE_CR_PASSWD" >> /root/.bashrc
+
+bootc switch --mutate-in-place --transport registry "$SOURCE_IMAGE"
+
+
+

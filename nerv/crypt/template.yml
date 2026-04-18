@@ -1,0 +1,5 @@
+{{- with secret "kv/data/nerv" -}}
+{{ range $key, $value := .Data.data }}
+{{- $key -}}: {{ printf "%q" $value }}
+{{ end }}
+{{- end -}}

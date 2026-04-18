@@ -1,0 +1,8 @@
+
+add manual partitioning
+remove bootloader verb
+https://github.com/rhinstaller/anaconda/pull/5298
+
+https://github.com/CentOS/centos-bootc/pull/72/files
+
+dont use pykickstart documentation, use rhel9 docs

@@ -1,0 +1,32 @@
+vault {
+  address = "https://vault.acmuic.org"
+  tls_skip_verify = "true"
+}
+
+# vault login -method=kerberos -address=https://vault.acmuic.org
+# -tls-skip-verify username="BOOTC-TEST$"
+# krb5conf_path=/etc/krb5.conf.d/nerv-cfg keytab_path=/etc/krb5.keytab
+# realm=ACMUIC.ORG disable_fast_negotiation=true
+# service=hcvault/vault.acmuic.org
+auto_auth {
+  method "kerberos" {
+    config = {
+      # vault krb5.conf parser cant cope with include directives
+      # this could be done better...
+      krb5conf_path = "/etc/krb5.conf.d/nerv-cfg"
+      keytab_path = "/etc/krb5.keytab"
+      realm = "ACMUIC.ORG"
+      # This will be sed'ed in from the run.sh script
+      username = "@username@"
+      service = "hcvault/vault.acmuic.org"
+      # This is needed
+      disable_fast_negotiation = true
+    }
+  }
+
+  sink "file" {
+    config = {
+      path = "./vault-token" # Later used by the vault wrapper script.
+    }
+  }
+}

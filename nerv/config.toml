@@ -1,0 +1,31 @@
+[customizations.installer.kickstart]
+contents = """
+text --non-interactive
+eula --agreed
+zerombr
+clearpart --all --initlabel --disklabel=gpt
+part /boot --size=1000 --label=boot --fstype=ext4
+part /boot/efi --size 512 --label=esp --fstype=vfat
+part / --grow --fstype=ext4 --label=root
+network --bootproto=dhcp --activate --onboot=on --hostname=CHANGETHIS
+keyboard us
+lang en_US
+timezone America/Chicago
+skipx
+selinux --disabled
+rootpw fakepassword
+
+
+
+%post --erroronfail
+
+curl http://your.http.server:port/post.sh | sh
+
+echo 'Post script code: $?'
+%end
+"""
+
+# 
+#part /boot --size=1000 --label=boot
+#part / --grow --fstype ext4
+#reqpart

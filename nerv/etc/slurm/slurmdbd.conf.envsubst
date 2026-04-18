@@ -1,0 +1,6 @@
+DbdHost=misato
+DbdAddr=misato.acmuic.org
+SlurmUser=slurm
+StorageHost=localhost
+StoragePass=${slurmdbd_password}
+StorageType=accounting_storage/mysql

@@ -1,0 +1,15 @@
+[Unit]
+Description=Early Machine ID Setup
+DefaultDependencies=no
+Conflicts=shutdown.target
+Before=systemd-journald.service systemd-tmpfiles-setup.service
+After=systemd-remount-fs.service
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/unlink /etc/machine-id
+ExecStart=/usr/bin/ln -s /var/etc/machine-id /etc/
+RemainAfterExit=yes
+
+[Install]
+RequiredBy=sysinit.target

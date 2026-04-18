@@ -1,0 +1,11 @@
+[Unit]
+Description="Mount efi partition"
+After=boot.mount
+
+[Mount]
+What=LABEL=esp
+Where=/boot/efi
+Type=auto
+
+[Install]
+WantedBy=local-fs.target
