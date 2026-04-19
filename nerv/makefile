@@ -1,4 +1,4 @@
-%:
+latest: Containerfile usr etc
 	ssh root@bootc-builder.acmuic.org "rm -rf bootc/nerv/"
 	rsync -avzhP --exclude="*.iso" $(PWD)/ root@bootc-builder.acmuic.org:bootc/nerv/
 	ssh root@bootc-builder.acmuic.org "cd bootc/nerv/ && ./gen.sh $(@)"
@@ -6,7 +6,7 @@
 
 .DEFAULT_GOAL := latest
 
-all: latest both
+all: both
 
 
 
