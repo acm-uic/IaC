@@ -1,0 +1,27 @@
+[logging]
+    default = FILE:/var/log/krb5libs.log
+    kdc = FILE:/var/log/krb5kdc.log
+    admin_server = FILE:/var/log/kadmind.log
+
+[libdefaults]
+    dns_lookup_realm = false
+    ticket_lifetime = 24h
+    renew_lifetime = 7d
+    forwardable = true
+    rdns = false
+    pkinit_anchors = FILE:/etc/pki/tls/certs/ca-bundle.crt
+    spake_preauth_groups = edwards25519
+#    dns_canonicalize_hostname = fallback
+    qualify_shortname = ""
+    default_ccache_name = KEYRING:persistent:%{uid}
+    udp_preference_limit = 0
+    default_realm = ACMUIC.ORG
+    k5login_authoritative = false
+
+[realms]
+ACMUIC.ORG = {
+	   kdc = addc1.acmuic.org
+	   admin_server = addc1.acmuic.org
+	   master_kdc = addc1.acmuic.org
+	   default_domain = addc1.acmuic.org
+}

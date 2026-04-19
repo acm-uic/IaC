@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+# SOPS is weird because it wants some params as env vars and some others on the
+# cli.
+# The environment var set below tells sops to use the ssh ed25519 hostkey
+# of the machine for decrypting with age.
+
+set -eu
+# make sure the name of the FUCKING 500 char environment var is correct.
+export SOPS_AGE_SSH_PRIVATE_KEY_FILE="/var/etc/ssh/ssh_host_ed25519_key"
+
+exec _sops "$@"

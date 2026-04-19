@@ -1,0 +1,191 @@
+# -*- mode: dockerfile-ts; -*-
+FROM docker.io/hashicorp/vault AS vault-ctx
+FROM quay.io/centos-bootc/centos-bootc:stream9
+
+# IMPORTANT: DO **NOT** end a comment with the BACKSLASH character!
+# This will make it escape the newline ending the comment,
+# causing the following line to be commented as well!!!
+# BADD!!!
+# This means do NOT simply use editors comment-line feature on lines ending in
+# BACKSLASH
+# Eg. long RUN statements with BACKSLASH+NEWLINE for formatting.
+
+### BEGIN Nvidia Crap
+# Enable CRB repo
+RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked dnf config-manager --set-enabled crb
+
+# Install epel-release
+RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked  dnf -y install epel-release
+
+# Install cuda repo from nvidia
+RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/cuda-rhel9.repo && \
+    dnf clean expire-cache
+
+# install dnf module and cuda and THE ACTUAL KERNEL MODULE packages.
+RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked dnf -y module enable nvidia-driver:latest-dkms && \
+    dnf -y install "nvidia-driver-cuda" "kmod-nvidia-latest-dkms"
+
+# Remove nouveu and selinux
+RUN mkdir -p /usr/lib/bootc/kargs.d && echo -e 'kargs = ["rd.driver.blacklist=nouveau", "selinux=0"]\n' >> /usr/lib/bootc/kargs.d/00-nvidia.toml
+
+# What the fuck?
+# Run dkms at build time cause it fails due to immutability at run time
+# Nvidia non-dkms fails because 500iq dependency hell
+RUN kver=$(cd /usr/lib/modules; echo *); /usr/sbin/dkms autoinstall --verbose --kernelver "$kver"
+
+### END Nvidia Crap
+
+# Realm join stuff
+RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked dnf install -y realmd sssd adcli oddjob oddjob-mkhomedir samba-common-tools krb5-workstation authselect-compat authselect mosh neovim nvidia-container-toolkit
+
+# Invoke authselect in the container
+# the oddjob thing won't work over nfs due to CVEs
+# This sed business probably isn't gonna hold for long...
+# TODO: make newly created home directories only readable by owning user.
+RUN mkdir -p /var/lib/authselect && authselect select sssd with-mkhomedir with-gssapi with-files-domain -q -f --nobackup --debug --trace && sed --debug -i s/pam_oddjob_mkhomedir.so/pam_mkhomedir.so/g /etc/pam.d/{system,password}-auth
+
+
+# Bootc/OSTree settings
+# This tells it to make /, /etc "transient"
+# aka reset on boot.
+# IMPORTANT!
+RUN echo -e '[composefs]\nenabled = true\n[etc]\ntransient=true\n[root]\ntransient=true\n' >> /usr/lib/ostree/prepare-root.conf
+
+# Rebuild initramfs
+RUN kver=$(cd /usr/lib/modules && echo *); dracut -vf /usr/lib/modules/$kver/initramfs.img "$kver"
+
+
+# /etc is not writeable at runtime, but is at container build time.
+RUN usermod --password '$6$Ocqm7B3V69CYjv5s$06PS5HAxSq6Jh1gXaJCrBH3m/h.xoXqBvMgttqdP.L46xhlwoPTpNTG8bMF1OWAcT08Me2YJROGwMUdaa9GsM/' root
+
+# Sets up locale and timezone by manually calling systemd's bootstrapping utility
+RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked dnf install -y langpacks-en
+RUN systemd-firstboot --locale=en_US.UTF-8 --keymap=us --timezone=America/Chicago
+
+# Man isnt installed by default?
+RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked dnf install -y man
+
+# Make space for NFS mount via home.mount
+# Note that /home is a symlink to inside /var
+RUN unlink /home
+
+# Fetch Hashicorp vault binary from their container
+# Prefixed with _ to enable wrapper in /usr/local/bin/vault
+COPY --from=vault-ctx --chown=root:root --chmod=0755 /bin/vault /usr/local/bin/_vault
+
+# ADD command can fetch from the interwebz
+# note that github does a bunch of redirects for the releases URL
+# but podman build seems to cope fine.
+# Do not forget to chmod otherwise it won't be executable.
+ADD \
+  --checksum=sha256:79b0f844237bd4b0446e4dc884dbc1765fc7dedc3968f743d5949c6f2e701739 \
+  --chown=0755 --chown=root:root \
+  https://github.com/getsops/sops/releases/download/v3.10.2/sops-v3.10.2.linux.amd64 \
+  /usr/local/bin/_sops
+
+# Make sure to create /var/{lib,log}/munge in tpmfiles.d
+# with appropriate perms
+# The dirs are made when it is installed imperatively via ssh
+# but not in containerfile
+# production ready technology btw.
+RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked dnf install -y munge
+
+# Copy sops encrypted file to easily accessible place.
+# Note that this makes it reset on boot!
+COPY crypt/enc.yml /sops.yml
+
+# Install slurm
+# SlurmDBD needs MariaDB
+RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked dnf install -y \
+    slurm slurm-slurmd slurm-slurmctld slurm-slurmdbd \
+    mariadb mariadb-server
+
+# Add slurm user
+RUN useradd --comment "slurm user" --no-create-home --system --uid 69 \
+    --user-group slurm
+
+# Containerfiles are dumb and wont let me fold this line properly
+RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked dnf group \
+    install -y 'Development Tools'
+
+# Spack user
+# NFS is slow as shit. Do not use NFS for spack building.
+RUN useradd --comment "spack user" --no-create-home --system --user-group \
+    --home-dir /shared/spack --no-create-home spack
+
+# Install some default tools, rest can be gotten from spack/guix/etc.
+# Add random dnf installs here
+# $$DNF
+# <2026-04-17 Fri>
+# Unfortunately the cuda packages are too large and blow up the image size,
+# so they need to be procured via spack or whatever.
+RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked dnf install -y \
+    git cmake make tcpdump rsync gcc-toolset-14 \
+    gcc-toolset-14-gcc-gfortran gcc-toolset-14-runtime \
+    gcc-toolset-14-binutils gdb gdb-doc \
+    traceroute nmon iperf3 Lmod screen
+
+# gcc-toolset-14 transitively installs the OLD TCL-based modules stuff
+# which DOESNT conflict with Lmod, but overwrites the profile.d/module.sh
+# symlink, through update-alternatives.
+# Tell alternatives to go back to Lmod.
+RUN update-alternatives --set modules.sh /usr/share/lmod/lmod/init/profile
+
+RUN ln -s /opt/rh/gcc-toolset-14/enable /etc/profile.d/20-new-gcc.sh
+
+# This makes changing any file in the local etc or usr folder invalidate the
+# cache for the rest of the file.
+# Make sure this is done before any of the
+# systemd services etc are referenced.  Having expensive statements below this
+# will cause them to be run more often than needed as the caching algorithm will
+# invalidate them.  Only have commands that depend on the contents of the local
+# etc or usr after this point.
+COPY etc/ /etc/
+COPY usr/ /usr/
+
+# Double check binaries/scripts are executable,
+# this has bitten me too many times
+RUN chmod +x /usr/local/bin/*
+RUN chmod +x /usr/nerv/*.sh
+
+#  -------------------------------------
+# | No Dnf installing after this point! |
+# --------------------------------------
+
+# Enable the various units we created in /etc or those installed by packages.
+# Since we override upstream units in local etc, this has to come after
+# etc is copied.
+# Note that an alternative is to manually create the symlinks in usr
+# with 'foo.wants' folders, but thats kinda annoying.
+# <2025-11-30 Sun>
+# nvidia-persistenced is required to make sure /dev/nvidia0 is *always* there
+# and that the GPU doesnt go to sleep which will give slurm a stroke.
+
+RUN systemctl enable boot.mount \
+    boot-efi.mount \
+    nerv-realm-join \
+    fuck-machineid.service \
+    oddjobd shared.mount \
+    vault-agent.service \
+    munge.service \
+    slurmd.service \
+    slurmctld.service \
+    slurmdbd.service \
+    mariadb.service \
+    nvidia-persistenced.service
+
+# Nag-ware
+RUN systemctl disable bootc-publish-rhsm-facts.service \
+    rhsmcertd.service
+
+# Why doesnt this shit start by itself???
+# Update: it was some machine-id bs
+# RUN systemctl add-wants sysinit.target systemd-journald
+
+
+RUN rm -rf /var/log/*.log
+
+#m4_include(`guix.m4')
+
+
+RUN bootc container lint

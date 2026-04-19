@@ -1,0 +1,11 @@
+#  Set SOPS_AGE_SSH_PRIVATE_KEY_FILE
+creation_rules:
+  - hc_vault_transit_uri: "https://vault.acmuic.org/v1/nerv-sops/keys/main"
+    age: |-
+        ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHZrFYn96f4U8UOPd4xJ+Ff/hA+ddnUNVDDHIfhvAiN3,
+        ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIK5guz19w+5GxMeGTP1YAxpVa3xKehQL0vUWZn4rLxe,
+        ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILyVIMy6SVhQ1eOyfrG5Rta6kmxxtt8hZ47pCbjg2aIs,
+        ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGdwfZC803JFKIqux6HBzJliJH5uIkHQI/j/IItemcEr,
+        ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPuQlZL9zjEh6dyptYfLQ7AFrlmLP6gINRyLLG/XoLBs sohamg@nixos,
+        ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILRGDGUA9YeD4dRfWOpnRBrmXL6+yAeLt0DeTpGzO+kM 
+      

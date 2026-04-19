@@ -1,0 +1,24 @@
+[Unit]
+Description=Join ActiveDirectory with ADCLI
+After=network-online.target
+AssertPathExists=/var/secrets/realm-join-password
+AssertPathExists=/usr/nerv/adcli.sh
+
+[Service]
+Type=oneshot
+ExecCondition=/usr/bin/test ! -e /var/secrets/krb5.keytab
+ExecStartPre=/usr/bin/chmod +x /usr/nerv/adcli.sh
+ExecStart=/usr/bin/bash /usr/nerv/adcli.sh
+ExecStopPost=/usr/bin/ln -sf /var/secrets/krb5.keytab /etc/krb5.keytab
+User=root
+Group=root
+WorkingDirectory=/
+RemainAfterExit=yes
+Restart=no
+StandardInput=file:/var/secrets/realm-join-password
+StandardOutput=journal
+StandardError=inherit
+
+[Install]
+# Install in multi-user target for late initialization
+WantedBy=multi-user.target
