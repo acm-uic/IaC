@@ -32,14 +32,13 @@ The repo is split by major technologies to better organize the various codebases
 ```
 
 
-## Maid Café (junior) mobile rack
+## Maid Café rack
 
-Maid Café is the server stack in the rack labeled "junior." (currently underneath "nempty" the recycling rack) on the back wall of the current ACM office.
+[Maid Café](https://acm-uic.github.io/docs/infrastructure/maid-caf%C3%A9/about) is the server stack on the back wall of the current ACM office (CDRLC 2433).
 
-It consists of 5 hypervisors (proxmox) and raspberry PIs (wifi enabled: maidcafe) with ipv6!!!
+It consists of 5 hypervisors (proxmox) and raspberry PIs (wifi enabled: `Maid Café`) with ipv6!!!
 
-We are (as you can see in the code) implementing kubernetes on this cluster:
+We are (as you can see in the [code](kubernetes/argocd/maid-cafe-stacks/)) implementing kubernetes on this cluster:
 
-  see helm charts for deployed applications
-
-  argocd for orchestration of deployment on kubernetes.
+- see helm charts for deployed applications.
+- argocd for orchestration of deployment on kubernetes.
