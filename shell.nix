@@ -15,7 +15,7 @@ mkShell {
   ];
 
   shellHook = ''
-      export KUBECONFIG = "$PWD/k8s-kubeconfig";
+      export KUBECONFIG="$PWD/k8s-kubeconfig";
       export VAULT_ADDR="https://vault.acmuic.org"
       export VAULT_SKIP_VERIFY="true"
   '';
