@@ -1,0 +1,29 @@
+server addc1.acmuic.org
+update add rei.acmuic.org 3600 IN SSHFP 1 1 251c44f7678404a2a3ad4a1a3412144e9bcc6303
+update add rei.acmuic.org 3600 IN SSHFP 1 2 dd8cb7d7bd983054a78b6f9329ae66c7a8d4724590f74b12582918ab326a4409
+update add rei.acmuic.org 3600 IN SSHFP 3 1 edfaebedd7e90c7fcd2f2e8dedf8713736545ffa
+update add rei.acmuic.org 3600 IN SSHFP 3 2 c5ce9d193afdb006bfbf0af290c8bb37ee2448fe7b80169a066a0eeb5eb07567
+update add rei.acmuic.org 3600 IN SSHFP 4 1 28e38bf5c69e3ba0bbcf0085c440e51e2e645365
+update add rei.acmuic.org 3600 IN SSHFP 4 2 d9df8250aa97619539d610ab5d88bfdc71e498b96c4debca5395c451d1216566
+update add shinji.acmuic.org 3600 IN SSHFP 1 1 251c44f7678404a2a3ad4a1a3412144e9bcc6303
+update add shinji.acmuic.org 3600 IN SSHFP 1 2 dd8cb7d7bd983054a78b6f9329ae66c7a8d4724590f74b12582918ab326a4409
+update add shinji.acmuic.org 3600 IN SSHFP 3 1 edfaebedd7e90c7fcd2f2e8dedf8713736545ffa
+update add shinji.acmuic.org 3600 IN SSHFP 3 2 c5ce9d193afdb006bfbf0af290c8bb37ee2448fe7b80169a066a0eeb5eb07567
+update add shinji.acmuic.org 3600 IN SSHFP 4 1 28e38bf5c69e3ba0bbcf0085c440e51e2e645365
+update add shinji.acmuic.org 3600 IN SSHFP 4 2 d9df8250aa97619539d610ab5d88bfdc71e498b96c4debca5395c451d1216566
+update add asuka.acmuic.org 3600 IN SSHFP 1 1 251c44f7678404a2a3ad4a1a3412144e9bcc6303
+update add asuka.acmuic.org 3600 IN SSHFP 1 2 dd8cb7d7bd983054a78b6f9329ae66c7a8d4724590f74b12582918ab326a4409
+update add asuka.acmuic.org 3600 IN SSHFP 3 1 edfaebedd7e90c7fcd2f2e8dedf8713736545ffa
+update add asuka.acmuic.org 3600 IN SSHFP 3 2 c5ce9d193afdb006bfbf0af290c8bb37ee2448fe7b80169a066a0eeb5eb07567
+update add asuka.acmuic.org 3600 IN SSHFP 4 1 28e38bf5c69e3ba0bbcf0085c440e51e2e645365
+update add asuka.acmuic.org 3600 IN SSHFP 4 2 d9df8250aa97619539d610ab5d88bfdc71e498b96c4debca5395c451d1216566
+update add misato.acmuic.org 3600  IN SSHFP 1 1 251c44f7678404a2a3ad4a1a3412144e9bcc6303
+update add misato.acmuic.org 3600  IN SSHFP 1 2 dd8cb7d7bd983054a78b6f9329ae66c7a8d4724590f74b12582918ab326a4409
+update add misato.acmuic.org 3600  IN SSHFP 3 1 edfaebedd7e90c7fcd2f2e8dedf8713736545ffa
+update add misato.acmuic.org 3600  IN SSHFP 3 2 c5ce9d193afdb006bfbf0af290c8bb37ee2448fe7b80169a066a0eeb5eb07567
+update add misato.acmuic.org 3600  IN SSHFP 4 1 28e38bf5c69e3ba0bbcf0085c440e51e2e645365
+update add misato.acmuic.org 3600  IN SSHFP 4 2 d9df8250aa97619539d610ab5d88bfdc71e498b96c4debca5395c451d1216566
+show
+gsstsig
+send
+answer
