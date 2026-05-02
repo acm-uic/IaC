@@ -28,6 +28,9 @@ RUN --mount=type=cache,target=/var/cache/dnf,sharing=locked dnf -y module enable
 # Remove nouveu and selinux
 RUN mkdir -p /usr/lib/bootc/kargs.d && echo -e 'kargs = ["rd.driver.blacklist=nouveau", "selinux=0"]\n' >> /usr/lib/bootc/kargs.d/00-nvidia.toml
 
+# https://copy.fail
+RUN mkdir -p /usr/lib/bootc/kargs.d && echo -e 'kargs = ["initcall_blacklist=algif_aead_init"]\n' >> /usr/lib/bootc/kargs.d/10-copyfail.toml
+
 # What the fuck?
 # Run dkms at build time cause it fails due to immutability at run time
 # Nvidia non-dkms fails because 500iq dependency hell
