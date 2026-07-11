@@ -20,6 +20,8 @@ spec:
         exclude: values.yml
   project: system
   syncPolicy:
+    syncOptions:
+      - ServerSideApply=true
     automated:
       prune: true
       selfHeal: true
