@@ -2,6 +2,9 @@ global:
   # -- Common labels for all object directly managed by this chart.
   commonLabels: {}
 
+  # -- Overrides the Docker registry globally for all images
+  imageRegistry: null
+
 # -- Overrides the chart's name
 nameOverride: ""
 
@@ -41,6 +44,7 @@ tempo:
   #    cpu: 2000m
   #    memory: 6Gi
 
+  streamOverHttpEnabled: false
   memBallastSizeMbs: 1024
   multitenancyEnabled: false
   # -- If true, Tempo will report anonymous usage data about the shape of a deployment to Grafana Labs
@@ -171,7 +175,6 @@ tempo:
           endpoint: 0.0.0.0:6831
         thrift_http:
           endpoint: 0.0.0.0:14268
-    opencensus:
     otlp:
       protocols:
         grpc:
@@ -200,6 +203,7 @@ tempo:
 # -- Tempo configuration file contents
 # @default -- Dynamically generated tempo configmap
 config: |
+    stream_over_http_enabled: {{ .Values.tempo.streamOverHttpEnabled }}
     memberlist:
       cluster_label: "{{ .Release.Name }}.{{ .Release.Namespace }}"
     multitenancy_enabled: {{ .Values.tempo.multitenancyEnabled }}
@@ -383,6 +387,12 @@ podLabels: {}
 
 # Apply extra labels to common labels.
 extraLabels: {}
+
+# -- Add initContainers to the Tempo StatefulSet
+initContainers: []
+
+# -- Add extra containers to the Tempo StatefulSet
+extraContainers: []
 
 # -- Volumes to add
 extraVolumes: []
