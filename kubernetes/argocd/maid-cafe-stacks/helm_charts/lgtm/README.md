@@ -10,8 +10,8 @@ This is the helm template rendering of each of LGTM components we want for ArgoC
 
 Assuming we are at `kubernetes/argocd/maid-cafe-stacks/helm_charts/lgtm/`, run these to produce the charts
 ```
-helm template grafana-community/<l,g,t> -f values/<l,g,t>-values.yml \
-                --namespace monitoring > <l,g,t>.yaml
+helm template grafana-community/<l,g,t> -f values/<l,g,t>-values.yaml \
+                --namespace monitoring > <l,g,t>.yml
 ```
 
 For Mimir specifically,
