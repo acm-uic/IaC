@@ -151,6 +151,6 @@ metadata:
     argocd.argoproj.io/secret-type: repository
 stringData:
   name: acm-helm
-  url: https://acm.cs.uic.edu/helm
+  url: https://acm-uic.github.io/helm
   type: helm
 ---
