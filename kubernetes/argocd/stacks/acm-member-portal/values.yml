@@ -1,0 +1,7 @@
+---
+imagePullSecrets:
+  - name: pull-creds
+database:
+  enabled: true
+  storage:
+    storageClass: nfs-csi

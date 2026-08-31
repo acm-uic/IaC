@@ -1,0 +1,28 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: acm-member-portal
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: acm-portal
+    server: 'https://kubernetes.default.svc'
+  sources:
+    - repoURL: 'https://acm.cs.uic.edu/helm'
+      targetRevision: 0.1.0
+      chart: 'acm-member-portal'
+      path: 'helm'
+      helm:
+        valueFiles:
+          - $values/kubernetes/argocd/stacks/acm-member-portal/values.yml
+    - path: kubernetes/argocd/stacks/acm-member-portal
+      repoURL: 'git@github.com:acm-uic/IaC.git'
+      targetRevision: HEAD
+      ref: values
+      directory:
+        recurse: true
+        include: '*.yml'
+        exclude: values.yml
+  project: sigweb
