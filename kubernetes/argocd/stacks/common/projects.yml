@@ -37,6 +37,7 @@ spec:
   - 'https://helm.releases.hashicorp.com'
   - 'https://kubernetes-sigs.github.io/metrics-server/'
   - 'https://azure.github.io/azure-workload-identity/charts'
+  - 'https://cloudnative-pg.github.io/charts'
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
