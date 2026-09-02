@@ -70,10 +70,24 @@ resource "kubernetes_secret_v1" "portal" {
 
   type = "Opaque"
 
+  lifecycle {
+    ignore_changes = [data, binary_data]
+  }
+}
+
+resource "kubernetes_secret_v1_data" "portal" {
+  metadata {
+    name      = kubernetes_secret_v1.portal.metadata[0].name
+    namespace = kubernetes_secret_v1.portal.metadata[0].namespace
+  }
+
   data = {
     BETTER_AUTH_SECRET      = random_password.auth.result
     MICROSOFT_CLIENT_ID     = azuread_application.portal.client_id
     MICROSOFT_CLIENT_SECRET = azuread_application_password.portal.value
     MICROSOFT_TENANT_ID     = data.azuread_client_config.current.tenant_id
   }
+
+  field_manager = "terraform-acm-member-portal"
+  force         = true
 }

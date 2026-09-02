@@ -1,8 +1,14 @@
 # ACM member portal Terraform stack
 
-Entra app registration for the member portal, plus the `portal-secrets` Kubernetes Secret (`BETTER_AUTH_SECRET` and `MICROSOFT_*`).
+Entra app registration for the member portal, plus the `portal-secrets` Kubernetes Secret.
 
-Helm / Argo CD deploy the app from `kubernetes/argocd/stacks/acm-member-portal`. SMTP, Discord, and Windows API keys are not managed here. Add them to the same Secret after apply. `kubernetes_secret_v1` replaces the whole object, so those extra keys are wiped on the next apply or client-secret rotation. Re-add them, or move them to a second Secret.
+Terraform patches `BETTER_AUTH_SECRET` and `MICROSOFT_*`. Other keys (SMTP, Discord, Windows API) can live on the same Secret and are left alone on apply.
+
+Helm / Argo CD deploy the app from `kubernetes/argocd/stacks/acm-member-portal`. If `portal-secrets` already exists, import the stub Secret before the first apply:
+
+```bash
+terraform import kubernetes_secret_v1.portal acm-portal/portal-secrets
+```
 
 ## Requirements
 
