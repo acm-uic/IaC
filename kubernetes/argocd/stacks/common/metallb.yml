@@ -24,10 +24,12 @@ spec:
     chart: metallb
     helm:
       values: |
-        # L2 advertisement only. The official chart defaults to FRR-K8s BGP.
+        # L2 advertisement only. The official chart defaults to FRR-K8s BGP
+        # and schedules speakers on control-plane nodes.
         speaker:
           frr:
             enabled: false
+          tolerateMaster: false
         frrk8s:
           enabled: false
   project: default
