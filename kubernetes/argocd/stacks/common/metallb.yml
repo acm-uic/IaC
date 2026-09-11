@@ -19,9 +19,17 @@ spec:
     namespace: metallb-system
     server: 'https://kubernetes.default.svc'
   source:
-    repoURL: 'https://charts.bitnami.com/bitnami'
-    targetRevision: 4.5.5
+    repoURL: 'https://metallb.github.io/metallb'
+    targetRevision: 0.16.1
     chart: metallb
+    helm:
+      values: |
+        # L2 advertisement only. The official chart defaults to FRR-K8s BGP.
+        speaker:
+          frr:
+            enabled: false
+        frrk8s:
+          enabled: false
   project: default
   syncPolicy:
     automated:
