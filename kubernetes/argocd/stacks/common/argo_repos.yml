@@ -26,18 +26,6 @@ stringData:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: mayastor
-  namespace: argocd
-  labels:
-    argocd.argoproj.io/secret-type: repository
-stringData:
-  name: mayastor
-  url: https://openebs.github.io/mayastor-extensions
-  type: helm
----
-apiVersion: v1
-kind: Secret
-metadata:
   name: hashicorp
   namespace: argocd
   labels:
@@ -45,18 +33,6 @@ metadata:
 stringData:
   name: hashicorp
   url: https://helm.releases.hashicorp.com
-  type: helm
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: rimusz
-  namespace: argocd
-  labels:
-    argocd.argoproj.io/secret-type: repository
-stringData:
-  name: rimusz
-  url: https://charts.rimusz.net
   type: helm
 ---
 apiVersion: v1
