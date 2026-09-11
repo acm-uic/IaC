@@ -119,9 +119,10 @@ kind: Service
 metadata:
   name: radius
   namespace: radius
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: 172.29.8.102
 spec:
   type: LoadBalancer
-  loadBalancerIP: 172.29.8.102
   ports:
     - name: radius
       protocol: UDP
