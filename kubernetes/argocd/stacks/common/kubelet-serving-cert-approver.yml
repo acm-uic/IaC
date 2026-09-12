@@ -11,7 +11,7 @@ spec:
     server: "https://kubernetes.default.svc"
   source:
     path: kubernetes/argocd/stacks/kubelet-serving-cert-approver
-    repoURL: "git@github.com:acm-uic/IaC.git"
+    repoURL: "https://github.com/acm-uic/IaC.git"
     targetRevision: HEAD
     ref: values
     directory:
