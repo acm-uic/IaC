@@ -5,6 +5,12 @@ global:
     create: false
 redis-ha:
   enabled: true
+  # ecr-public.aws.com timed out on k8s-04; this cluster already pulls public.ecr.aws.
+  image:
+    repository: public.ecr.aws/docker/library/redis
+  haproxy:
+    image:
+      repository: public.ecr.aws/docker/library/haproxy
 controller:
   replicas: 1
 server:
