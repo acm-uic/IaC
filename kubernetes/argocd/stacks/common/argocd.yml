@@ -11,13 +11,13 @@ spec:
     server: 'https://kubernetes.default.svc'
   sources:
     - repoURL: 'https://argoproj.github.io/argo-helm'
-      targetRevision: 7.9.1
+      targetRevision: 8.0.17
       chart: argo-cd
       helm:
         valueFiles:
           - $values/kubernetes/argocd/stacks/argocd/values.yml
     - path: kubernetes/argocd/stacks/argocd
-      repoURL: 'git@github.com:acm-uic/IaC.git'
+      repoURL: 'https://github.com/acm-uic/IaC.git'
       targetRevision: HEAD
       ref: values
       directory:
