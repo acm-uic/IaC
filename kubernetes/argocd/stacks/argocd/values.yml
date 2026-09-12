@@ -20,6 +20,7 @@ configs:
   params:
     server.insecure: true
   cm:
+    url: https://cd.acmuic.org
     timeout.reconciliation: 0s
   secret:
     githubSecret: "TotallyNotASecret"
