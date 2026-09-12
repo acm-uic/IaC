@@ -11,7 +11,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   sources:
     - repoURL: 'https://argoproj.github.io/argo-helm'
-      targetRevision: 5.51.6
+      targetRevision: 7.9.1
       chart: argo-cd
       helm:
         valueFiles:
