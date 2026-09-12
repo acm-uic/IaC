@@ -1,4 +1,8 @@
 ---
+# Chart 10.0.0 defaults NetworkPolicy to true. Keep current Flannel+Traefik reachability.
+global:
+  networkPolicy:
+    create: false
 redis-ha:
   enabled: true
 controller:
@@ -19,6 +23,10 @@ crds:
 configs:
   params:
     server.insecure: true
+    # Chart 9.0.0 default became empty; keep the 8.x ApplicationSet policy.
+    applicationsetcontroller.policy: sync
+    # Chart 9.1.0 redis-ha HAProxy selector replace needs client-side diff.
+    controller.diff.server.side: "false"
   cm:
     url: https://cd.acmuic.org
     timeout.reconciliation: 0s
