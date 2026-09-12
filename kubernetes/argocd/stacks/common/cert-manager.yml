@@ -40,7 +40,9 @@ spec:
   sources:
     - repoURL: 'https://charts.jetstack.io'
       chart: 'cert-manager'
-      targetRevision: 'v1.12.3'
+      targetRevision: 'v1.12.17'
+      helm:
+        skipCrds: true
     - repoURL: 'git@github.com:acm-uic/IaC.git'
       targetRevision: 'HEAD'
       path: 'kubernetes/argocd/stacks/cert-manager'
