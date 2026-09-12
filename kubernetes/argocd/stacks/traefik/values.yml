@@ -1,6 +1,11 @@
 ---
+core:
+  # Existing IngressRoutes still use v2 matcher syntax.
+  # Deprecated since Traefik 3.4; still honored on 3.7.
+  defaultRuleSyntax: v2
 ingressRoute:
   dashboard:
+    enabled: true
     matchRule: Host(`traefik.acmuic.org`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
     entryPoints:
       - websecure
@@ -13,6 +18,9 @@ tlsStore:
   default:
     defaultCertificate:
       secretName: default-cert
+service:
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: "172.29.8.0"
 #ports:
 #  web:
 #    redirectTo: websecure # old syntax!

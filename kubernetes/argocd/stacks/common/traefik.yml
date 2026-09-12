@@ -2,6 +2,30 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
+  name: traefik-crd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  destination:
+    namespace: traefik
+    server: 'https://kubernetes.default.svc'
+  source:
+    repoURL: 'https://github.com/acm-uic/IaC.git'
+    targetRevision: HEAD
+    path: kubernetes/argocd/stacks/traefik
+    directory:
+      include: '*.crds.yaml'
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
   name: traefik
   annotations:
     argocd.argoproj.io/sync-wave: "1"
@@ -11,9 +35,10 @@ spec:
     server: 'https://kubernetes.default.svc'
   sources:
     - repoURL: 'https://traefik.github.io/charts'
-      targetRevision: 23.1.0
+      targetRevision: 41.5.0
       chart: traefik
       helm:
+        skipCrds: true
         valueFiles:
           - $values/kubernetes/argocd/stacks/traefik/values.yml
     - path: kubernetes/argocd/stacks/traefik
