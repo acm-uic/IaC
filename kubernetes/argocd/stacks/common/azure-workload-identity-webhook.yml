@@ -21,6 +21,13 @@ spec:
       helm:
         values: |
           azureTenantID: cad5e02f-bae4-42d6-a06e-4377dd3e386f
+          resources:
+            limits:
+              cpu: 200m
+              memory: 64Mi
+            requests:
+              cpu: 100m
+              memory: 32Mi
   project: infrastructure
   syncPolicy:
     automated:
