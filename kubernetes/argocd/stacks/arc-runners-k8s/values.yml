@@ -1,0 +1,29 @@
+githubConfigUrl: https://github.com/acm-uic
+githubConfigSecret: github-arc
+runnerScaleSetName: acmapp-k8s
+minRunners: 1
+maxRunners: 20
+containerMode:
+  type: kubernetes
+  kubernetesModeWorkVolumeClaim:
+    accessModes: ["ReadWriteOnce"]
+    storageClassName: nfs-right-perms-csi
+    resources:
+      requests:
+        storage: 10Gi
+controllerServiceAccount:
+  namespace: arc-systems
+  name: arc-gha-rs-controller
+template:
+  spec:
+    containers:
+      - name: runner
+        image: ghcr.io/actions/actions-runner:latest
+        command: ["/home/runner/run.sh"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: "1"
+            memory: 1Gi

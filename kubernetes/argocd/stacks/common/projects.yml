@@ -40,6 +40,7 @@ spec:
   - 'https://kubernetes-sigs.github.io/metrics-server/'
   - 'https://azure.github.io/azure-workload-identity/charts'
   - 'https://cloudnative-pg.github.io/charts'
+  - 'ghcr.io/actions/actions-runner-controller-charts'
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only

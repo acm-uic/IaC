@@ -1,0 +1,23 @@
+githubConfigUrl: https://github.com/acm-uic
+githubConfigSecret: github-arc
+runnerScaleSetName: acmapp
+minRunners: 1
+maxRunners: 20
+containerMode:
+  type: dind
+controllerServiceAccount:
+  namespace: arc-systems
+  name: arc-gha-rs-controller
+template:
+  spec:
+    containers:
+      - name: runner
+        image: ghcr.io/actions/actions-runner:latest
+        command: ["/home/runner/run.sh"]
+        resources:
+          requests:
+            cpu: 250m
+            memory: 1Gi
+          limits:
+            cpu: "2"
+            memory: 4Gi

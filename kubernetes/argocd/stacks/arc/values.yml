@@ -1,0 +1,18 @@
+# Helm release name is the Argo CD Application name "arc".
+# Controller SA is therefore arc-gha-rs-controller.
+replicaCount: 1
+serviceAccount:
+  create: true
+  name: arc-gha-rs-controller
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+flags:
+  logLevel: info
+  # Argo CD stamps this on every resource; do not copy it onto ephemeral runners.
+  excludeLabelPropagationPrefixes:
+    - argocd.argoproj.io/instance
