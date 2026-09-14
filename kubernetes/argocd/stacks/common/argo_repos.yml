@@ -130,3 +130,16 @@ stringData:
   url: https://acm-uic.github.io/helm
   type: helm
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: actions-runner-controller-charts
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  name: actions-runner-controller-charts
+  url: ghcr.io/actions/actions-runner-controller-charts
+  type: helm
+  enableOCI: "true"
+---

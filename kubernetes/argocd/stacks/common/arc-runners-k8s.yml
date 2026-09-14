@@ -1,0 +1,33 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: arc-runners-k8s
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: arc-runners-k8s
+    server: 'https://kubernetes.default.svc'
+  sources:
+    - repoURL: ghcr.io/actions/actions-runner-controller-charts
+      targetRevision: 0.14.2
+      chart: gha-runner-scale-set
+      helm:
+        valueFiles:
+          - $values/kubernetes/argocd/stacks/arc-runners-k8s/values.yml
+    - path: kubernetes/argocd/stacks/arc-runners-k8s
+      repoURL: 'https://github.com/acm-uic/IaC.git'
+      targetRevision: HEAD
+      ref: values
+      directory:
+        recurse: true
+        include: '*.yml'
+        exclude: values.yml
+  project: infrastructure
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
