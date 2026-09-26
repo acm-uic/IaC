@@ -22,5 +22,5 @@ terraform {
 
 provider "azuread" {}
 
-# Auth via KUBE_CONFIG_PATH / KUBECONFIG (set on the maid-cafe runner).
+# Auth via KUBE_CONFIG_PATH / KUBECONFIG (set on the acmapp-k8s runner).
 provider "kubernetes" {}

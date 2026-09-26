@@ -22,7 +22,7 @@ jobs:
       TF_WORKSPACE: prod
       TF_IN_AUTOMATION: true
       TF_INPUT: 0
-    runs-on: maid-cafe
+    runs-on: acmapp-k8s
 
     strategy:
       matrix:
