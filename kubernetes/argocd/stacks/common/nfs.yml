@@ -22,7 +22,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   source:
     repoURL: 'https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts'
-    targetRevision: v4.4.0
+    targetRevision: 4.13.4
     chart: csi-driver-nfs
     helm:
       parameters:

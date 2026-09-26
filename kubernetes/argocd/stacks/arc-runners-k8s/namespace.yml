@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: arc-runners-k8s
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: runner-defaults
+  namespace: arc-runners-k8s
+spec:
+  limits:
+    - type: Container
+      default:
+        cpu: "1"
+        memory: 2Gi
+      defaultRequest:
+        cpu: 100m
+        memory: 256Mi
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: arc-runners-k8s
+  namespace: arc-runners-k8s
+spec:
+  hard:
+    # 20 runners + listener + job/service pods spawned in kubernetes mode
+    pods: "61"
+    requests.cpu: "12"
+    requests.memory: 32Gi
+    limits.cpu: "80"
+    limits.memory: 160Gi

@@ -1,23 +1,50 @@
 ---
+# Chart 10.0.0 defaults NetworkPolicy to true. Keep current Flannel+Traefik reachability.
+global:
+  networkPolicy:
+    create: false
 redis-ha:
   enabled: true
+  # ecr-public.aws.com timed out on k8s-04; this cluster already pulls public.ecr.aws.
+  image:
+    repository: public.ecr.aws/docker/library/redis
+  haproxy:
+    image:
+      repository: public.ecr.aws/docker/library/haproxy
 controller:
   replicas: 1
 server:
   autoscaling:
     enabled: true
     minReplicas: 2
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
 repoServer:
   autoscaling:
     enabled: true
     minReplicas: 2
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
 applicationSet:
-  replicaCount: 2
+  replicas: 2
+crds:
+  annotations:
+    argocd.argoproj.io/sync-options: ServerSideApply=true
 configs:
   params:
     server.insecure: true
+    # Chart 9.0.0 default became empty; keep the 8.x ApplicationSet policy.
+    applicationsetcontroller.policy: sync
+    # Chart 9.1.0 redis-ha HAProxy selector replace needs client-side diff.
+    controller.diff.server.side: "false"
   cm:
+    url: https://cd.acmuic.org
     timeout.reconciliation: 0s
+    application.resourceTrackingMethod: label
   secret:
     githubSecret: "TotallyNotASecret"
   rbac:

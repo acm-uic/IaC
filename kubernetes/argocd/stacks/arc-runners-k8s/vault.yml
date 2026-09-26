@@ -1,0 +1,40 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: arc-vault
+  namespace: arc-runners-k8s
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+---
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: arc-vault-static-auth
+  namespace: arc-runners-k8s
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  method: kubernetes
+  mount: kubernetes
+  namespace: arc-runners-k8s
+  kubernetes:
+    role: arc
+    serviceAccount: arc-vault
+---
+# Same Vault path as arc-runners. Role "arc" must include this namespace's arc-vault SA.
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: github-arc
+  namespace: arc-runners-k8s
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  vaultAuthRef: arc-vault-static-auth
+  type: kv-v2
+  mount: kv
+  path: github/arc
+  destination:
+    name: github-arc
+    create: true

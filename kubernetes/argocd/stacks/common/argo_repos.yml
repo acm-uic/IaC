@@ -2,13 +2,13 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: bitnami
+  name: metallb-charts
   namespace: argocd
   labels:
     argocd.argoproj.io/secret-type: repository
 stringData:
-  name: bitnami
-  url: https://charts.bitnami.com/bitnami
+  name: metallb-charts
+  url: https://metallb.github.io/metallb
   type: helm
 ---
 apiVersion: v1
@@ -26,18 +26,6 @@ stringData:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: mayastor
-  namespace: argocd
-  labels:
-    argocd.argoproj.io/secret-type: repository
-stringData:
-  name: mayastor
-  url: https://openebs.github.io/mayastor-extensions
-  type: helm
----
-apiVersion: v1
-kind: Secret
-metadata:
   name: hashicorp
   namespace: argocd
   labels:
@@ -45,18 +33,6 @@ metadata:
 stringData:
   name: hashicorp
   url: https://helm.releases.hashicorp.com
-  type: helm
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: rimusz
-  namespace: argocd
-  labels:
-    argocd.argoproj.io/secret-type: repository
-stringData:
-  name: rimusz
-  url: https://charts.rimusz.net
   type: helm
 ---
 apiVersion: v1
@@ -153,4 +129,17 @@ stringData:
   name: acm-helm
   url: https://acm-uic.github.io/helm
   type: helm
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: actions-runner-controller-charts
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  name: actions-runner-controller-charts
+  url: ghcr.io/actions/actions-runner-controller-charts
+  type: helm
+  enableOCI: "true"
 ---

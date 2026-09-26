@@ -11,11 +11,11 @@ spec:
     server: "https://kubernetes.default.svc"
   sources:
     - repoURL: 'https://kubernetes-sigs.github.io/metrics-server/'
-      targetRevision: 3.11.0
+      targetRevision: 3.12.2
       chart: metrics-server
       helm:
     - path: kubernetes/argocd/stacks/metrics-server
-      repoURL: "git@github.com:acm-uic/IaC.git"
+      repoURL: "https://github.com/acm-uic/IaC.git"
       targetRevision: HEAD
       ref: values
       directory:

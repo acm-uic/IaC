@@ -13,6 +13,7 @@ spec:
     server: '*'
   sourceRepos:
   - 'git@github.com:acm-uic/IaC.git'
+  - 'https://github.com/acm-uic/IaC.git'
   - 'https://acm-uic.github.io/helm'
   roles:
   # A role which provides read-only access to all applications in the project
@@ -33,11 +34,13 @@ spec:
     server: '*'
   sourceRepos:
   - 'git@github.com:acm-uic/IaC.git'
+  - 'https://github.com/acm-uic/IaC.git'
   - 'https://acm-uic.github.io/helm'
   - 'https://helm.releases.hashicorp.com'
   - 'https://kubernetes-sigs.github.io/metrics-server/'
   - 'https://azure.github.io/azure-workload-identity/charts'
   - 'https://cloudnative-pg.github.io/charts'
+  - 'ghcr.io/actions/actions-runner-controller-charts'
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
@@ -57,6 +60,7 @@ spec:
     server: '*'
   sourceRepos:
   - 'git@github.com:acm-uic/IaC.git'
+  - 'https://github.com/acm-uic/IaC.git'
   - 'https://acm-uic.github.io/helm'
   roles:
   # A role which provides read-only access to all applications in the project
@@ -77,28 +81,9 @@ spec:
     server: '*'
   sourceRepos:
   - 'git@github.com:acm-uic/IaC.git'
+  - 'https://github.com/acm-uic/IaC.git'
   - 'https://acm-uic.github.io/helm'
   roles:
   # A role which provides read-only access to all applications in the project
   - name: read-only
     description: Read-only privileges to sparkhacks
----
-apiVersion: argoproj.io/v1alpha1
-kind: AppProject
-metadata:
-  name: bmes
-  namespace: argocd
-spec:
-  clusterResourceWhitelist:
-  - group: '*'
-    kind: '*'
-  destinations:
-  - namespace: 'bmes-wordpress'
-    server: '*'
-  sourceRepos:
-  - 'git@github.com:acm-uic/IaC.git'
-  - 'https://acm-uic.github.io/helm'
-  roles:
-  # A role which provides read-only access to all applications in the project
-  - name: read-only
-    description: Read-only privileges to bmes-wordpress
