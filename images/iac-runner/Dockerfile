@@ -1,7 +1,8 @@
 # Job container for IaC workflows on the acmapp-k8s scale set.
 # The scale set pod stays on ghcr.io/actions/actions-runner. This image
 # adds the CLIs those workflows call inside the job container.
-FROM ghcr.io/actions/actions-runner:latest
+ARG BASE_IMAGE=ghcr.io/actions/actions-runner:latest
+FROM ${BASE_IMAGE}
 
 USER root
 

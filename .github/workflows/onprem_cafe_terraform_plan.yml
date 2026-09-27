@@ -76,4 +76,5 @@ jobs:
         with:
           path: "proxmox/terraform/stacks/${{ matrix.stack }}"
           workspace: ${{ env.TF_WORKSPACE }}
+          parallelism: 1
           var_file: "proxmox/terraform/stacks/${{ matrix.stack }}/configuration/${{ env.TF_WORKSPACE }}.tfvars"
