@@ -1,6 +1,7 @@
 githubConfigUrl: https://github.com/acm-uic
 githubConfigSecret: github-arc
-runnerScaleSetName: acmapp
+# runs-on: acmapp-builder — DinD pool for docker build / container jobs
+runnerScaleSetName: acmapp-builder
 minRunners: 1
 maxRunners: 20
 containerMode:
