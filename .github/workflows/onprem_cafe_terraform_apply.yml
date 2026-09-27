@@ -17,12 +17,18 @@ on:
 permissions:
   contents: read
   id-token: write
+  packages: read
   pull-requests: write
 
 jobs:
   tofu:
     name: 'Tofu Apply'
-    runs-on: maid-cafe
+    runs-on: acmapp-k8s
+    container:
+      image: ghcr.io/acm-uic/iac-runner:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
