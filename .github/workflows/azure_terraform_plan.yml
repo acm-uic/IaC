@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   id-token: write
+  packages: read
   pull-requests: write
 
 jobs:
@@ -22,7 +23,12 @@ jobs:
       TF_WORKSPACE: prod
       TF_IN_AUTOMATION: true
       TF_INPUT: 0
-    runs-on: ubuntu-latest
+    runs-on: acmapp-k8s
+    container:
+      image: ghcr.io/acm-uic/iac-runner:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     strategy:
       matrix:
