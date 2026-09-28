@@ -4,13 +4,8 @@ runnerScaleSetName: acmapp-k8s
 minRunners: 1
 maxRunners: 20
 containerMode:
-  type: kubernetes
-  kubernetesModeWorkVolumeClaim:
-    accessModes: ["ReadWriteOnce"]
-    storageClassName: nfs-right-perms-csi
-    resources:
-      requests:
-        storage: 10Gi
+  # Job pods use an emptyDir on the node instead of an NFS work claim.
+  type: kubernetes-novolume
 controllerServiceAccount:
   namespace: arc-systems
   name: arc-gha-rs-controller
