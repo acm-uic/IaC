@@ -23,7 +23,7 @@ permissions:
 jobs:
   tofu:
     name: 'Tofu Apply'
-    runs-on: acmapp-k8s
+    runs-on: acmapp-builder
     container:
       image: ghcr.io/acm-uic/iac-runner:latest
       credentials:
@@ -64,21 +64,17 @@ jobs:
 
       - name: 'Tofu Format'
         id: fmt
-        uses: dflook/tofu-fmt-check@v1
-        with:
-          path: "proxmox/terraform/stacks/${{ matrix.stack }}"
-          workspace: ${{ env.TF_WORKSPACE }}
+        run: tofu fmt -check -diff -recursive
 
       - name: 'Tofu Validate'
         id: validate
-        uses: dflook/tofu-validate@v1
-        with:
-          path: "proxmox/terraform/stacks/${{ matrix.stack }}"
-          workspace: ${{ env.TF_WORKSPACE }}
+        run: |
+          tofu init -input=false -backend=false
+          tofu validate -no-color
 
       - name: 'Tofu Apply'
         id: apply
-        uses: dflook/tofu-apply@v1
+        uses: dflook/tofu-apply@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

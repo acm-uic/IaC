@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   labeler:
-    runs-on: acmapp-k8s
+    runs-on: acmapp-builder
     container:
       image: ghcr.io/acm-uic/iac-runner:latest
       credentials:
