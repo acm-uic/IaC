@@ -22,7 +22,9 @@ jobs:
       TF_WORKSPACE: prod
       TF_IN_AUTOMATION: true
       TF_INPUT: 0
-    runs-on: ubuntu-latest
+    runs-on: acmapp-k8s
+    container:
+      image: ghcr.io/actions/actions-runner:latest
 
     strategy:
       matrix:

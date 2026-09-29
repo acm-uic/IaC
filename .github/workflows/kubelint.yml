@@ -9,7 +9,9 @@ on:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: acmapp-k8s
+    container:
+      image: ghcr.io/actions/actions-runner:latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3

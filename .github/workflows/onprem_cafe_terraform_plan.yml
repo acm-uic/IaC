@@ -15,7 +15,9 @@ permissions:
 jobs:
   tofu:
     name: 'Tofu PR Plan'
-    runs-on: maid-cafe
+    runs-on: acmapp-k8s
+    container:
+      image: ghcr.io/actions/actions-runner:latest
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
