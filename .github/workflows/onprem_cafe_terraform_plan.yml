@@ -56,17 +56,13 @@ jobs:
 
       - name: 'Tofu Format'
         id: fmt
-        uses: dflook/tofu-fmt-check@v3
-        with:
-          path: "proxmox/terraform/stacks/${{ matrix.stack }}"
-          workspace: ${{ env.TF_WORKSPACE }}
+        run: tofu fmt -check -diff -recursive
 
       - name: 'Tofu Validate'
         id: validate
-        uses: dflook/tofu-validate@v3
-        with:
-          path: "proxmox/terraform/stacks/${{ matrix.stack }}"
-          workspace: ${{ env.TF_WORKSPACE }}
+        run: |
+          tofu init -input=false -backend=false
+          tofu validate -no-color
 
       - name: 'Tofu Plan'
         id: plan
