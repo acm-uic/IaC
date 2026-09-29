@@ -64,21 +64,21 @@ jobs:
 
       - name: 'Tofu Format'
         id: fmt
-        uses: dflook/tofu-fmt-check@v1
+        uses: dflook/tofu-fmt-check@v3
         with:
           path: "proxmox/terraform/stacks/${{ matrix.stack }}"
           workspace: ${{ env.TF_WORKSPACE }}
 
       - name: 'Tofu Validate'
         id: validate
-        uses: dflook/tofu-validate@v1
+        uses: dflook/tofu-validate@v3
         with:
           path: "proxmox/terraform/stacks/${{ matrix.stack }}"
           workspace: ${{ env.TF_WORKSPACE }}
 
       - name: 'Tofu Apply'
         id: apply
-        uses: dflook/tofu-apply@v1
+        uses: dflook/tofu-apply@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

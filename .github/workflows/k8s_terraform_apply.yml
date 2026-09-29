@@ -57,21 +57,21 @@ jobs:
 
       - name: 'Terraform Format'
         id: fmt
-        uses: dflook/terraform-fmt-check@v1
+        uses: dflook/terraform-fmt-check@v3
         with:
           path: "kubernetes/terraform/stacks/${{ matrix.stack }}"
           workspace: ${{ env.TF_WORKSPACE }}
 
       - name: 'Terraform Validate'
         id: validate
-        uses: dflook/terraform-validate@v1
+        uses: dflook/terraform-validate@v3
         with:
           path: "kubernetes/terraform/stacks/${{ matrix.stack }}"
           workspace: ${{ env.TF_WORKSPACE }}
 
       - name: 'Terraform Apply'
         id: apply
-        uses: dflook/terraform-apply@v1
+        uses: dflook/terraform-apply@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
