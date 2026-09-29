@@ -17,6 +17,7 @@ on:
 permissions:
   contents: read
   id-token: write
+  packages: read
   pull-requests: write
 
 jobs:
@@ -24,7 +25,10 @@ jobs:
     name: 'Tofu Apply'
     runs-on: acmapp-k8s
     container:
-      image: ghcr.io/actions/actions-runner:latest
+      image: ghcr.io/acm-uic/iac-runner:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -80,5 +84,6 @@ jobs:
         with:
           path: "proxmox/terraform/stacks/${{ matrix.stack }}"
           workspace: ${{ env.TF_WORKSPACE }}
+          parallelism: 1
           var_file: "proxmox/terraform/stacks/${{ matrix.stack }}/configuration/${{ env.TF_WORKSPACE }}.tfvars"
           auto_approve: ${{ github.event.inputs.auto-approve }}

@@ -8,11 +8,19 @@ on:
       - ".github/labels.yml"
       - ".github/workflows/labels.yml"
 
+permissions:
+  contents: read
+  issues: write
+  packages: read
+
 jobs:
   labeler:
     runs-on: acmapp-k8s
     container:
-      image: ghcr.io/actions/actions-runner:latest
+      image: ghcr.io/acm-uic/iac-runner:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout 🛎
         uses: actions/checkout@v3

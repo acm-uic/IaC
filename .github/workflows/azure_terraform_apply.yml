@@ -11,6 +11,7 @@ on:
 permissions:
   contents: read
   id-token: write
+  packages: read
   pull-requests: write
 
 jobs:
@@ -26,7 +27,10 @@ jobs:
       TF_INPUT: 0
     runs-on: acmapp-k8s
     container:
-      image: ghcr.io/actions/actions-runner:latest
+      image: ghcr.io/acm-uic/iac-runner:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     environment: prod
 
     strategy:
