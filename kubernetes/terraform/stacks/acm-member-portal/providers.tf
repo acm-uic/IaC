@@ -22,5 +22,5 @@ terraform {
 
 provider "azuread" {}
 
-# Auth via KUBE_CONFIG_PATH / KUBECONFIG (set on the acmapp-k8s runner).
+# Auth via KUBE_CONFIG_PATH / KUBECONFIG, or in-cluster config when the job runs as a pod.
 provider "kubernetes" {}

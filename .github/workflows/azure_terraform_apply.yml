@@ -25,7 +25,7 @@ jobs:
       TF_WORKSPACE: prod
       TF_IN_AUTOMATION: true
       TF_INPUT: 0
-    runs-on: acmapp-k8s
+    runs-on: acmapp-builder
     container:
       image: ghcr.io/acm-uic/iac-runner:latest
       credentials:

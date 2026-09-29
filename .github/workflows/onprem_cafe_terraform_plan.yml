@@ -16,7 +16,7 @@ permissions:
 jobs:
   tofu:
     name: 'Tofu PR Plan'
-    runs-on: acmapp-k8s
+    runs-on: acmapp-builder
     container:
       image: ghcr.io/acm-uic/iac-runner:latest
       credentials:
