@@ -10,7 +10,6 @@ permissions:
   contents: read
   id-token: write
   packages: read
-  pull-requests: write
 
 jobs:
   terraform:
@@ -23,7 +22,8 @@ jobs:
       TF_WORKSPACE: prod
       TF_IN_AUTOMATION: true
       TF_INPUT: 0
-    runs-on: acmapp-builder
+    # Kubernetes-mode pool. This job container is a pod, so Terraform uses in-cluster config.
+    runs-on: acmapp-k8s
     container:
       image: ghcr.io/acm-uic/iac-runner:latest
       credentials:
@@ -63,10 +63,9 @@ jobs:
 
       - name: 'Terraform Plan'
         id: plan
-        uses: dflook/terraform-plan@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          path: "kubernetes/terraform/stacks/${{ matrix.stack }}"
-          workspace: ${{ env.TF_WORKSPACE }}
-          var_file: "kubernetes/terraform/stacks/${{ matrix.stack }}/configuration/${{ env.TF_WORKSPACE }}.tfvars"
+        run: |
+          workspace="$TF_WORKSPACE"
+          unset TF_WORKSPACE
+          terraform init -input=false -reconfigure
+          terraform workspace select "$workspace" || terraform workspace new "$workspace"
+          terraform plan -input=false -no-color -var-file="configuration/${workspace}.tfvars"
