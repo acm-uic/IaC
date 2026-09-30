@@ -4,4 +4,4 @@ imagePullSecrets:
 database:
   enabled: true
   storage:
-    storageClass: nfs-csi
+    storageClass: nfs-right-perms-csi
