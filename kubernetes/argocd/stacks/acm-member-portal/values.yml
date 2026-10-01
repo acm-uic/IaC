@@ -1,4 +1,7 @@
 ---
+image:
+  # acm-member-portal commit 2b97bec644c75b5d9371e8306ccefc7be0a72ebb, PR #55.
+  tag: "2b97bec"
 imagePullSecrets:
   - name: pull-creds
 # Matches the numeric runtime user in the portal Dockerfile.
