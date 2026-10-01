@@ -21,6 +21,12 @@ variable "external_dns_namespace" {
   default     = "externaldns"
 }
 
+variable "external_dns_oidc_issuer_url" {
+  type        = string
+  description = "Public Kubernetes service account OIDC issuer used by ExternalDNS"
+  default     = "https://k8s-oidc.acmuic.org"
+}
+
 variable "resource_group_name" {
   type        = string
   description = "Specifies the name of the resource group that resources should be deployed into"
