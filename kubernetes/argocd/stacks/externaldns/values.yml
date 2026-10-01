@@ -24,6 +24,8 @@ registry: txt
 txtOwnerId: default
 domainFilters:
   - acmuic.org
+# ACME solver Ingresses must not publish the internal load balancer address.
+labelFilter: acme.cert-manager.io/http01-solver!=true
 # Keep the target annotations used by the existing IngressRoutes.
 annotationPrefix: external-dns.alpha.kubernetes.io/
 sources:
