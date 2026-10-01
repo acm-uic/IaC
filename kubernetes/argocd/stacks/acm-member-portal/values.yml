@@ -1,6 +1,10 @@
 ---
 imagePullSecrets:
   - name: pull-creds
+# Matches the numeric runtime user in the portal Dockerfile.
+podSecurityContext:
+  runAsUser: 10001
+  runAsGroup: 10001
 database:
   enabled: true
   storage:
