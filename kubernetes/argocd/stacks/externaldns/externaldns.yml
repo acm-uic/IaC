@@ -4,22 +4,16 @@ kind: Namespace
 metadata:
   name: externaldns
 ---
-apiVersion: cert-manager.io/v1
-kind: Certificate
+apiVersion: v1
+kind: ConfigMap
 metadata:
-  name: externaldns-vault-cert
+  name: externaldns-azure-config
   namespace: externaldns
-spec:
-  dnsNames:
-    - "externaldns.acmuic.org"
-    - "*.externaldns.svc"
-  ipAddresses:
-    - 127.0.0.1
-  usages:
-    - server auth
-    - digital signature
-    - key encipherment
-  secretName: externaldns-vault-cert
-  issuerRef:
-    kind: ClusterIssuer
-    name: acmuic-self-ca
+data:
+  azure.json: |
+    {
+      "tenantId": "cad5e02f-bae4-42d6-a06e-4377dd3e386f",
+      "subscriptionId": "2f98793b-7e2f-4f03-ac5b-7b2ec934dcd7",
+      "resourceGroup": "acm-general",
+      "useWorkloadIdentityExtension": true
+    }
