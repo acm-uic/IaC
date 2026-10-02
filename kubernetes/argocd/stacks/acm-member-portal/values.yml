@@ -1,7 +1,8 @@
 ---
 image:
-  # acm-member-portal commit 2b97bec644c75b5d9371e8306ccefc7be0a72ebb, PR #55.
-  tag: "2b97bec"
+  # Follow the latest default-branch build and check GHCR whenever a pod starts.
+  tag: latest
+  pullPolicy: Always
 imagePullSecrets:
   - name: pull-creds
 # Matches the numeric runtime user in the portal Dockerfile.
