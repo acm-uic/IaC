@@ -72,7 +72,7 @@ jobs:
       - name: Save reconciliation plan
         run: |
           umask 077
-          tofu plan -input=false -json -parallelism=1 \
+          tofu plan -input=false -no-color -parallelism=1 \
             -var-file=configuration/prod.tfvars \
             -out="$RUNNER_TEMP/maid-cafe.tfplan"
           tofu show -json "$RUNNER_TEMP/maid-cafe.tfplan" > "$RUNNER_TEMP/maid-cafe.tfplan.json"

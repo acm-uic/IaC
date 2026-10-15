@@ -75,9 +75,12 @@ No backup restore or guest creation is performed.
 
 ## Validation and application
 
-The PR workflow runs formatting/validation, saves a plan, and checks the plan
-policy. Plans contain credentials and guest metadata, so they are never uploaded
-as artifacts or printed with `tofu show`; only the action summary is published.
+The PR and apply workflows run formatting/validation, print the human-readable
+plan in the job log while saving it, and check the plan policy. OpenTofu redacts
+values marked sensitive in this log output. The saved plan and machine-readable
+JSON contain credentials and guest metadata, so they remain private temporary
+files and are never uploaded as artifacts or printed. The safety-check summary
+is published in the job summary.
 
 Application is **manual only** and applies the exact saved plan that passed the
 policy. The incident-disabled apply workflow should remain disabled until this
