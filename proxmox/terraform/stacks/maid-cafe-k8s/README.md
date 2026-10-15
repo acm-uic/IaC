@@ -1,14 +1,19 @@
 # Maid Café guest inventory
 
 This stack adopts the existing **30 QEMU VMs (including templates) and 16 LXC
-containers**. Definitions are split by current hypervisor; labels use the guest
-type and VMID rather than the names of previous occupants of that ID.
-`horchata` currently has no guests.
+containers**. Each guest has its own `<guest-name>.tf` file, preserving the
+name's capitalization. The unnamed guests use Proxmox's display names:
+`VM 104.tf`, `VM 105.tf` and `VM 106.tf`. The HA policy for `bootc-builder`
+is kept alongside its VM definition. Shared imports, outputs and provider
+configuration remain in their respective files. `horchata` currently has no guests.
+
+Resource labels use the guest type and VMID rather than guest names.
 
 The inventory was read from Proxmox on 2026-10-15. Keep the VMID, guest type,
 node, disk storage, MAC addresses, firmware and template flags aligned with the
 actual guest when editing a definition. Renaming a resource label requires an
-explicit state move; reusing a VMID does not transfer ownership to a new guest.
+explicit state move; renaming a file does not change a resource's address.
+Reusing a VMID does not transfer ownership to a new guest.
 
 ## Adoption and state migration
 
@@ -105,49 +110,49 @@ Run that test command from the repository root.
 
 | ID | Type | Node | Guest | Pool |
 | --- | --- | --- | --- | --- |
-| 100 | LXC | boba | cafe-manager | — |
-| 101 | VM | boba | lug-ctf-live-host | — |
-| 102 | VM | coffee | samsCS468PleaseDontTouch | — |
-| 103 | LXC | boba | mc-github-runner | — |
-| 104 | VM | coffee | VM 104 (template) | — |
-| 105 | VM | chai | VM 105 | — |
-| 106 | VM | boba | VM 106 | — |
-| 107 | VM | matcha | taskbox-template (template) | — |
-| 108 | VM | matcha | webserver-template (template) | — |
-| 109 | VM | matcha | db-template (template) | — |
-| 110 | VM | boba | bootc-builder | Bootc |
-| 111 | VM | matcha | bootc-test | Bootc |
-| 112 | VM | matcha | pi-nas | — |
-| 113 | VM | matcha | death-to-ansible | — |
-| 114 | LXC | chai | ani-backend | — |
-| 115 | VM | chai | wicys-attack (template) | — |
-| 116 | VM | chai | wicys-defend (template) | — |
-| 117 | LXC | chai | ani-frontend | — |
-| 118 | LXC | chai | ani-db | — |
-| 119 | LXC | chai | lovebug | — |
-| 120 | LXC | coffee | ansible-test1 | — |
-| 121 | LXC | coffee | ansible-test2 | — |
-| 122 | LXC | boba | sig-ai | — |
-| 123 | LXC | boba | lug-ctf | — |
-| 124 | LXC | coffee | dd-clone-test | — |
-| 125 | LXC | boba | lug-cloudflared | — |
-| 126 | LXC | boba | intotheflame | — |
-| 127 | VM | matcha | ad-template (template) | — |
-| 128 | VM | chai | Samsvm2 | — |
-| 129 | VM | chai | bluetest | — |
-| 130 | LXC | boba | bytetheflame | — |
-| 131 | LXC | boba | weatherapp | — |
-| 132 | VM | matcha | fp-taskbox-01 | FlamePenguins |
-| 133 | VM | matcha | fp-webserver-01 | FlamePenguins |
-| 134 | VM | matcha | fp-db-01 | FlamePenguins |
-| 135 | VM | matcha | fp-ad-01 | FlamePenguins |
-| 136 | VM | matcha | bad-taskbox-01 | 0xbadb002 |
-| 137 | VM | matcha | bad-webserver-01 | 0xbadb002 |
-| 138 | VM | matcha | bad-db-01 | 0xbadb002 |
-| 139 | VM | matcha | bad-ad-01 | 0xbadb002 |
-| 140 | VM | matcha | bp-taskbox-01 | ButterPizza |
-| 141 | VM | matcha | bp-webserver-01 | ButterPizza |
-| 142 | VM | matcha | bp-db-01 | ButterPizza |
-| 143 | VM | matcha | bp-ad-01 | ButterPizza |
-| 144 | VM | boba | lug-ctf-workbench | — |
-| 167 | LXC | coffee | rgw-proxy-1 | — |
+| 100 | LXC | boba | [cafe-manager](<cafe-manager.tf>) | — |
+| 101 | VM | boba | [lug-ctf-live-host](<lug-ctf-live-host.tf>) | — |
+| 102 | VM | coffee | [samsCS468PleaseDontTouch](<samsCS468PleaseDontTouch.tf>) | — |
+| 103 | LXC | boba | [mc-github-runner](<mc-github-runner.tf>) | — |
+| 104 | VM | coffee | [VM 104 (template)](<VM 104.tf>) | — |
+| 105 | VM | chai | [VM 105](<VM 105.tf>) | — |
+| 106 | VM | boba | [VM 106](<VM 106.tf>) | — |
+| 107 | VM | matcha | [taskbox-template (template)](<taskbox-template.tf>) | — |
+| 108 | VM | matcha | [webserver-template (template)](<webserver-template.tf>) | — |
+| 109 | VM | matcha | [db-template (template)](<db-template.tf>) | — |
+| 110 | VM | boba | [bootc-builder](<bootc-builder.tf>) | Bootc |
+| 111 | VM | matcha | [bootc-test](<bootc-test.tf>) | Bootc |
+| 112 | VM | matcha | [pi-nas](<pi-nas.tf>) | — |
+| 113 | VM | matcha | [death-to-ansible](<death-to-ansible.tf>) | — |
+| 114 | LXC | chai | [ani-backend](<ani-backend.tf>) | — |
+| 115 | VM | chai | [wicys-attack (template)](<wicys-attack.tf>) | — |
+| 116 | VM | chai | [wicys-defend (template)](<wicys-defend.tf>) | — |
+| 117 | LXC | chai | [ani-frontend](<ani-frontend.tf>) | — |
+| 118 | LXC | chai | [ani-db](<ani-db.tf>) | — |
+| 119 | LXC | chai | [lovebug](<lovebug.tf>) | — |
+| 120 | LXC | coffee | [ansible-test1](<ansible-test1.tf>) | — |
+| 121 | LXC | coffee | [ansible-test2](<ansible-test2.tf>) | — |
+| 122 | LXC | boba | [sig-ai](<sig-ai.tf>) | — |
+| 123 | LXC | boba | [lug-ctf](<lug-ctf.tf>) | — |
+| 124 | LXC | coffee | [dd-clone-test](<dd-clone-test.tf>) | — |
+| 125 | LXC | boba | [lug-cloudflared](<lug-cloudflared.tf>) | — |
+| 126 | LXC | boba | [intotheflame](<intotheflame.tf>) | — |
+| 127 | VM | matcha | [ad-template (template)](<ad-template.tf>) | — |
+| 128 | VM | chai | [Samsvm2](<Samsvm2.tf>) | — |
+| 129 | VM | chai | [bluetest](<bluetest.tf>) | — |
+| 130 | LXC | boba | [bytetheflame](<bytetheflame.tf>) | — |
+| 131 | LXC | boba | [weatherapp](<weatherapp.tf>) | — |
+| 132 | VM | matcha | [fp-taskbox-01](<fp-taskbox-01.tf>) | FlamePenguins |
+| 133 | VM | matcha | [fp-webserver-01](<fp-webserver-01.tf>) | FlamePenguins |
+| 134 | VM | matcha | [fp-db-01](<fp-db-01.tf>) | FlamePenguins |
+| 135 | VM | matcha | [fp-ad-01](<fp-ad-01.tf>) | FlamePenguins |
+| 136 | VM | matcha | [bad-taskbox-01](<bad-taskbox-01.tf>) | 0xbadb002 |
+| 137 | VM | matcha | [bad-webserver-01](<bad-webserver-01.tf>) | 0xbadb002 |
+| 138 | VM | matcha | [bad-db-01](<bad-db-01.tf>) | 0xbadb002 |
+| 139 | VM | matcha | [bad-ad-01](<bad-ad-01.tf>) | 0xbadb002 |
+| 140 | VM | matcha | [bp-taskbox-01](<bp-taskbox-01.tf>) | ButterPizza |
+| 141 | VM | matcha | [bp-webserver-01](<bp-webserver-01.tf>) | ButterPizza |
+| 142 | VM | matcha | [bp-db-01](<bp-db-01.tf>) | ButterPizza |
+| 143 | VM | matcha | [bp-ad-01](<bp-ad-01.tf>) | ButterPizza |
+| 144 | VM | boba | [lug-ctf-workbench](<lug-ctf-workbench.tf>) | — |
+| 167 | LXC | coffee | [rgw-proxy-1](<rgw-proxy-1.tf>) | — |
