@@ -9,6 +9,11 @@ configuration remain in their respective files. `horchata` currently has no gues
 
 Resource labels use the guest type and VMID rather than guest names.
 
+Historical `k8s-02.tf.disable` through `k8s-08.tf.disable` are retained
+for reference because they have no corresponding active guest file. Terraform
+does not load these files. The old WiCyS disabled files are superseded by
+`wicys-attack.tf` and `wicys-defend.tf`.
+
 The inventory was read from Proxmox on 2026-10-15. Keep the VMID, guest type,
 node, disk storage, MAC addresses, firmware and template flags aligned with the
 actual guest when editing a definition. Renaming a resource label requires an
