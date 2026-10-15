@@ -1,71 +1,72 @@
-resource "proxmox_vm_qemu" "k8s_04" {
-  name        = "k8s-04"
-  target_node = "matcha"
+# Disabled Talos VM definition; Proxmox allocates a new VMID when enabled.
+# Verify the retained MAC and target-node storage before enabling.
+resource "proxmox_virtual_environment_vm" "k8s_04" {
+  name          = "k8s-04"
+  node_name     = "matcha"
+  pool_id       = "Kubernetes"
+  bios          = "ovmf"
+  boot_order    = ["virtio0", "ide2", "net0"]
+  scsi_hardware = "virtio-scsi-single"
+  on_boot       = true
+  started       = false
+  template      = false
+  protection    = true
 
-  # VM Settings
-  onboot   = true
-  memory   = 16384
-  vm_state = "stopped"
-  pool     = "Kubernetes"
+  agent {
+    # Do not wait for a guest agent during ISO installation.
+    enabled = false
+  }
 
-  # CPU settings
   cpu {
     type  = "x86-64-v2-AES"
     cores = 8
   }
 
-  # BIOS/Boot settings
-  bios = "ovmf"
-  boot = "order=virtio0;ide2;net0"
-
-  # EFI disk
-  efidisk {
-    storage = "ceph"
-    efitype = "4m"
+  memory {
+    dedicated = 16384
   }
 
-  # TPM
+  disk {
+    # Allocate a new blank disk; do not attach or clone an existing guest's disk.
+    datastore_id = "local-lvm"
+    interface    = "virtio0"
+    file_format  = "raw"
+    size         = 100
+    iothread     = true
+  }
+
+  efi_disk {
+    datastore_id      = "local-lvm"
+    type              = "4m"
+    pre_enrolled_keys = false
+  }
+
   tpm_state {
-    storage = "ceph"
+    datastore_id = "local-lvm"
+    version      = "v2.0"
   }
 
-  # Network settings
-  network {
-    id       = 0
-    model    = "virtio"
-    bridge   = "speed2"
-    firewall = true
-    tag      = 9
-    macaddr  = "BC:24:11:6A:47:0D"
+  # This existing ISO is the installation source; Talos configuration is separate.
+  cdrom {
+    interface = "ide2"
+    file_id   = "cephfs:iso/taloslinux-cached-amd64-20250528.iso"
   }
 
-  # Main disk (virtio0)
-  disk {
-    slot     = "virtio0"
-    type     = "disk"
-    storage  = "ceph"
-    size     = "100G"
-    iothread = true
+  network_device {
+    model       = "virtio"
+    bridge      = "speed2"
+    firewall    = true
+    vlan_id     = 9
+    mac_address = "BC:24:11:6A:47:0D"
   }
 
-  # SCSI hardware
-  scsihw = "virtio-scsi-single"
-
-  # OS type
-  os_type = "l26"
-
-  # CD-ROM (ide2)
-  disk {
-    slot = "ide2"
-    type = "cdrom"
-    iso  = "cephfs:iso/taloslinux-cached-amd64-20250528.iso"
+  operating_system {
+    type = "l26"
   }
 
   lifecycle {
-    ignore_changes = [
-      vm_state,
-      disk,
-    ]
+    prevent_destroy = true
+    # Create stopped; subsequent runtime power state is operated in Proxmox.
+    ignore_changes = [started]
   }
-
 }

@@ -10,9 +10,14 @@ configuration remain in their respective files. `horchata` currently has no gues
 Existing guest resource labels use the guest type and VMID rather than guest names.
 The new VM uses the distinct address `proxmox_virtual_environment_vm.k8s_01`.
 
-Historical `k8s-02.tf.disable` through `k8s-08.tf.disable` are retained
-for reference because they have no corresponding active guest file. Terraform
-does not load these files. The old WiCyS disabled files are superseded by
+`k8s-02.tf.disable` through `k8s-08.tf.disable` follow the BPG provider
+definition in `k8s-01.tf`, retaining their individual names, nodes, MACs and
+CPU/memory sizes. They use new blank disks on `local-lvm`, UEFI/TPM, the Talos
+ISO, and the same stopped/protected lifecycle. VMIDs are allocated by Proxmox
+rather than reusing VM 168. Terraform does not load these disabled files.
+Before enabling any of them, verify its retained MAC, target-node storage
+and installation source, and review the separate plan-policy change required
+to permit creation. The old WiCyS disabled files are superseded by
 `wicys-attack.tf` and `wicys-defend.tf`.
 
 The inventory was read from Proxmox on 2026-10-15. Keep the VMID, guest type,
