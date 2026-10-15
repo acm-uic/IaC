@@ -3,7 +3,8 @@ name: 'Tofu Plan for Maid Café'
 on:
   pull_request:
     paths:
-      - '.github/workflows/onprem_cafe_terraform_plan.yml'
+      - '.github/workflows/onprem_cafe_terraform_*.yml'
+      - '.github/scripts/*proxmox_plan*.py'
       - 'proxmox/terraform/stacks/**'
   workflow_dispatch:
 
@@ -11,12 +12,25 @@ permissions:
   contents: read
   id-token: write
   packages: read
-  pull-requests: write
+
+concurrency:
+  group: maid-cafe-terraform-prod
+  cancel-in-progress: false
 
 jobs:
+  plan-safety-tests:
+    name: Plan safety regression tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
+
   tofu:
     name: 'Tofu PR Plan'
     runs-on: acmapp-builder
+    strategy:
+      matrix:
+        stack: [maid-cafe-k8s]
     container:
       image: ghcr.io/acm-uic/iac-runner:latest
       credentials:
@@ -27,16 +41,11 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
       ARM_USE_OIDC: true
-      TF_VAR_proxmox_api_token_id: ${{ secrets.PM_CAFE_API_TOKEN_ID}}
+      TF_VAR_proxmox_api_token_id: ${{ secrets.PM_CAFE_API_TOKEN_ID }}
       TF_VAR_proxmox_api_token_secret: ${{ secrets.PM_CAFE_API_TOKEN_SECRET }}
       TF_WORKSPACE: prod
       TF_IN_AUTOMATION: true
       TF_INPUT: 0
-
-    strategy:
-      matrix:
-        stack:
-          - maid-cafe-k8s
 
     defaults:
       run:
@@ -47,30 +56,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Azure CLI setup
+      - name: Azure login
         uses: azure/login@v1
         with:
           client-id: ${{ env.ARM_CLIENT_ID }}
           tenant-id: ${{ env.ARM_TENANT_ID }}
           subscription-id: ${{ env.ARM_SUBSCRIPTION_ID }}
 
-      - name: 'Tofu Format'
-        id: fmt
-        run: tofu fmt -check -diff -recursive
-
-      - name: 'Tofu Validate'
-        id: validate
+      - name: Format and validate
         run: |
-          tofu init -input=false -backend=false
+          tofu fmt -check -diff -recursive
+          tofu init -input=false -no-color
           tofu validate -no-color
 
-      - name: 'Tofu Plan'
-        id: plan
-        uses: dflook/tofu-plan@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          path: "proxmox/terraform/stacks/${{ matrix.stack }}"
-          workspace: ${{ env.TF_WORKSPACE }}
-          parallelism: 1
-          var_file: "proxmox/terraform/stacks/${{ matrix.stack }}/configuration/${{ env.TF_WORKSPACE }}.tfvars"
+      - name: Save reconciliation plan
+        run: |
+          umask 077
+          tofu plan -input=false -no-color -parallelism=1 \
+            -var-file=configuration/prod.tfvars \
+            -out="$RUNNER_TEMP/maid-cafe.tfplan"
+          tofu show -json "$RUNNER_TEMP/maid-cafe.tfplan" > "$RUNNER_TEMP/maid-cafe.tfplan.json"
+
+      - name: Reject unsafe guest changes
+        run: |
+          python3 "$GITHUB_WORKSPACE/.github/scripts/check_proxmox_plan.py" \
+            "$RUNNER_TEMP/maid-cafe.tfplan.json" >> "$GITHUB_STEP_SUMMARY"
+
+      # Saved plans include credentials and guest metadata; never publish them.
+      - name: Remove private plan files
+        if: always()
+        run: |
+          rm -f -- "$RUNNER_TEMP/maid-cafe.tfplan" "$RUNNER_TEMP/maid-cafe.tfplan.json"
