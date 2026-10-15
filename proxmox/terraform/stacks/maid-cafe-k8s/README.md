@@ -1,13 +1,14 @@
 # Maid Café guest inventory
 
 This stack adopts the existing **30 QEMU VMs (including templates) and 16 LXC
-containers**. Each guest has its own `<guest-name>.tf` file, preserving the
-name's capitalization. The unnamed guests use Proxmox's display names:
+containers** and defines one new Talos VM, `k8s-01` (VM 168). Each guest has its
+own `<guest-name>.tf` file, preserving the name's capitalization. The unnamed guests use Proxmox's display names:
 `VM 104.tf`, `VM 105.tf` and `VM 106.tf`. The HA policy for `bootc-builder`
 is kept alongside its VM definition. Shared imports, outputs and provider
 configuration remain in their respective files. `horchata` currently has no guests.
 
-Resource labels use the guest type and VMID rather than guest names.
+Existing guest resource labels use the guest type and VMID rather than guest names.
+The new VM uses the distinct address `proxmox_virtual_environment_vm.k8s_01`.
 
 Historical `k8s-02.tf.disable` through `k8s-08.tf.disable` are retained
 for reference because they have no corresponding active guest file. Terraform
@@ -34,7 +35,8 @@ delete the `removed` block or the legacy provider until every workspace that
 contains that entry has completed adoption. Do not restore an old state file
 over the current guests or re-enable the historical Kubernetes/WiCyS definitions.
 
-The initial adoption plan imports 47 objects and detaches the one legacy entry.
+The initial plan imports 47 existing objects, detaches the one legacy entry,
+and creates only the new VM 168.
 The 16 container updates initialize only Terraform metadata (`vm_id` and
 `timeout_start`); they do not change guest configuration. Validation uses a
 local copy of production state with API writes blocked.
@@ -44,16 +46,41 @@ The backend and workspace remain unchanged: Azure storage
 `prod`. Adoption must use that workspace. Import blocks are idempotent and
 may remain after adoption.
 
+## New Kubernetes VM
+
+[`k8s-01.tf`](k8s-01.tf) defines a new guest at
+`proxmox_virtual_environment_vm.k8s_01`, with VMID **168** on **boba**.
+The old `proxmox_vm_qemu.k8s_01` address remains detached with
+`destroy = false`; it must not be reused to rename or reconfigure VM 107.
+
+The incident run failed with `source must be set on creation` while attempting
+to update `matcha/qemu/107` from `taskbox-template` to `k8s-01`. The new definition
+uses the active BPG provider, allocates a new blank 100 GiB VirtIO disk on
+`local-lvm`, and explicitly attaches the existing
+`cephfs:iso/taloslinux-cached-amd64-20250528.iso` installation source. It retains
+the intended four CPU cores, 4096 MiB RAM, UEFI/TPM, Kubernetes pool, and
+`speed2` network with VLAN 9 and MAC `BC:24:11:84:15:8B`.
+
+VMID 168 and that MAC were unused when checked on 2026-10-15. Boba's ISO,
+bridge, resource pool and available local storage were also verified. The VM
+is created stopped, with autostart enabled and deletion protection. Starting
+the installer and supplying a Talos machine configuration remain separate
+operational steps; this stack does not bootstrap a Kubernetes cluster.
+
 ## Change safeguards
 
 Every managed object has `prevent_destroy = true`. The plan policy also blocks
-creation, deletion, replacement, forgetting state, guest ID/node changes, and SMBIOS UUID mismatches.
+unapproved creation, deletion, replacement, forgetting state, guest ID/node
+changes, and SMBIOS UUID mismatches.
 This second check matters because removing an entire resource definition also
 removes its Terraform lifecycle guard.
 
 The sole permitted state removal is the legacy 107 address, and only when the
-same plan imports `matcha/107` at its new address. New guest creation or deliberate
-decommissioning needs a separate reviewed policy/configuration change.
+same plan imports `matcha/107` at its new address. The sole creation exception is
+`proxmox_virtual_environment_vm.k8s_01` with VMID 168, node `boba`, name `k8s-01`,
+and known stopped, non-template, protected state. This exception never permits
+replacement or adoption of an existing guest. Other new guests or deliberate
+decommissioning need a separate reviewed policy/configuration change.
 
 Power state (`started`) is operated in Proxmox and ignored by Terraform; importing
 a stopped guest must not start it. Autostart flags are explicitly recorded and
@@ -71,7 +98,8 @@ zero is not a valid configured weight. Only `cpu[0].units` is ignored for those
 guests, preserving Proxmox's host default. The required container
 `operating_system.template_file_id = ""` denotes import-only configuration,
 an empty placeholder for the already-existing container; no creation image is selected.
-No backup restore or guest creation is performed.
+Adoption does not restore backups or recreate existing guests. Only the new
+`k8s-01` guest is created when the reviewed plan is applied.
 
 ## Validation and application
 

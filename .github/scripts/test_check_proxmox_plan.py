@@ -1,6 +1,6 @@
 import unittest
 
-from check_proxmox_plan import check_plan
+from check_proxmox_plan import K8S_01_IDENTITY, check_plan
 
 
 def resource(address, actions, before=None, after=None, importing=None, unknown=None):
@@ -28,6 +28,49 @@ class PlanSafetyTests(unittest.TestCase):
         for actions in (["create"], ["delete", "create"], ["create", "delete"]):
             with self.subTest(actions=actions):
                 self.assertTrue(self.errors(resource("guest", actions)))
+
+    def new_k8s(self):
+        guest = resource("proxmox_virtual_environment_vm.k8s_01", ["create"],
+                         after=dict(K8S_01_IDENTITY))
+        guest["type"] = "proxmox_virtual_environment_vm"
+        return guest
+
+    def test_only_the_reviewed_new_k8s_vm_is_allowed(self):
+        self.assertFalse(self.errors(self.new_k8s()))
+        self.assertTrue(self.errors(self.new_k8s(), resource("other", ["create"])))
+        for field, value in (("address", "proxmox_vm_qemu.k8s_01"),
+                             ("type", "proxmox_virtual_environment_container")):
+            with self.subTest(field=field):
+                guest = self.new_k8s()
+                guest[field] = value
+                self.assertTrue(self.errors(guest))
+
+    def test_new_k8s_identity_and_stopped_state_must_be_known_and_match(self):
+        for field, value in (("vm_id", 107), ("node_name", "matcha"),
+                             ("name", "taskbox-template"), ("started", True),
+                             ("template", True), ("protection", False)):
+            with self.subTest(field=field):
+                guest = self.new_k8s()
+                guest["change"]["after"][field] = value
+                self.assertTrue(self.errors(guest))
+                guest = self.new_k8s()
+                guest["change"]["after_unknown"][field] = True
+                self.assertTrue(self.errors(guest))
+
+    def test_new_k8s_exception_never_allows_deletion_or_replacement(self):
+        for actions in (["delete"], ["delete", "create"], ["create", "delete"]):
+            with self.subTest(actions=actions):
+                guest = self.new_k8s()
+                guest["change"]["actions"] = actions
+                self.assertTrue(self.errors(guest))
+
+    def test_new_k8s_exception_never_adopts_or_reuses_existing_state(self):
+        for field, value in (("before", {"id": "107"}),
+                             ("importing", {"id": "matcha/107"})):
+            with self.subTest(field=field):
+                guest = self.new_k8s()
+                guest["change"][field] = value
+                self.assertTrue(self.errors(guest))
 
     def test_import_and_non_identity_update_are_allowed(self):
         self.assertFalse(self.errors(

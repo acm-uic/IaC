@@ -7,6 +7,17 @@ import sys
 from collections import Counter
 
 
+# The only reviewed new guest. Never reuse the legacy Telmate address/VMID 107.
+K8S_01_IDENTITY = {
+    "vm_id": 168,
+    "node_name": "boba",
+    "name": "k8s-01",
+    "started": False,
+    "template": False,
+    "protection": True,
+}
+
+
 def check_plan(plan):
     errors = []
     counts = Counter()
@@ -34,7 +45,17 @@ def check_plan(plan):
             and (change.get("before") or {}).get("id") == "matcha/qemu/107"
             and adopted_template
         )
-        if any(action in actions for action in ("create", "delete", "forget")) and not legacy_detach:
+        after, unknown = change.get("after") or {}, change.get("after_unknown") or {}
+        new_k8s = (
+            address == "proxmox_virtual_environment_vm.k8s_01"
+            and resource.get("type") == "proxmox_virtual_environment_vm"
+            and actions == ["create"]
+            and change.get("before") is None
+            and not change.get("importing")
+            and all(after.get(field) == value and not unknown.get(field)
+                    for field, value in K8S_01_IDENTITY.items())
+        )
+        if any(action in actions for action in ("create", "delete", "forget")) and not (legacy_detach or new_k8s):
             errors.append(f"{address}: rejected actions {actions}")
         if actions == ["update"]:
             before, after = change.get("before") or {}, change.get("after") or {}
@@ -71,7 +92,7 @@ def main():
         plan = json.load(source)
     errors, counts, imports = check_plan(plan)
     print("### Proxmox plan safety check\n")
-    print(f"Imports: {imports}; updates: {counts['update']}; unchanged: {counts['no-op']}.")
+    print(f"Imports: {imports}; creates: {counts['create']}; updates: {counts['update']}; unchanged: {counts['no-op']}.")
     updates = [resource for resource in plan.get("resource_changes", [])
                if resource["change"]["actions"] == ["update"]]
     if updates:
@@ -85,7 +106,9 @@ def main():
         for error in errors:
             print(error, file=sys.stderr)
         return 1
-    print("No guest creation, deletion, replacement, or identity changes are planned.")
+    if counts["create"]:
+        print("Approved creation: k8s-01 (VM 168 on boba), initially stopped.")
+    print("No unapproved guest creation, deletion, replacement, or identity changes are planned.")
     return 0
 
 

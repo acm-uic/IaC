@@ -31,6 +31,7 @@ output "vm_ids" {
     "142" = proxmox_virtual_environment_vm.vm_142.id
     "143" = proxmox_virtual_environment_vm.vm_143.id
     "144" = proxmox_virtual_environment_vm.vm_144.id
+    "168" = proxmox_virtual_environment_vm.k8s_01.id
   }
 }
 
