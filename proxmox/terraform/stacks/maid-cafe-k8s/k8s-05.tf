@@ -3,7 +3,7 @@
 resource "proxmox_virtual_environment_vm" "k8s_05" {
   name          = "hachimi"
   node_name     = "boba"
-  vm_id         = 242
+  vm_id         = 172
   pool_id       = "Kubernetes"
   bios          = "ovmf"
   boot_order    = ["virtio0", "ide2", "net0"]
