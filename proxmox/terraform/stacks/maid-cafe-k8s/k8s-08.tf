@@ -2,7 +2,7 @@
 # Verify the retained MAC and target-node storage before enabling.
 resource "proxmox_virtual_environment_vm" "k8s_08" {
   name          = "sakura-bakushin"
-  vm_id         = 268
+  vm_id         = 174
   node_name     = "matcha"
   pool_id       = "Kubernetes"
   bios          = "ovmf"
