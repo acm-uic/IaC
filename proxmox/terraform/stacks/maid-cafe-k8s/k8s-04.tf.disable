@@ -4,7 +4,7 @@ resource "proxmox_virtual_environment_vm" "k8s_04" {
   name          = "stay-gold"
   node_name     = "matcha"
   pool_id       = "Kubernetes"
-  vm_id         = 243
+  vm_id         = 171
   bios          = "ovmf"
   boot_order    = ["virtio0", "ide2", "net0"]
   scsi_hardware = "virtio-scsi-single"
