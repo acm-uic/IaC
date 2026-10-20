@@ -6,7 +6,6 @@ resource "proxmox_virtual_environment_vm" "vm_141" {
   bios            = "seabios"
   boot_order      = ["scsi0", "ide2", "net0"]
   keyboard_layout = "en-us"
-  mac_addresses   = ["BC:24:11:BC:F6:57"]
   name            = "bp-webserver-01"
   network_device {
     bridge       = "vmbr0"
