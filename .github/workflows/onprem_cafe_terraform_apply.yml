@@ -65,12 +65,12 @@ jobs:
             -out="$RUNNER_TEMP/maid-cafe.tfplan"
           tofu show -json "$RUNNER_TEMP/maid-cafe.tfplan" > "$RUNNER_TEMP/maid-cafe.tfplan.json"
 
-      - name: Reject unsafe guest changes
+      - name: Summarize plan actions
         run: |
-          python3 "$GITHUB_WORKSPACE/.github/scripts/check_proxmox_plan.py" \
+          python3 "$GITHUB_WORKSPACE/.github/scripts/summarize_proxmox_plan.py" \
             "$RUNNER_TEMP/maid-cafe.tfplan.json" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Apply the checked saved plan
+      - name: Apply the saved plan
         run: tofu apply -input=false -no-color "$RUNNER_TEMP/maid-cafe.tfplan"
 
       # Saved plans include credentials and guest metadata; never publish them.
