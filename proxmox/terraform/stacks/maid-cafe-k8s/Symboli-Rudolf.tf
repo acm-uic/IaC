@@ -1,7 +1,7 @@
 # A new Talos VM, separate from the legacy address that points to VM 107.
 # VMID 168 and this MAC were verified unused on 2026-10-15.
 resource "proxmox_virtual_environment_vm" "k8s_01" {
-  name          = "k8s-01"
+  name          = "Symboli-Rudolf"
   node_name     = "boba"
   vm_id         = 168
   pool_id       = "Kubernetes"
