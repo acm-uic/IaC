@@ -7,7 +7,6 @@ resource "proxmox_virtual_environment_vm" "vm_143" {
   bios            = "ovmf"
   boot_order      = ["scsi0", "ide2", "net0", "ide0"]
   keyboard_layout = "en-us"
-  mac_addresses   = ["BC:24:11:F1:FD:D2"]
   machine         = "pc-i440fx-9.2+pve1"
   name            = "bp-ad-01"
   network_device {
