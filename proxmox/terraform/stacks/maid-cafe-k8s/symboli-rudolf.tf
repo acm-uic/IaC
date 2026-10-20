@@ -1,7 +1,7 @@
 # A new Talos VM, separate from the legacy address that points to VM 107.
 # VMID 168 and this MAC were verified unused on 2026-10-15.
 resource "proxmox_virtual_environment_vm" "k8s_01" {
-  name          = "k8s-01"
+  name          = "symboli-rudolf"
   node_name     = "boba"
   vm_id         = 168
   pool_id       = "Kubernetes"
@@ -50,7 +50,7 @@ resource "proxmox_virtual_environment_vm" "k8s_01" {
   # This existing ISO is the installation source; Talos configuration is separate.
   cdrom {
     interface = "ide2"
-    file_id   = "cephfs:iso/taloslinux-cached-amd64-20250528.iso"
+    file_id   = "cephfs:iso/talos-factory-1.14.3.iso"
   }
 
   network_device {
