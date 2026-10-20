@@ -68,7 +68,6 @@ resource "proxmox_virtual_environment_container" "ct_122" {
   vm_id = 122
 
   lifecycle {
-    prevent_destroy = true
     # Power state and operator notes are maintained in Proxmox.
     # An omitted LXC cpuunits reads as 0, which the API cannot set. Preserve the host default.
     ignore_changes = [started, description, cpu[0].units]

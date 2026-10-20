@@ -66,7 +66,6 @@ resource "proxmox_virtual_environment_vm" "k8s_01" {
   }
 
   lifecycle {
-    prevent_destroy = true
     # Create stopped; subsequent runtime power state is operated in Proxmox.
     ignore_changes = [started]
   }
