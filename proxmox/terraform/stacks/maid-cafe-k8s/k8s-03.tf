@@ -4,7 +4,7 @@ resource "proxmox_virtual_environment_vm" "k8s_03" {
   name          = "Agnes-Digital"
   node_name     = "coffee"
   pool_id       = "Kubernetes"
-  vm_id         = 789
+  vm_id         = 170
   bios          = "ovmf"
   boot_order    = ["virtio0", "ide2", "net0"]
   scsi_hardware = "virtio-scsi-single"
