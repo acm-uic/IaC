@@ -12,6 +12,7 @@ resource "proxmox_virtual_environment_vm" "k8s_05" {
   started       = false
   template      = false
   protection    = true
+  tags          = ["kubernetes"]
 
   agent {
     # Do not wait for a guest agent during ISO installation.
