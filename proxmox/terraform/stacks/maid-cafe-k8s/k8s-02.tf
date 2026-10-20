@@ -3,7 +3,7 @@
 resource "proxmox_virtual_environment_vm" "k8s_02" {
   name          = "goldship"
   node_name     = "chai"
-  vm_id         = 267
+  vm_id         = 169
   pool_id       = "Kubernetes"
   bios          = "ovmf"
   boot_order    = ["virtio0", "ide2", "net0"]
