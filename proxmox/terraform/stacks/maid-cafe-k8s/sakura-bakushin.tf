@@ -3,7 +3,7 @@
 resource "proxmox_virtual_environment_vm" "k8s_08" {
   name          = "sakura-bakushin"
   vm_id         = 174
-  node_name     = "matcha"
+  node_name     = "horchata"
   pool_id       = "Kubernetes"
   bios          = "ovmf"
   boot_order    = ["virtio0", "ide2", "net0"]
