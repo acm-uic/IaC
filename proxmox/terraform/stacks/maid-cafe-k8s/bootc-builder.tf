@@ -85,7 +85,6 @@ resource "proxmox_virtual_environment_vm" "vm_110" {
   }
 
   lifecycle {
-    prevent_destroy = true
     # Power state and operator notes are maintained in Proxmox.
     # Preserve existing peripheral state that the provider does not hydrate during import.
     # An omitted LXC cpuunits reads as 0, which the API cannot set. Preserve the host default.
@@ -99,8 +98,4 @@ resource "proxmox_haresource" "bootc_builder" {
   state        = "started"
   max_restart  = 10
   max_relocate = 0
-
-  lifecycle {
-    prevent_destroy = true
-  }
 }

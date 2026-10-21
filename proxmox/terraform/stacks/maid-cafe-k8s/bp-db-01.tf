@@ -7,7 +7,6 @@ resource "proxmox_virtual_environment_vm" "vm_142" {
   bios            = "ovmf"
   boot_order      = ["scsi0", "ide2", "net0", "ide0"]
   keyboard_layout = "en-us"
-  mac_addresses   = ["BC:24:11:11:4D:0F"]
   machine         = "pc-q35-9.2+pve1"
   name            = "bp-db-01"
   network_device {
@@ -89,7 +88,6 @@ resource "proxmox_virtual_environment_vm" "vm_142" {
   }
 
   lifecycle {
-    prevent_destroy = true
     # Power state and operator notes are maintained in Proxmox.
     # Preserve existing peripheral state that the provider does not hydrate during import.
     # An omitted LXC cpuunits reads as 0, which the API cannot set. Preserve the host default.

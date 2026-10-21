@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/onprem_cafe_terraform_*.yml'
-      - '.github/scripts/*proxmox_plan*.py'
+      - '.github/scripts/*proxmox_plan*'
       - 'proxmox/terraform/stacks/**'
   workflow_dispatch:
 
@@ -12,6 +12,7 @@ permissions:
   contents: read
   id-token: write
   packages: read
+  pull-requests: write
 
 concurrency:
   group: maid-cafe-terraform-prod
@@ -19,11 +20,13 @@ concurrency:
 
 jobs:
   plan-safety-tests:
+    # Preserve the existing status-check name for branch protection rules.
     name: Plan safety regression tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
+      - run: node --test .github/scripts/test_*proxmox_plan.cjs
 
   tofu:
     name: 'Tofu PR Plan'
@@ -77,13 +80,33 @@ jobs:
             -out="$RUNNER_TEMP/maid-cafe.tfplan"
           tofu show -json "$RUNNER_TEMP/maid-cafe.tfplan" > "$RUNNER_TEMP/maid-cafe.tfplan.json"
 
-      - name: Reject unsafe guest changes
+      - name: Summarize plan actions
         run: |
-          python3 "$GITHUB_WORKSPACE/.github/scripts/check_proxmox_plan.py" \
-            "$RUNNER_TEMP/maid-cafe.tfplan.json" >> "$GITHUB_STEP_SUMMARY"
+          python3 "$GITHUB_WORKSPACE/.github/scripts/summarize_proxmox_plan.py" \
+            "$RUNNER_TEMP/maid-cafe.tfplan.json" \
+            --report "$RUNNER_TEMP/maid-cafe.plan-report.json" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment on planned creations and deletions
+        if: github.event_name == 'pull_request'
+        # Comment delivery must not become a deployment gate.
+        continue-on-error: true
+        uses: actions/github-script@v8
+        env:
+          PLAN_REPORT_PATH: ${{ runner.temp }}/maid-cafe.plan-report.json
+          PLAN_STACK: ${{ matrix.stack }}
+        with:
+          script: |
+            const commentPlan = require('./.github/scripts/comment_proxmox_plan.cjs');
+            await commentPlan({
+              github,
+              context,
+              reportPath: process.env.PLAN_REPORT_PATH,
+              stack: process.env.PLAN_STACK,
+            });
 
       # Saved plans include credentials and guest metadata; never publish them.
       - name: Remove private plan files
         if: always()
         run: |
-          rm -f -- "$RUNNER_TEMP/maid-cafe.tfplan" "$RUNNER_TEMP/maid-cafe.tfplan.json"
+          rm -f -- "$RUNNER_TEMP/maid-cafe.tfplan" "$RUNNER_TEMP/maid-cafe.tfplan.json" \
+            "$RUNNER_TEMP/maid-cafe.plan-report.json"

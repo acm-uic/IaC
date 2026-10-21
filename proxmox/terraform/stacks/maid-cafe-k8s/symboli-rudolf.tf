@@ -1,8 +1,9 @@
-# Disabled Talos VM definition; Proxmox allocates a new VMID when enabled.
-# Verify the retained MAC and target-node storage before enabling.
-resource "proxmox_virtual_environment_vm" "k8s_03" {
-  name          = "k8s-03"
-  node_name     = "coffee"
+# A new Talos VM, separate from the legacy address that points to VM 107.
+# VMID 168 and this MAC were verified unused on 2026-10-15.
+resource "proxmox_virtual_environment_vm" "k8s_01" {
+  name          = "symboli-rudolf"
+  node_name     = "boba"
+  vm_id         = 168
   pool_id       = "Kubernetes"
   bios          = "ovmf"
   boot_order    = ["virtio0", "ide2", "net0"]
@@ -49,7 +50,7 @@ resource "proxmox_virtual_environment_vm" "k8s_03" {
   # This existing ISO is the installation source; Talos configuration is separate.
   cdrom {
     interface = "ide2"
-    file_id   = "cephfs:iso/taloslinux-cached-amd64-20250528.iso"
+    file_id   = "cephfs:iso/talos-factory-1.14.3.iso"
   }
 
   network_device {
@@ -57,7 +58,7 @@ resource "proxmox_virtual_environment_vm" "k8s_03" {
     bridge      = "speed2"
     firewall    = true
     vlan_id     = 9
-    mac_address = "BC:24:11:E4:10:66"
+    mac_address = "BC:24:11:84:15:8B"
   }
 
   operating_system {
@@ -65,7 +66,6 @@ resource "proxmox_virtual_environment_vm" "k8s_03" {
   }
 
   lifecycle {
-    prevent_destroy = true
     # Create stopped; subsequent runtime power state is operated in Proxmox.
     ignore_changes = [started]
   }

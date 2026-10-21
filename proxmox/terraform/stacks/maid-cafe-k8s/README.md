@@ -16,8 +16,8 @@ CPU/memory sizes. They use new blank disks on `local-lvm`, UEFI/TPM, the Talos
 ISO, and the same stopped/protected lifecycle. VMIDs are allocated by Proxmox
 rather than reusing VM 168. Terraform does not load these disabled files.
 Before enabling any of them, verify its retained MAC, target-node storage
-and installation source, and review the separate plan-policy change required
-to permit creation. The old WiCyS disabled files are superseded by
+and installation source, and review the planned creation in the PR comment.
+The old WiCyS disabled files are superseded by
 `wicys-attack.tf` and `wicys-defend.tf`.
 
 The inventory was read from Proxmox on 2026-10-15. Keep the VMID, guest type,
@@ -72,20 +72,23 @@ is created stopped, with autostart enabled and deletion protection. Starting
 the installer and supplying a Talos machine configuration remain separate
 operational steps; this stack does not bootstrap a Kubernetes cluster.
 
-## Change safeguards
+## Change reporting
 
-Every managed object has `prevent_destroy = true`. The plan policy also blocks
-unapproved creation, deletion, replacement, forgetting state, guest ID/node
-changes, and SMBIOS UUID mismatches.
-This second check matters because removing an entire resource definition also
-removes its Terraform lifecycle guard.
+The workflows allow all valid OpenTofu plans, including creations, deletions,
+replacements, state removal and guest identity/placement changes. There is no
+creation allowlist or `prevent_destroy` lifecycle restriction, including in the
+disabled guest templates.
 
-The sole permitted state removal is the legacy 107 address, and only when the
-same plan imports `matcha/107` at its new address. The sole creation exception is
-`proxmox_virtual_environment_vm.k8s_01` with VMID 168, node `boba`, name `k8s-01`,
-and known stopped, non-template, protected state. This exception never permits
-replacement or adoption of an existing guest. Other new guests or deliberate
-decommissioning need a separate reviewed policy/configuration change.
+When a PR plan includes creations or deletions, the workflow posts a comment
+listing the resource addresses and actions. Replacements count as both a creation
+and a deletion. Subsequent plans update the same bot comment for this stack; if
+those actions disappear, the comment is updated to say so. Plans with only
+updates, imports or state removal do not create a new comment. Comments and job
+summaries are informational, and a comment delivery failure does not fail the job.
+
+Proxmox deletion protection remains part of each guest's configuration. A
+protected guest must have `protection` disabled and applied before deleting or
+replacing it. The provider and Proxmox still enforce their normal constraints.
 
 Power state (`started`) is operated in Proxmox and ignored by Terraform; importing
 a stopped guest must not start it. Autostart flags are explicitly recorded and
@@ -109,16 +112,17 @@ Adoption does not restore backups or recreate existing guests. Only the new
 ## Validation and application
 
 The PR and apply workflows run formatting/validation, print the human-readable
-plan in the job log while saving it, and check the plan policy. OpenTofu redacts
+plan in the job log while saving it, and summarize resource actions. OpenTofu redacts
 values marked sensitive in this log output. The saved plan and machine-readable
 JSON contain credentials and guest metadata, so they remain private temporary
-files and are never uploaded as artifacts or printed. The safety-check summary
-is published in the job summary.
+files and are never uploaded as artifacts or printed. The job summary and PR
+comment contain action counts and addresses only, without resource attribute
+values, outputs or provider configuration. The PR job needs `pull-requests: write`
+to create or update its comment. Manual plan runs publish only the job summary.
 
-Application is **manual only** and applies the exact saved plan that passed the
-policy. The incident-disabled apply workflow should remain disabled until this
-PR is reviewed and merged. Re-enable and dispatch it only after reviewing a fresh
-production plan; merging this PR alone must not apply anything.
+Application is **manual only** and applies the exact saved plan generated in that
+run. Dispatch the apply workflow after reviewing a fresh production plan; merging
+a PR alone does not apply anything.
 
 Both workflows share a concurrency group. Required credentials are the existing
 Azure backend environment variables and `TF_VAR_proxmox_api_token_id` /
@@ -135,17 +139,18 @@ tofu init -input=false
 tofu validate
 tofu plan -var-file=configuration/prod.tfvars -out=/private/path/maid-cafe.tfplan
 tofu show -json /private/path/maid-cafe.tfplan > /private/path/maid-cafe.tfplan.json
-python3 ../../../../.github/scripts/check_proxmox_plan.py /private/path/maid-cafe.tfplan.json
+python3 ../../../../.github/scripts/summarize_proxmox_plan.py /private/path/maid-cafe.tfplan.json
 ```
 
-Do not commit state, plan files, API tokens, or raw API exports. The plan policy
+Do not commit state, plan files, API tokens, or raw API exports. The plan reporting
 has offline regression tests:
 
 ```sh
 python3 -m unittest discover -s .github/scripts -p 'test_*.py'
+node --test .github/scripts/test_*proxmox_plan.cjs
 ```
 
-Run that test command from the repository root.
+Run those test commands from the repository root.
 
 ## Current guests
 

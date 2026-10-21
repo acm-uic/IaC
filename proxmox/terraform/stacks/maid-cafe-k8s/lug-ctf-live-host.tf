@@ -6,7 +6,6 @@ resource "proxmox_virtual_environment_vm" "vm_101" {
   bios            = "seabios"
   boot_order      = ["scsi0", "ide2", "net0"]
   keyboard_layout = "en-us"
-  mac_addresses   = ["BC:24:11:07:0C:7C"]
   name            = "lug-ctf-live-host"
   network_device {
     bridge       = "speed0"
@@ -76,7 +75,6 @@ resource "proxmox_virtual_environment_vm" "vm_101" {
   }
 
   lifecycle {
-    prevent_destroy = true
     # Power state and operator notes are maintained in Proxmox.
     # Preserve existing peripheral state that the provider does not hydrate during import.
     # An omitted LXC cpuunits reads as 0, which the API cannot set. Preserve the host default.
