@@ -2,7 +2,7 @@
 # Verify the retained MAC and target-node storage before enabling.
 resource "proxmox_virtual_environment_vm" "k8s_04" {
   name          = "stay-gold"
-  node_name     = "matcha"
+  node_name     = "horchata"
   pool_id       = "Kubernetes"
   vm_id         = 171
   bios          = "ovmf"
