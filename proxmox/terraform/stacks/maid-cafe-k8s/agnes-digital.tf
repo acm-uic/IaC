@@ -1,7 +1,7 @@
 # Disabled Talos VM definition; Proxmox allocates a new VMID when enabled.
 # Verify the retained MAC and target-node storage before enabling.
 resource "proxmox_virtual_environment_vm" "k8s_03" {
-  name          = "Agnes-Digital"
+  name          = "agnes-digital"
   node_name     = "coffee"
   pool_id       = "Kubernetes"
   vm_id         = 170
