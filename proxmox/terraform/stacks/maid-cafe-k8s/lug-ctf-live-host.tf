@@ -6,7 +6,6 @@ resource "proxmox_virtual_environment_vm" "vm_101" {
   bios            = "seabios"
   boot_order      = ["scsi0", "ide2", "net0"]
   keyboard_layout = "en-us"
-  mac_addresses   = ["BC:24:11:07:0C:7C"]
   name            = "lug-ctf-live-host"
   network_device {
     bridge       = "speed0"

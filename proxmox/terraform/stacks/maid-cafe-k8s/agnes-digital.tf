@@ -1,9 +1,10 @@
 # Disabled Talos VM definition; Proxmox allocates a new VMID when enabled.
 # Verify the retained MAC and target-node storage before enabling.
-resource "proxmox_virtual_environment_vm" "k8s_02" {
-  name          = "k8s-02"
-  node_name     = "chai"
+resource "proxmox_virtual_environment_vm" "k8s_03" {
+  name          = "agnes-digital"
+  node_name     = "coffee"
   pool_id       = "Kubernetes"
+  vm_id         = 170
   bios          = "ovmf"
   boot_order    = ["virtio0", "ide2", "net0"]
   scsi_hardware = "virtio-scsi-single"
@@ -11,6 +12,7 @@ resource "proxmox_virtual_environment_vm" "k8s_02" {
   started       = false
   template      = false
   protection    = true
+  tags          = ["kubernetes"]
 
   agent {
     # Do not wait for a guest agent during ISO installation.
@@ -49,7 +51,7 @@ resource "proxmox_virtual_environment_vm" "k8s_02" {
   # This existing ISO is the installation source; Talos configuration is separate.
   cdrom {
     interface = "ide2"
-    file_id   = "cephfs:iso/taloslinux-cached-amd64-20250528.iso"
+    file_id   = "cephfs:iso/talos-factory-1.14.3.iso"
   }
 
   network_device {
@@ -57,7 +59,7 @@ resource "proxmox_virtual_environment_vm" "k8s_02" {
     bridge      = "speed2"
     firewall    = true
     vlan_id     = 9
-    mac_address = "BC:24:11:52:BC:A2"
+    mac_address = "BC:24:11:E4:10:66"
   }
 
   operating_system {
