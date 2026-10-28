@@ -9,7 +9,7 @@ spec:
   destination:
     server: https://kubernetes.default.svc
   source:
-    path: kubernetes/argocd/umapyoi/Manifests
+    path: kubernetes/argocd/umapyoi/k8s-resources
     repoURL: git@github.com:acm-uic/IaC.git
     targetRevision: HEAD
     directory:
