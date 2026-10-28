@@ -90,7 +90,7 @@ spec:
         - name: stump
           # Pinned to one build (the short commit hash from GitHub Actions), so a pod
           # restart always brings back exactly the version that was tested.
-          image: ghcr.io/acm-uic/stump-the-profs-website:8636605
+          image: ghcr.io/acm-uic/stump-the-profs-website:e85aef4
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
