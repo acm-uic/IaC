@@ -88,10 +88,11 @@ spec:
             claimName: stump-data
       containers:
         - name: stump
-          # Pinned to one build (the short commit hash from GitHub Actions), so a pod
-          # restart always brings back exactly the version that was tested.
-          image: ghcr.io/acm-uic/stump-the-profs-website:e85aef4
-          imagePullPolicy: IfNotPresent
+          # Always the newest build from main. Every pod restart pulls it again, so to deploy:
+          # push to main, wait for GitHub Actions, then Restart this Deployment in Argo CD.
+          # Do not push to main on event day: any restart would pick up the new code.
+          image: ghcr.io/acm-uic/stump-the-profs-website:latest
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 3000
