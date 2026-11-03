@@ -1,16 +1,15 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cert-manager
+  name: k8s-resources
   namespace: argocd
   annotations: 
     argocd.argoproj.io/sync-wave: "-5"  # Mainly to make sure this got synced before everything else
 spec:
   destination:
     server: https://kubernetes.default.svc
-    namespace: cert-manager
   source:
-    path: kubernetes/argocd/umapyoi/cert-manager
+    path: kubernetes/argocd/umapyoi/k8s-resources/
     repoURL: git@github.com:acm-uic/IaC.git
     targetRevision: HEAD
     directory:
