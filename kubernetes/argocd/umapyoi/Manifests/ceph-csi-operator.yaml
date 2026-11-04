@@ -14,6 +14,12 @@ spec:
       helm:
         valueFiles:
           - $values/kubernetes/argocd/umapyoi/ceph-csi-operator/values.yaml
+    - repoURL: https://ceph.github.io/ceph-csi-operator/
+      chart: ceph-csi-drivers
+      targetRevision: 1.1.0
+      helm:
+        valueFiles:
+          - $values/kubernetes/argocd/umapyoi/ceph-csi-operator/values.yaml
     - repoURL: git@github.com:acm-uic/IaC.git
       targetRevision: HEAD
       ref: values
