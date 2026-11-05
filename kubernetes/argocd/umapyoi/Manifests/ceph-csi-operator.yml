@@ -30,7 +30,7 @@ spec:
         recurse: true
         include: "*.{yaml,yml}"
         exclude: "values.{yaml,yml}"
-  project: default
+  project: infra
   syncPolicy:
     automated:
       prune: true

@@ -15,7 +15,7 @@ spec:
     directory:
       recurse: true
   sources: []
-  project: default
+  project: infra
   syncPolicy:
     automated:
       prune: true
