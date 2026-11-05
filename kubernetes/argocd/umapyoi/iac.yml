@@ -1,0 +1,12 @@
+project: default
+source:
+  repoURL: git@github.com:acm-uic/IaC.git
+  path: kubernetes/argocd/umapyoi/Manifests
+  targetRevision: HEAD
+destination:
+  server: https://kubernetes.default.svc
+syncPolicy:
+  automated:
+    prune: true
+    selfHeal: true
+    enabled: true
