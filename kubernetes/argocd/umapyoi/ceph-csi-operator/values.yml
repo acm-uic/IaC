@@ -1,0 +1,10 @@
+---
+drivers:
+  rbd:
+    enabled: true
+  cephfs:
+    enabled: false
+  nfs:
+    enabled: false
+  nvmeof:
+    enabled: false

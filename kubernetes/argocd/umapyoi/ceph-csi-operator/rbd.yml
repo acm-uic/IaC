@@ -1,0 +1,49 @@
+apiVersion: csi.ceph.io/v1
+kind: CephConnection
+metadata:
+  name: maidcafe-ceph
+  namespace: ceph-csi-operator
+spec:
+  monitors:
+    - 172.25.8.2
+    - 172.25.8.3
+    - 172.25.8.4
+    - 172.25.8.5
+    - 172.25.8.6
+---
+apiVersion: csi.ceph.io/v1
+kind: ClientProfile
+metadata:
+  name: maidcafe-ceph
+  namespace: ceph-csi-operator
+spec:
+  cephConnectionRef:
+    name: maidcafe-ceph
+  rbd:
+    radosNamespace: ""
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ceph-rbd
+provisioner: rbd.csi.ceph.com
+parameters:
+  clusterID: maidcafe-ceph
+  pool: kubernetes
+  imageFeatures: layering
+  csi.storage.k8s.io/provisioner-secret-name: ceph-csi-rbd
+  csi.storage.k8s.io/provisioner-secret-namespace: ceph-csi-operator
+  csi.storage.k8s.io/controller-expand-secret-name: ceph-csi-rbd
+  csi.storage.k8s.io/controller-expand-secret-namespace: ceph-csi-operator
+  csi.storage.k8s.io/controller-publish-secret-name: ceph-csi-rbd
+  csi.storage.k8s.io/controller-publish-secret-namespace: ceph-csi-operator
+  csi.storage.k8s.io/controller-modify-secret-name: ceph-csi-rbd
+  csi.storage.k8s.io/controller-modify-secret-namespace: ceph-csi-operator
+  csi.storage.k8s.io/node-stage-secret-name: ceph-csi-rbd
+  csi.storage.k8s.io/node-stage-secret-namespace: ceph-csi-operator
+  csi.storage.k8s.io/node-publish-secret-name: ceph-csi-rbd
+  csi.storage.k8s.io/node-publish-secret-namespace: ceph-csi-operator
+  csi.storage.k8s.io/fstype: ext4
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+

@@ -5,7 +5,7 @@ metadata:
   namespace: argocd
 spec:
   destination:
-    namespace: ceph-csi-operator-system
+    namespace: ceph-csi-operator
     server: https://kubernetes.default.svc
   sources:
     - repoURL: https://ceph.github.io/ceph-csi-operator/
@@ -13,13 +13,13 @@ spec:
       targetRevision: 1.1.0
       helm:
         valueFiles:
-          - $values/kubernetes/argocd/umapyoi/ceph-csi-operator/values.yaml
+          - $values/kubernetes/argocd/umapyoi/ceph-csi-operator/values.yml
     - repoURL: https://ceph.github.io/ceph-csi-operator/
       chart: ceph-csi-drivers
       targetRevision: 1.1.0
       helm:
         valueFiles:
-          - $values/kubernetes/argocd/umapyoi/ceph-csi-operator/values.yaml
+          - $values/kubernetes/argocd/umapyoi/ceph-csi-operator/values.yml
     - repoURL: git@github.com:acm-uic/IaC.git
       targetRevision: HEAD
       ref: values
@@ -28,8 +28,8 @@ spec:
       path: kubernetes/argocd/umapyoi/ceph-csi-operator/
       directory:
         recurse: true
-        include: "*.yaml"
-        exclude: values.yaml
+        include: "*.{yaml,yml}"
+        exclude: "values.{yaml,yml}"
   project: default
   syncPolicy:
     automated:
