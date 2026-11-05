@@ -1,8 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: sigsysadmin
+  name: sigweb
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-10"
 spec:
   clusterResourceWhitelist:
     - group: '*'
