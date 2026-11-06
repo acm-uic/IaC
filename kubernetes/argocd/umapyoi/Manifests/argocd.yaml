@@ -24,7 +24,7 @@ spec:
     - repoURL: git@github.com:acm-uic/IaC.git
       targetRevision: HEAD
       ref: values
-  project: default
+  project: infra
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
