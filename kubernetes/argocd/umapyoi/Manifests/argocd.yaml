@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  sources:
+    - repoURL: https://argoproj.github.io/argo-helm
+      chart: argo-cd
+      targetRevision: 10.14.0
+      helm:
+        valueFiles: 
+          - $values/kubernetes/argocd/umapyoi/argocd/values.yaml
+    - path: kubernetes/argocd/umapyoi/argocd
+      repoURL: git@github.com:acm-uic/IaC.git
+      targetRevision: HEAD
+      directory:
+        recurse: true
+        include: "*.{yaml,yml}"
+        exclude: "values.{yaml,yml}"
+    - repoURL: git@github.com:acm-uic/IaC.git
+      targetRevision: HEAD
+      ref: values
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
