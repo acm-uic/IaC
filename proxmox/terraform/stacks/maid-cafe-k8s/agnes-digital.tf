@@ -20,7 +20,7 @@ resource "proxmox_virtual_environment_vm" "k8s_03" {
   }
 
   cpu {
-    type  = "x86-64-v2-AES"
+    type  = "x86-64-v3"
     cores = 4
   }
 
