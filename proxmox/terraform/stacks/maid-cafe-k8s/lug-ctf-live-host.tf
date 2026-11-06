@@ -34,7 +34,7 @@ resource "proxmox_virtual_environment_vm" "vm_101" {
     type    = "virtio"
   }
   cpu {
-    cores      = 2
+    cores      = 4
     flags      = []
     hotplugged = 0
     limit      = 0
@@ -58,7 +58,7 @@ resource "proxmox_virtual_environment_vm" "vm_101" {
     ssd               = false
   }
   memory {
-    dedicated      = 4096
+    dedicated      = 8192
     floating       = 0
     keep_hugepages = false
     shared         = 0
