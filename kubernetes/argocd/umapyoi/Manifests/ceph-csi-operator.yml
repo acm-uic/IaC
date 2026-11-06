@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ceph-csi-operator
+  namespace: argocd
+spec:
+  destination:
+    namespace: ceph-csi-operator
+    server: https://kubernetes.default.svc
+  sources:
+    - repoURL: https://ceph.github.io/ceph-csi-operator/
+      chart: ceph-csi-operator
+      targetRevision: 1.1.0
+      helm:
+        valueFiles:
+          - $values/kubernetes/argocd/umapyoi/ceph-csi-operator/values.yml
+    - repoURL: https://ceph.github.io/ceph-csi-operator/
+      chart: ceph-csi-drivers
+      targetRevision: 1.1.0
+      helm:
+        valueFiles:
+          - $values/kubernetes/argocd/umapyoi/ceph-csi-operator/values.yml
+    - repoURL: git@github.com:acm-uic/IaC.git
+      targetRevision: HEAD
+      ref: values
+    - repoURL: git@github.com:acm-uic/IaC.git
+      targetRevision: HEAD
+      path: kubernetes/argocd/umapyoi/ceph-csi-operator/
+      directory:
+        recurse: true
+        include: "*.{yaml,yml}"
+        exclude: "values.{yaml,yml}"
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      enabled: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    managedNamespaceMetadata:
+      labels:
+        pod-security.kubernetes.io/enforce: privileged
+        pod-security.kubernetes.io/enforce-version: latest
+        pod-security.kubernetes.io/audit: privileged
+        pod-security.kubernetes.io/audit-version: latest
+        pod-security.kubernetes.io/warn: privileged
+        pod-security.kubernetes.io/warn-version: latest
