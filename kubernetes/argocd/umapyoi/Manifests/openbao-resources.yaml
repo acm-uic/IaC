@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: openbao
+spec:
+  destination:
+    namespace: openbao
+    server: https://kubernetes.default.svc
+  sources:
+    - repoURL: https://openbao.github.io/openbao-helm
+      targetRevision: 0.30.6
+      chart: openbao
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      enabled: true
+    syncOptions:
+      - CreateNamespace=true
