@@ -88,10 +88,9 @@ spec:
             claimName: stump-data
       containers:
         - name: stump
-          # Always the newest build from main. Every pod restart pulls it again, so to deploy:
-          # push to main, wait for GitHub Actions, then Restart this Deployment in Argo CD.
-          # Do not push to main on event day: any restart would pick up the new code.
-          image: ghcr.io/acm-uic/stump-the-profs-website:latest
+          # Pinned to the 2026-11-04 main build (commit 3b74d22). That commit tag and
+          # :latest currently resolve to the same digest. Bump this tag to ship a newer build.
+          image: ghcr.io/acm-uic/stump-the-profs-website:3b74d22@sha256:918819127c02b796c84991af9e070866743111468667b93acd2a82a873f7871b
           imagePullPolicy: Always
           ports:
             - name: http

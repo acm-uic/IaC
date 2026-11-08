@@ -16,7 +16,9 @@ spec:
     spec:
       containers:
         - name: smtp
-          image: bytemark/smtp
+          # Digest of bytemark/smtp:latest (published 2018-07-17). The only other
+          # tag, stretch, is a different image, so this pin keeps the current bytes.
+          image: bytemark/smtp@sha256:9fd6ff05ac25141fe10ae4f9db0df361ad6139244ac280c398cc175bd2356a98
           ports:
             - containerPort: 25
           resources:
