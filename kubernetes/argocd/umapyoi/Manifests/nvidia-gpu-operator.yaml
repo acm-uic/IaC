@@ -10,7 +10,7 @@ spec:
   sources:
     - repoURL: https://helm.ngc.nvidia.com/nvidia
       chart: gpu-operator
-      targetRevision: 26.7.1
+      targetRevision: 26.7.2
       helm:
         valueFiles:
           - $values/kubernetes/argocd/umapyoi/nvidia-operator/values.yaml
@@ -24,7 +24,7 @@ spec:
         recurse: true
         include: "*.{yaml,yml}"
         exclude: "values.{yaml,yml}"
-  project: default
+  project: infra
   syncPolicy:
     automated:
       prune: true

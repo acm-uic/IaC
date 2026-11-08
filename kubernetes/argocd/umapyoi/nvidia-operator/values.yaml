@@ -6,7 +6,7 @@ toolkit:
 hostPaths:
   driverInstallDir: /usr/local
 
-# devicePlugin:
-#   config:
-#     name: sharing-config
-#     default: ts-4
+devicePlugin:
+  config:
+    name: sharing-config
+    default: ts-4
