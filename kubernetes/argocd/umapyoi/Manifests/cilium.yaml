@@ -10,7 +10,7 @@ spec:
   sources:
     - repoURL: https://helm.cilium.io/
       chart: cilium
-      targetRevision: 1.20.2
+      targetRevision: 1.20.4
       helm:
         valueFiles:
           - $values/kubernetes/argocd/umapyoi/cilium/values.yaml
