@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cilium
+  namespace: argocd
+spec:
+  destination:
+    namespace: kube-system
+    server: https://kubernetes.default.svc
+  sources:
+    - repoURL: https://helm.cilium.io/
+      chart: cilium
+      targetRevision: 1.20.4
+      helm:
+        valueFiles:
+          - $values/kubernetes/argocd/umapyoi/cilium/values.yaml
+    - path: kubernetes/argocd/umapyoi/cilium
+      repoURL: git@github.com:acm-uic/IaC.git
+      targetRevision: HEAD
+      directory:
+        recurse: true
+        include: "*.{yaml,yml}"
+        exclude: "values.{yaml,yml}"
+    - repoURL: git@github.com:acm-uic/IaC.git
+      targetRevision: HEAD
+      ref: values
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      enabled: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
