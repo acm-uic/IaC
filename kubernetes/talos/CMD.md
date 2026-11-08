@@ -2,7 +2,7 @@
 
 ## Patch machine config (including enabling Kernel modules)
 ```
-talosctl patch mc --patch <modules-file> -n <NODE-IP> -e <ENDPOINT-ID>
+talosctl patch mc --patch <patch-file> -n <NODE-IP> -e <ENDPOINT-ID>
 ```
 
 ## Upgrade the Talos Linux image
