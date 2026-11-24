@@ -1,1 +1,37 @@
 ---
+provider:
+  name: azure
+serviceAccount:
+  name: externaldns
+  annotations:
+    azure.workload.identity/client-id: f995b4bc-00a0-4912-9a1a-da9f74407cb8
+    azure.workload.identity/tenant-id: cad5e02f-bae4-42d6-a06e-4377dd3e386f
+podLabels:
+  azure.workload.identity/use: "true"
+extraVolumes:
+  - name: azure-config
+    configMap:
+      name: externaldns-azure-config
+extraVolumeMounts:
+  - name: azure-config
+    mountPath: /etc/kubernetes
+    readOnly: true
+extraArgs:
+  azure-config-file: /etc/kubernetes/azure.json
+policy: upsert-only
+registry: txt
+# Preserve ownership of records created by the existing controller.
+txtOwnerId: default
+domainFilters:
+  - acmuic.org
+# ACME solver Ingresses must not publish the internal load balancer address.
+labelFilter: acme.cert-manager.io/dns01-solver!=true
+# Keep the target annotations used by the existing IngressRoutes.
+annotationPrefix: external-dns.alpha.kubernetes.io/
+sources:
+  - service
+  - ingress
+  - gateway-httproute
+  - gateway-tcproute
+  - gateway-tlsroute
+  - gateway-udproute
