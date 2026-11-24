@@ -1,0 +1,12 @@
+customization:
+    systemExtensions:
+        officialExtensions:
+            - siderolabs/intel-ice-firmware
+            - siderolabs/intel-npu
+            - siderolabs/intel-ucode
+            - siderolabs/iscsi-tools
+            - siderolabs/nvidia-container-toolkit-production
+            - siderolabs/nvidia-gdrdrv-device
+            - siderolabs/nvidia-open-gpu-kernel-modules-production
+            - siderolabs/util-linux-tools
+            - siderolabs/xe
