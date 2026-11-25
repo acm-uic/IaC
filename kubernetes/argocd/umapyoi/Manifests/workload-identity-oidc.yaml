@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: workload-identity-oidc
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: workload-identity-system
+    server: https://kubernetes.default.svc
+  source:
+    path: kubernetes/argocd/umapyoi/workload-identity
+    repoURL: git@github.com:acm-uic/IaC.git
+    targetRevision: HEAD
+    directory:
+      recurse: true
+      include: "*.{yaml,yml}"
+  project: infra
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      enabled: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

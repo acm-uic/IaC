@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: azure-workload-identity-system
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: azure-workload-identity-webhook
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: azure-workload-identity-system
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://azure.github.io/azure-workload-identity/charts
+    chart: workload-identity-webhook
+    targetRevision: 1.6.3
+    helm:
+      values: |
+        azureTenantID: cad5e02f-bae4-42d6-a06e-4377dd3e386f
+        resources:
+          limits:
+            cpu: 200m
+            memory: 64Mi
+          requests:
+            cpu: 100m
+            memory: 32Mi
+  project: infra
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      enabled: true
+    syncOptions:
+      - CreateNamespace=true
