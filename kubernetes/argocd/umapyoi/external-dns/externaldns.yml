@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: externaldns-azure-config
+  namespace: externaldns
+data:
+  azure.json: |
+    {
+      "tenantId": "cad5e02f-bae4-42d6-a06e-4377dd3e386f",
+      "subscriptionId": "2f98793b-7e2f-4f03-ac5b-7b2ec934dcd7",
+      "resourceGroup": "acm-general",
+      "useWorkloadIdentityExtension": true
+    }
