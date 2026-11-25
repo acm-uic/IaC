@@ -39,17 +39,6 @@ data:
         resources:
           - name: nvidia.com/gpu
             replicas: 4
-  ts-8: |-
-    version: v1
-    flags:
-      migStrategy: none
-    sharing:
-      timeSlicing:
-        renameByDefault: false
-        failRequestsGreaterThanOne: false
-        resources:
-          - name: nvidia.com/gpu
-            replicas: 8
 
 # ts-<n> is time-slicing a single GPU to <n>-instances
 # mps-<n> is Multi-Process-Service of a single GPU to <n>-instances (broken upstream from last time I tried to deploy) 
