@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "kubernetes/**/*.yml"
+      - "kubernetes/**/*.yaml"
     branches:
       - main
 
