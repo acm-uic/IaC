@@ -44,7 +44,8 @@ spec:
           effect: "NoSchedule"
       containers:
       - name: nginx
-        image: nginx
+        # Untagged nginx is nginx:latest, which is mainline 1.31.8 (not stable 1.30.6).
+        image: nginx:1.31.8@sha256:165ddde8751e75a1c907d24ef10d9f6deb08b57e0fe56caf67512486aff76d82
         ports:
         - containerPort: 80
           name: http
@@ -75,7 +76,8 @@ spec:
           timeoutSeconds: 5
       initContainers:
       - name: init-azwi
-        image: bitnami/kubectl
+        # bitnami/kubectl publishes only :latest. This digest is kubectl 1.37.2 (2026-11-04).
+        image: bitnami/kubectl@sha256:8f59408f9e896fc8992a0660a56687545bd06751f26531b4a26fca6d5dc7562d
         command: ["/bin/sh", "-c"]
         args: 
         - |
