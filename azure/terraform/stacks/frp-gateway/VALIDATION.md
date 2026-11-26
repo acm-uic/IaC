@@ -16,7 +16,7 @@ November 25, 2026. The target was the `admin@umapyoi` Kubernetes context and the
 
 ## Deployment workflow
 
-Validated the gateway workflow with actionlint and the stack with the runner's Terraform 1.9.8. A disposable Terraform workspace and a local substitute for Azure Blob storage exercised plan, apply and cleanup. Apply used the reviewed inputs even after the fixture variables changed. An invalid plan ID and a plan from a different commit were rejected. The Umapyoi API accepted the revision-pinned Argo Application in a server-side dry run. Azure OIDC access, runner-to-Umapyoi connectivity and health after deployment require a production run with the configured credentials.
+On November 26, 2026, actionlint passed for the gateway workflow, and OpenTofu 1.12.6 passed formatting, read-only dependency initialization and validation with AzureRM 4.81.0. A fresh local backend and read-only Azure lookups produced the same baseline plan of **11 additions, 0 changes, 0 deletions**. A disposable OpenTofu workspace and a local substitute for Azure Blob storage exercised plan, apply and cleanup. Apply used the reviewed inputs even after the fixture variables changed. An invalid plan ID and a plan from a different commit were rejected. The Umapyoi API accepted the revision-pinned Argo Application in a server-side dry run. Azure OIDC access, runner-to-Umapyoi connectivity and health after deployment require a production run with the configured credentials.
 
 ## Reproduce the core checks
 
@@ -24,9 +24,9 @@ From the repository root, run the following with FRP 0.72.0 release binaries on 
 
 ```bash
 stack=azure/terraform/stacks/frp-gateway
-terraform -chdir="$stack" fmt -check -recursive
-terraform -chdir="$stack" init -backend=false -input=false
-terraform -chdir="$stack" validate
+tofu -chdir="$stack" fmt -check -recursive
+tofu -chdir="$stack" init -backend=false -input=false -lockfile=readonly
+tofu -chdir="$stack" validate
 docker compose -f "$stack/server/compose.yaml" config --quiet
 docker compose -f "$stack/server/compose.yaml" -f "$stack/server/compose.ssh.yaml" config --quiet
 kubectl kustomize kubernetes/argocd/umapyoi/frp-client >/dev/null

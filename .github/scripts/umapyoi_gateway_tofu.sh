@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Called from the FRP Terraform stack after Azure OIDC login.
+# Called from the FRP OpenTofu stack after Azure OIDC login.
 set -euo pipefail
 umask 077
 case "$OPERATION" in
@@ -22,25 +22,25 @@ plan="$scratch/gateway.tfplan"
 blob="umapyoi-frp-plans/$GITHUB_SHA/$PLAN_ID.tfplan"
 storage=(--auth-mode login --account-name acmhybridstore --container-name acm-terraform-state --name "$blob" --only-show-errors)
 
-terraform init -input=false -lockfile=readonly
+tofu init -input=false -lockfile=readonly
 if [[ $OPERATION == plan ]]; then
-  terraform workspace select -or-create prod
+  tofu workspace select -or-create prod
   printf '%s\n' "$GATEWAY_TFVARS_JSON" > "$scratch/inputs.tfvars.json"
-  terraform plan -input=false -lock-timeout=5m -no-color -var-file="$scratch/inputs.tfvars.json" -out="$plan" >/dev/null
+  tofu plan -input=false -lock-timeout=5m -no-color -var-file="$scratch/inputs.tfvars.json" -out="$plan" >/dev/null
   az storage blob upload "${storage[@]}" --file "$plan" --overwrite false --output none
   {
     echo "Gateway plan \`$PLAN_ID\` for commit \`$GITHUB_SHA\`"
     echo
     echo 'Resource changes'
     echo '~~~'
-    terraform show -json "$plan" | jq -r '.resource_changes[]? | select(.change.actions != ["no-op"]) | "\(.change.actions | join("/"))  \(.address)"'
+    tofu show -json "$plan" | jq -r '.resource_changes[]? | select(.change.actions != ["no-op"]) | "\(.change.actions | join("/"))  \(.address)"'
     echo '~~~'
     echo "Full plan in private state storage: \`$blob\`."
   } >> "$GITHUB_STEP_SUMMARY"
 else
-  terraform workspace select prod
+  tofu workspace select prod
   az storage blob download "${storage[@]}" --file "$plan" --output none
-  terraform apply -input=false -lock-timeout=5m -no-color "$plan"
+  tofu apply -input=false -lock-timeout=5m -no-color "$plan"
   az storage blob delete "${storage[@]}" --output none ||
     echo "::warning::Applied the gateway plan. Remove the used plan from private storage: $blob"
 fi

@@ -2,10 +2,10 @@
 
 ## Service and tunnel health
 
-Run the Azure commands from the initialized Terraform stack directory. The VM's public SSH port is closed by default. Operators authorized for Azure Run Command can execute the same host diagnostics without opening it. Run Command provides root-equivalent access.
+Run the Azure commands from the initialized OpenTofu stack directory. The VM's public SSH port is closed by default. Operators authorized for Azure Run Command can execute the same host diagnostics without opening it. Run Command provides root-equivalent access.
 
 ```bash
-vm_id=$(terraform output -raw vm_id)
+vm_id=$(tofu output -raw vm_id)
 az vm get-instance-view --ids "$vm_id" --query 'instanceView.statuses[].displayStatus' -o tsv
 az vm run-command invoke --ids "$vm_id" --command-id RunShellScript --scripts \
   'cloud-init status --long; systemctl is-active frps; cd /opt/frp && docker compose ps; ip -6 addr show dev eth0; ip -6 route'
@@ -36,11 +36,11 @@ kubectl --context admin@umapyoi get ingress,ciliumenvoyconfig,certificate,challe
 
 ## Validate a cutover
 
-1. Before assigning DNS ownership, export the two public IPs from Terraform. Use two approved application hostnames with distinct routes and an endpoint that identifies each application. From an external network with IPv4 and IPv6, run the following checks. Use public CA verification for application HTTPS. Replace the paths with application-specific health endpoints if needed.
+1. Before assigning DNS ownership, export the two public IPs from OpenTofu. Use two approved application hostnames with distinct routes and an endpoint that identifies each application. From an external network with IPv4 and IPv6, run the following checks. Use public CA verification for application HTTPS. Replace the paths with application-specific health endpoints if needed.
 
    ```bash
-   v4=$(terraform output -json public_addresses | jq -r .IPv4)
-   v6=$(terraform output -json public_addresses | jq -r .IPv6)
+   v4=$(tofu output -json public_addresses | jq -r .IPv4)
+   v6=$(tofu output -json public_addresses | jq -r .IPv6)
    for host in "$APP_ONE" "$APP_TWO"; do
      curl -4 --show-error --resolve "$host:80:$v4" -i "http://$host/"
      curl -6 --show-error --resolve "$host:80:[$v6]" -i "http://$host/"
@@ -78,4 +78,4 @@ kubectl --context admin@umapyoi get ingress,ciliumenvoyconfig,certificate,challe
 
 FRP 0.72 supports `transport.proxyProtocolVersion = "v2"` on a TCP proxy. Umapyoi's Cilium 1.20.4 ingress and Gateway API PROXY settings are disabled. Cilium's ingress-wide switch requires PROXY input on every affected listener. The shared Service also accepts plain traffic, and Docker's IPv6-to-IPv4 userland proxy may already substitute the peer on the Azure side. A future preservation design needs an address-preserving gateway path, a dedicated trusted ingress listener isolated to frpc, and IPv4/IPv6 tests for direct and tunneled clients. Leave PROXY disabled on the shared path. [FRP real client IP](https://gofrp.org/en/docs/features/common/realip/) · [Cilium 1.20.4 Helm values](https://github.com/cilium/cilium/blob/v1.20.4/install/kubernetes/cilium/values.yaml)
 
-To enable SSH after web cutover, verify the destination administrator has approved the target, enabled public-key authentication, disabled password and keyboard-interactive authentication, and supplied the SSH host-key fingerprint over a trusted channel. Set `source_cidrs.forwarded_ssh` to the allowed administrator sources. Terraform enables the matching NSG rules, Compose publication and frps port allowance. Review the resulting VM replacement. Set `FRP_SSH_HOST` and `FRP_SSH_PORT` to the approved reachable host or Service in `settings.env`. From an allowed source verify the known host key and a key-authenticated login with `ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -p 2222 user@tunnel.acmuic.org`. Verify refusal from a disallowed source and test each permitted family. To withdraw, remove the client target and return the Terraform source list to empty. VM administration on TCP 22 has its own separate allowlist.
+To enable SSH after web cutover, verify the destination administrator has approved the target, enabled public-key authentication, disabled password and keyboard-interactive authentication, and supplied the SSH host-key fingerprint over a trusted channel. Set `source_cidrs.forwarded_ssh` to the allowed administrator sources. OpenTofu enables the matching NSG rules, Compose publication and frps port allowance. Review the resulting VM replacement. Set `FRP_SSH_HOST` and `FRP_SSH_PORT` to the approved reachable host or Service in `settings.env`. From an allowed source verify the known host key and a key-authenticated login with `ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -p 2222 user@tunnel.acmuic.org`. Verify refusal from a disallowed source and test each permitted family. To withdraw, remove the client target and return the OpenTofu source list to empty. VM administration on TCP 22 has its own separate allowlist.

@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - .github/workflows/umapyoi_public_gateway.yml
-      - .github/scripts/umapyoi_gateway_terraform.sh
+      - .github/scripts/umapyoi_gateway_tofu.sh
       - azure/terraform/stacks/frp-gateway/**
       - kubernetes/argocd/umapyoi/frp-client/**
       - kubernetes/argocd/umapyoi/cilium/values.yaml
@@ -56,16 +56,16 @@ jobs:
         with:
           version: v1.37.1
           checksum: 65691ff77eb6fa44c908b77a1082c9f092c3b9733b5cefabec0d1104890e21a8
-      - name: Validate Terraform and render the Umapyoi client
+      - name: Validate OpenTofu and render the Umapyoi client
         run: |
           stack=azure/terraform/stacks/frp-gateway
-          terraform -chdir="$stack" fmt -check -diff -recursive
-          terraform -chdir="$stack" init -backend=false -input=false -lockfile=readonly
-          terraform -chdir="$stack" validate
+          tofu -chdir="$stack" fmt -check -diff -recursive
+          tofu -chdir="$stack" init -backend=false -input=false -lockfile=readonly
+          tofu -chdir="$stack" validate
           kubectl kustomize kubernetes/argocd/umapyoi/frp-client >/dev/null
 
-  terraform:
-    name: Gateway Terraform
+  tofu:
+    name: Gateway OpenTofu
     needs: validate
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     runs-on: acmapp-builder
@@ -99,11 +99,11 @@ jobs:
           OPERATION: ${{ inputs.operation }}
           PLAN_ID: ${{ inputs.plan_id }}
           GATEWAY_TFVARS_JSON: ${{ vars.UMAPYOI_GATEWAY_TFVARS_JSON }}
-        run: bash "$GITHUB_WORKSPACE/.github/scripts/umapyoi_gateway_terraform.sh"
+        run: bash "$GITHUB_WORKSPACE/.github/scripts/umapyoi_gateway_tofu.sh"
 
   client:
     name: Deploy Umapyoi FRP client
-    needs: terraform
+    needs: tofu
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.operation == 'deploy'
     runs-on: acmapp-k8s
     environment: prod
