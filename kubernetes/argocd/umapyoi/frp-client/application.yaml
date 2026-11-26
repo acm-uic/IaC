@@ -7,7 +7,8 @@ spec:
   project: infra
   source:
     repoURL: git@github.com:acm-uic/IaC.git
-    targetRevision: HEAD
+    # The deployment workflow substitutes the approved main commit before applying.
+    targetRevision: main
     path: kubernetes/argocd/umapyoi/frp-client
   destination:
     server: https://kubernetes.default.svc

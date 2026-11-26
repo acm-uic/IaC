@@ -14,6 +14,10 @@ November 25, 2026. The target was the `admin@umapyoi` Kubernetes context and the
 | Firewall and SSH | Reviewed planned IPv4 and IPv6 NSG rules separately. The default plan opened web traffic and site-restricted control, with a final inbound deny. An unrestricted control CIDR failed validation. Port 2222 registration failed by default. With SSH enabled, a real SSH handshake authenticated a test user by public key over IPv6 through FRP to the configured internal test destination. | Confirm allowed/denied source networks on each public family, the authorized destination's key-only policy, host key and access logs before using SSH. Verify no inbound change on premises. |
 | Health and load | frps returned HTTP 200 at its private health endpoint. A local ARM64 run completed 128 verified TLS requests at concurrency eight, with peak process RSS of 19.25 MiB for frpc and 21.5 MiB for frps. | Measure pod CPU, memory and disconnects under the site's workload and B1s CPU credits. Observe the published applications from an external dual-stack probe. |
 
+## Deployment workflow
+
+Validated the gateway workflow with actionlint and the stack with the runner's Terraform 1.9.8. A disposable Terraform workspace and a local substitute for Azure Blob storage exercised plan, apply and cleanup. Apply used the reviewed inputs even after the fixture variables changed. An invalid plan ID and a plan from a different commit were rejected. The Umapyoi API accepted the revision-pinned Argo Application in a server-side dry run. Azure OIDC access, runner-to-Umapyoi connectivity and health after deployment require a production run with the configured credentials.
+
 ## Reproduce the core checks
 
 From the repository root, run the following with FRP 0.72.0 release binaries on PATH. The smoke test uses Linux user, mount, PID and network namespaces, disposable certificates and only the loopback interface. It exercises both IP families, two TLS identities and both process restarts without a cluster, Azure account or Docker daemon. [Pinned upstream release and checksums](https://github.com/fatedier/frp/releases/tag/v0.72.0)

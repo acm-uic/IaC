@@ -7,6 +7,7 @@ on:
     paths:
       - '.github/workflows/azure_terraform_apply.yml'
       - 'azure/terraform/stacks/**'
+      - '!azure/terraform/stacks/frp-gateway/**'
 
 permissions:
   contents: read
