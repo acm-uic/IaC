@@ -7,7 +7,6 @@ spec:
   project: infra
   source:
     repoURL: git@github.com:acm-uic/IaC.git
-    # The deployment workflow substitutes the approved main commit before applying.
     targetRevision: main
     path: kubernetes/argocd/umapyoi/frp-client
   destination:
@@ -15,6 +14,7 @@ spec:
     namespace: frp-system
   syncPolicy:
     automated:
+      enabled: true
       prune: true
       selfHeal: true
     syncOptions:

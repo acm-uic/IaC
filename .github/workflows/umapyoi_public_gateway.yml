@@ -7,6 +7,7 @@ on:
       - .github/workflows/umapyoi_public_gateway.yml
       - .github/scripts/umapyoi_gateway_tofu.sh
       - azure/terraform/stacks/frp-gateway/**
+      - kubernetes/argocd/umapyoi/Manifests/frp-client.yaml
       - kubernetes/argocd/umapyoi/frp-client/**
       - kubernetes/argocd/umapyoi/cilium/values.yaml
   workflow_dispatch:
@@ -26,7 +27,7 @@ permissions:
   contents: read
   packages: read
 
-# Serialize production operations through client reconciliation. PR checks run independently.
+# Serialize gateway plans and applies. PR checks run independently.
 concurrency:
   group: umapyoi-gateway-${{ github.event_name == 'workflow_dispatch' && 'prod' || github.run_id }}
   cancel-in-progress: false
@@ -100,51 +101,3 @@ jobs:
           PLAN_ID: ${{ inputs.plan_id }}
           GATEWAY_TFVARS_JSON: ${{ vars.UMAPYOI_GATEWAY_TFVARS_JSON }}
         run: bash "$GITHUB_WORKSPACE/.github/scripts/umapyoi_gateway_tofu.sh"
-
-  client:
-    name: Deploy Umapyoi FRP client
-    needs: tofu
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.operation == 'deploy'
-    runs-on: acmapp-k8s
-    environment: prod
-    timeout-minutes: 15
-    container:
-      image: ghcr.io/acm-uic/iac-runner:latest
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: azure/setup-kubectl@bda439f5f36b99b262ebdcd3613869bddb064c8e # v5.2.0
-        with:
-          version: v1.37.1
-          checksum: 65691ff77eb6fa44c908b77a1082c9f092c3b9733b5cefabec0d1104890e21a8
-      - name: Reconcile the reviewed revision on Umapyoi
-        env:
-          DEPLOY_KUBECONFIG: ${{ secrets.UMAPYOI_DEPLOY_KUBECONFIG }}
-        run: |
-          set -euo pipefail
-          : "${DEPLOY_KUBECONFIG:?Set the Umapyoi deployment credential in the prod environment}"
-          umask 077
-          KUBECONFIG=$(mktemp "$RUNNER_TEMP/umapyoi-kubeconfig.XXXXXXXX")
-          export KUBECONFIG
-          trap 'rm -f -- "$KUBECONFIG"' EXIT
-          printf '%s\n' "$DEPLOY_KUBECONFIG" > "$KUBECONFIG"
-          unset DEPLOY_KUBECONFIG
-          kube=(kubectl --kubeconfig "$KUBECONFIG" --context umapyoi-deploy -n argocd --request-timeout=20s)
-          patch=$(jq -nc --arg sha "$GITHUB_SHA" '{spec:{source:{targetRevision:$sha}}}')
-          "${kube[@]}" patch --local --type=merge -p "$patch" \
-            -f kubernetes/argocd/umapyoi/frp-client/application.yaml -o yaml |
-            "${kube[@]}" apply --server-side --field-manager=umapyoi-gateway-workflow -f -
-          for attempt in {1..60}; do
-            state=$("${kube[@]}" get application.argoproj.io/frp-client -o json)
-            if jq -e --arg sha "$GITHUB_SHA" '
-              .status.sync.revision == $sha and .status.sync.status == "Synced" and
-              .status.health.status == "Healthy"' <<< "$state" >/dev/null; then
-              echo "Argo CD reports frp-client synced and healthy at $GITHUB_SHA."
-              exit 0
-            fi
-            sleep 10
-          done
-          jq '.status | {sync, health, conditions}' <<< "$state"
-          exit 1
