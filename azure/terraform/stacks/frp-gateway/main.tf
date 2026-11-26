@@ -1,6 +1,14 @@
+locals {
+  default_tags = {
+    owner   = "clee231@acmuic.org"
+    project = "umapyoi-gateway"
+  }
+}
+
 resource "azurerm_resource_group" "gateway" {
   name     = "${var.name}-rg"
   location = var.location
+  tags     = local.default_tags
 }
 
 data "azurerm_key_vault" "existing" {
@@ -12,6 +20,7 @@ resource "azurerm_user_assigned_identity" "server" {
   name                = "${var.name}-server"
   location            = azurerm_resource_group.gateway.location
   resource_group_name = azurerm_resource_group.gateway.name
+  tags                = local.default_tags
 }
 
 resource "azurerm_role_assignment" "bundle_reader" {
@@ -28,6 +37,7 @@ resource "azurerm_dns_a_record" "gateway" {
   resource_group_name = var.dns.resource_group
   ttl                 = var.dns.ttl
   records             = [azurerm_public_ip.gateway["IPv4"].ip_address]
+  tags                = local.default_tags
 }
 
 resource "azurerm_dns_aaaa_record" "gateway" {
@@ -37,6 +47,7 @@ resource "azurerm_dns_aaaa_record" "gateway" {
   resource_group_name = var.dns.resource_group
   ttl                 = var.dns.ttl
   records             = [azurerm_public_ip.gateway["IPv6"].ip_address]
+  tags                = local.default_tags
 }
 
 resource "azurerm_consumption_budget_resource_group" "gateway" {

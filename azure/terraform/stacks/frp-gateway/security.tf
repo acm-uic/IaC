@@ -19,6 +19,7 @@ resource "azurerm_network_security_group" "gateway" {
   name                = "${var.name}-nsg"
   resource_group_name = azurerm_resource_group.gateway.name
   location            = azurerm_resource_group.gateway.location
+  tags                = local.default_tags
 
   dynamic "security_rule" {
     for_each = { for r in local.rules : r.name => r if length(r.sources) > 0 }

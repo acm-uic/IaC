@@ -36,6 +36,7 @@ resource "azurerm_linux_virtual_machine" "gateway" {
   resource_group_name             = azurerm_resource_group.gateway.name
   location                        = azurerm_resource_group.gateway.location
   size                            = var.vm_size
+  tags                            = local.default_tags
   admin_username                  = "gatewayadmin"
   disable_password_authentication = true
   network_interface_ids           = [azurerm_network_interface.gateway.id]

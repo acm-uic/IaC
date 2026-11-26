@@ -3,6 +3,7 @@ resource "azurerm_virtual_network" "gateway" {
   resource_group_name = azurerm_resource_group.gateway.name
   location            = azurerm_resource_group.gateway.location
   address_space       = [var.ipv4_network, var.ipv6_network]
+  tags                = local.default_tags
 }
 
 resource "azurerm_subnet" "gateway" {
@@ -24,12 +25,15 @@ resource "azurerm_public_ip" "gateway" {
   allocation_method   = "Static"
   sku                 = "Standard"
   ip_version          = each.key
+  tags                = local.default_tags
 }
 
 resource "azurerm_network_interface" "gateway" {
   name                = "${var.name}-nic"
   resource_group_name = azurerm_resource_group.gateway.name
   location            = azurerm_resource_group.gateway.location
+  tags                = local.default_tags
+
   dynamic "ip_configuration" {
     for_each = ["IPv4", "IPv6"]
     content {
