@@ -1,0 +1,36 @@
+serverAddr = {{ printf "%q" .Envs.FRP_GATEWAY }}
+serverPort = 7000
+loginFailExit = false
+
+auth.method = "token"
+auth.token = {{ printf "%q" .Envs.FRP_AUTH_TOKEN }}
+auth.additionalScopes = ["HeartBeats", "NewWorkConns"]
+transport.tls.enable = true
+transport.tls.trustedCaFile = "/run/frp-trust/ca.crt"
+transport.tls.serverName = {{ printf "%q" .Envs.FRP_GATEWAY }}
+log.to = "console"
+log.level = "info"
+log.disablePrintColor = true
+
+[[proxies]]
+name = "umapyoi-http"
+type = "tcp"
+localIP = {{ printf "%q" .Envs.FRP_INGRESS_SERVICE }}
+localPort = 80
+remotePort = 80
+
+[[proxies]]
+name = "umapyoi-https"
+type = "tcp"
+localIP = {{ printf "%q" .Envs.FRP_INGRESS_SERVICE }}
+localPort = 443
+remotePort = 443
+
+{{ if .Envs.FRP_SSH_HOST }}
+[[proxies]]
+name = "umapyoi-ssh"
+type = "tcp"
+localIP = {{ printf "%q" .Envs.FRP_SSH_HOST }}
+localPort = {{ .Envs.FRP_SSH_PORT }}
+remotePort = 2222
+{{ end }}

@@ -1,0 +1,4 @@
+services:
+  frps:
+    ports:
+      - "2222:2222/tcp"

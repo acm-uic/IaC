@@ -1,0 +1,12 @@
+configuration/*.tfvars
+!configuration/example.tfvars
+*.tfplan
+tfplan
+*.auto.tfvars*
+*.pem
+*.key
+*.crt
+.env
+credentials/
+token
+server-bundle.json

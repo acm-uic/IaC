@@ -56,3 +56,4 @@ This is a quick summary of each stack for the Azure Cloud Platform.
 | Type      | Name        | Description                                          |
 |-----------|-------------|------------------------------------------------------|
 | Terraform | acm-general | Deploys the assets in the acm-general resource group |
+| OpenTofu | [frp-gateway](terraform/stacks/frp-gateway/README.md) | Dual-stack TCP gateway for Umapyoi Cilium ingress |

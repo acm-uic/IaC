@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: frp-client
+  namespace: argocd
+spec:
+  project: infra
+  source:
+    repoURL: git@github.com:acm-uic/IaC.git
+    targetRevision: main
+    path: kubernetes/argocd/umapyoi/frp-client
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: frp-system
+  syncPolicy:
+    automated:
+      enabled: true
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

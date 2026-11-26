@@ -1,0 +1,34 @@
+services:
+  frps:
+    image: ghcr.io/fatedier/frps:v0.72.0@sha256:17abb20dd392557a44070d9726954630c0eb1f7a9bd6ead5ae9150d165179ea4
+    command: ["-c", "/etc/frp/frps.toml"]
+    user: "65532:65532"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    sysctls:
+      net.ipv4.ip_unprivileged_port_start: "0"
+    environment:
+      FRP_ENABLE_SSH: "${FRP_ENABLE_SSH:-false}"
+    ports:
+      - "80:80/tcp"
+      - "443:443/tcp"
+      - "7000:7000/tcp"
+    volumes:
+      - ./frps.toml:/etc/frp/frps.toml:ro
+      - type: bind
+        source: /run/frp-gateway/credentials
+        target: /run/credentials
+        read_only: true
+        bind:
+          create_host_path: false
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:7501/healthz"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+    logging:
+      driver: local
+      options:
+        max-size: 5m
+        max-file: "3"
