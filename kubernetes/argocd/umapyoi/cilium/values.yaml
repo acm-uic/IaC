@@ -25,6 +25,10 @@ cgroup:
   autoMount:
     enabled: false
   hostRoot: /sys/fs/cgroup
+# Public application Ingresses opt into the shared Service individually.
+ingressController:
+  enabled: true
+
 gatewayAPI:
   enabled: true
   enableAlpn: true

@@ -1,0 +1,20 @@
+bindAddr = "::"
+bindPort = 7000
+proxyBindAddr = "::"
+allowPorts = [{ single = 80 }, { single = 443 }{{ if eq .Envs.FRP_ENABLE_SSH "true" }}, { single = 2222 }{{ end }}]
+detailedErrorsToClient = false
+
+auth.method = "token"
+auth.tokenSource.type = "file"
+auth.tokenSource.file.path = "/run/credentials/token"
+auth.additionalScopes = ["HeartBeats", "NewWorkConns"]
+
+transport.tls.force = true
+transport.tls.certFile = "/run/credentials/server.crt"
+transport.tls.keyFile = "/run/credentials/server.key"
+
+log.to = "console"
+log.level = "info"
+log.disablePrintColor = true
+metricsServer.addr = "127.0.0.1"
+metricsServer.port = 7501

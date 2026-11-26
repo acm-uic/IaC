@@ -1,0 +1,27 @@
+[Unit]
+Description=FRP public TCP gateway
+Requires=docker.service
+PartOf=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=exec
+WorkingDirectory=/opt/frp
+EnvironmentFile=/opt/frp/.env
+RuntimeDirectory=frp-gateway
+RuntimeDirectoryMode=0700
+UMask=0077
+ExecStartPre=/usr/bin/python3 /opt/frp/fetch-bundle.py
+ExecStartPre=/usr/bin/docker compose run -T --rm --no-deps frps verify -c /etc/frp/frps.toml
+ExecStart=/usr/bin/docker compose up --abort-on-container-exit --exit-code-from frps
+ExecStartPost=/bin/sh -ec 'until /usr/bin/docker compose exec -T frps wget -q -O /dev/null http://127.0.0.1:7501/healthz; do sleep 2; done'
+ExecStop=/usr/bin/docker compose down --timeout 10
+ExecStopPost=-/usr/bin/docker compose down --timeout 10
+TimeoutStartSec=5min
+Restart=always
+RestartSec=15s
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frpc
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: frpc
+  template:
+    metadata:
+      labels:
+        app: frpc
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: frpc
+          image: ghcr.io/fatedier/frpc:v0.72.0@sha256:c447f0c3572a02bd3da5677f249db3b62cb02d7367d1d5bb420678ce092d65c8
+          args: ["-c", "/etc/frp/frpc.toml"]
+          env:
+            - name: FRP_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: &credentials frp-client-auth-v1
+                  key: token
+          envFrom:
+            - configMapRef:
+                name: frpc-settings
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/frp
+              readOnly: true
+            - name: trust
+              mountPath: /run/frp-trust
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: frpc-config
+            items:
+              - key: frpc.toml
+                path: frpc.toml
+        - name: trust
+          secret:
+            secretName: *credentials
+            items:
+              - key: ca.crt
+                path: ca.crt
